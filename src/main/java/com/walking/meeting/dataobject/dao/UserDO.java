@@ -1,78 +1,108 @@
+/** 
+ * UserDO.Java
+ * All rights reserved
+ * ------------------------------------------
+ * @Date: 2019-10-30 23:47:28 Created
+ * @Author: Technical team of walking
+ * @ProjectName: meeting
+ */
 package com.walking.meeting.dataobject.dao;
 
-import com.walking.meeting.dataobject.BaseObject;
-import lombok.Data;
-
-import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Date;
+import javax.persistence.*;
+import lombok.Data;
 
-/**
- * user_test
- * @author 
- */
 @Data
-public class UserDO extends BaseObject implements Serializable {
+@Table(name = "user")
+public class UserDO implements Serializable {
     /**
-     * 数据库表字段注释 : 主键
+     * 数据库表字段注释 : 用户表id
      *
      * 数据库表字段名称 : user.id
      */
     public static final String PROP_ID="id";
-    @Id
+    @javax.persistence.Id
     private Integer id;
 
     /**
-     * 数据库表字段注释 : 用户唯一编码
+     * 数据库表字段注释 : 用户id
      *
-     * 数据库表字段名称 : user.user_id
+     * 数据库表字段名称 : user.user-id
      */
     public static final String PROP_USER_ID="userId";
-    private Long userId;
+    private String userId;
 
     /**
-     * 数据库表字段注释 : 登录用户名
+     * 数据库表字段注释 : 用户名
      *
-     * 数据库表字段名称 : user.user_name
+     * 数据库表字段名称 : user.username
      */
-    public static final String PROP_USER_NAME="userName";
+    public static final String PROP_USERNAME="username";
     private String username;
 
     /**
-     * 数据库表字段注释 : MD5加密密码
+     * 数据库表字段注释 : 用户密码，MD5加密
      *
      * 数据库表字段名称 : user.password
      */
-    public static final String PROP_MD5_PWD="password";
+    public static final String PROP_PASSWORD="password";
     private String password;
 
     /**
-     * 数据库表字段注释 : 用户E_Mail
      *
      * 数据库表字段名称 : user.email
      */
-    public static final String PROP_E_MAIL="email";
+    public static final String PROP_EMAIL="email";
     private String email;
 
     /**
-     * 找回密码问题
+     * 数据库表字段注释 : 找回密码问题
+     *
+     * 数据库表字段名称 : user.question
      */
     public static final String PROP_QUESTION="question";
     private String question;
 
     /**
-     * 找回密码答案
+     * 数据库表字段注释 : 找回密码答案
+     *
+     * 数据库表字段名称 : user.answer
      */
     public static final String PROP_ANSWER="answer";
     private String answer;
 
     /**
-     * 角色0-管理员,1-普通用户
+     * 数据库表字段注释 : 角色0-管理员,1-普通用户
+     *
+     * 数据库表字段名称 : user.role
      */
     public static final String PROP_ROLE="role";
     private Integer role;
 
+    /**
+     * 数据库表字段注释 : 创建时间
+     *
+     * 数据库表字段名称 : user.create_time
+     */
+    public static final String PROP_CREATE_TIME="createTime";
+    private Date createTime;
+
+    /**
+     * 数据库表字段注释 : 最后一次更新时间
+     *
+     * 数据库表字段名称 : user.update_time
+     */
+    public static final String PROP_UPDATE_TIME="updateTime";
+    private Date updateTime;
+
+    /**
+     * 数据库表字段注释 : 有值则已经被删除
+     *
+     * 数据库表字段名称 : user.delete_time
+     */
+    public static final String PROP_DELETE_TIME="deleteTime";
+    private Date deleteTime;
+
     private static final long serialVersionUID = 1L;
-
-
 }
