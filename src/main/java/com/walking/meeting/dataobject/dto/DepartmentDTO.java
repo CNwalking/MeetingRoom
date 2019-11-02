@@ -11,8 +11,9 @@
  */
 package com.walking.meeting.dataobject.dto;
 
-import cn.ucmed.yilian.common.utils.annotation.IdEncryption;
 import java.util.Date;
+
+import com.walking.meeting.common.IdEncryption;
 import lombok.Data;
 
 @Data

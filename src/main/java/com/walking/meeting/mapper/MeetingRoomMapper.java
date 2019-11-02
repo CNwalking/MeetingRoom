@@ -1,8 +1,5 @@
 /** 
  * MeetingRoomMapper.Java
- * <p>
- * Copyright(C) 2017-2019 Hangzhou Zhuo Jian Mdt InfoTech Ltd
- * </p>
  * All rights reserved
  * ------------------------------------------
  * @Date: 2019-11-02 16:56:01 Created

@@ -1,8 +1,5 @@
 /** 
  * DeviceDTO.Java
- * <p>
- * Copyright(C) 2017-2019 Hangzhou Zhuo Jian Mdt InfoTech Ltd
- * </p>
  * All rights reserved
  * ------------------------------------------
  * @Date: 2019-11-02 16:56:10 Created
@@ -11,8 +8,10 @@
  */
 package com.walking.meeting.dataobject.dto;
 
-import cn.ucmed.yilian.common.utils.annotation.IdEncryption;
+
 import java.util.Date;
+
+import com.walking.meeting.common.IdEncryption;
 import lombok.Data;
 
 @Data
