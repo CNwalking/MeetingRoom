@@ -1,11 +1,11 @@
 /** 
- * UserDTO.Java
+ * DepartmentDTO.Java
  * <p>
  * Copyright(C) 2017-2019 Hangzhou Zhuo Jian Mdt InfoTech Ltd
  * </p>
  * All rights reserved
  * ------------------------------------------
- * @Date: 2019-11-02 16:57:49 Created
+ * @Date: 2019-11-02 16:56:14 Created
  * @Author: Technical team of walking
  * @ProjectName: meeting
  */
@@ -16,44 +16,22 @@ import java.util.Date;
 import lombok.Data;
 
 @Data
-public class UserDTO {
+public class DepartmentDTO {
     /**
-     * 用户表id
+     * 部门表id
      */
     @IdEncryption
     private String id;
 
     /**
-     * 用户名（不可重复）
-     */
-    private String username;
-
-    /**
-     * 用户密码，MD5加密
-     */
-    private String password;
-
-    /**
-     * 部门名字（不可重复）
+     * 部门名字(不可重复）
      */
     private String departmentName;
 
-    private String email;
-
     /**
-     * 找回密码问题
+     * 部门等级，123，最高3
      */
-    private String question;
-
-    /**
-     * 找回密码答案
-     */
-    private String answer;
-
-    /**
-     * 角色0-管理员,1-普通用户
-     */
-    private Integer role;
+    private Integer departmentLevel;
 
     /**
      * 创建时间

@@ -1,11 +1,11 @@
 /** 
- * UserDTO.Java
+ * RoomDeviceDTO.Java
  * <p>
  * Copyright(C) 2017-2019 Hangzhou Zhuo Jian Mdt InfoTech Ltd
  * </p>
  * All rights reserved
  * ------------------------------------------
- * @Date: 2019-11-02 16:57:49 Created
+ * @Date: 2019-11-02 16:55:52 Created
  * @Author: Technical team of walking
  * @ProjectName: meeting
  */
@@ -16,44 +16,22 @@ import java.util.Date;
 import lombok.Data;
 
 @Data
-public class UserDTO {
+public class RoomDeviceDTO {
     /**
-     * 用户表id
+     * 设备表id
      */
     @IdEncryption
     private String id;
 
     /**
-     * 用户名（不可重复）
+     * 房间id
      */
-    private String username;
+    private String roomId;
 
     /**
-     * 用户密码，MD5加密
+     * 设备id,1投影仪,2电插头,3遥控器,4黑板,5HDMI接口
      */
-    private String password;
-
-    /**
-     * 部门名字（不可重复）
-     */
-    private String departmentName;
-
-    private String email;
-
-    /**
-     * 找回密码问题
-     */
-    private String question;
-
-    /**
-     * 找回密码答案
-     */
-    private String answer;
-
-    /**
-     * 角色0-管理员,1-普通用户
-     */
-    private Integer role;
+    private Integer deviceId;
 
     /**
      * 创建时间

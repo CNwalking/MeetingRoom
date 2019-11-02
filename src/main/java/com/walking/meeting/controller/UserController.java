@@ -34,8 +34,8 @@ public class UserController {
         if (StringUtils.isBlank(loginName) || StringUtils.isBlank(password) || Objects.isNull(userRole)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
         }
-        // TODO 数据库判username是否存在
-        if (!userService.checkUserNameExist(loginName)){
+        // 判username是否存在
+        if (userService.checkUserNameExist(loginName)){
             // false说明不存在,抛用户名不存在，请注册
             throw new ResponseException(StatusCodeEnu.USERNAME_NOT_EXIT);
         }

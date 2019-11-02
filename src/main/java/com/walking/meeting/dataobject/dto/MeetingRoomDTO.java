@@ -1,11 +1,11 @@
 /** 
- * UserDTO.Java
+ * MeetingRoomDTO.Java
  * <p>
  * Copyright(C) 2017-2019 Hangzhou Zhuo Jian Mdt InfoTech Ltd
  * </p>
  * All rights reserved
  * ------------------------------------------
- * @Date: 2019-11-02 16:57:49 Created
+ * @Date: 2019-11-02 16:56:01 Created
  * @Author: Technical team of walking
  * @ProjectName: meeting
  */
@@ -16,7 +16,7 @@ import java.util.Date;
 import lombok.Data;
 
 @Data
-public class UserDTO {
+public class MeetingRoomDTO {
     /**
      * 用户表id
      */
@@ -24,36 +24,29 @@ public class UserDTO {
     private String id;
 
     /**
-     * 用户名（不可重复）
+     * 房间id（不可重复）
      */
-    private String username;
+    private String roomId;
 
     /**
-     * 用户密码，MD5加密
+     * 会议室可容纳人数
      */
-    private String password;
+    private Short scale;
 
     /**
-     * 部门名字（不可重复）
+     * 中文房间名
      */
-    private String departmentName;
-
-    private String email;
+    private String roomName;
 
     /**
-     * 找回密码问题
+     * 开放时间开始
      */
-    private String question;
+    private Date freeTimeStart;
 
     /**
-     * 找回密码答案
+     * 开放时间结束
      */
-    private String answer;
-
-    /**
-     * 角色0-管理员,1-普通用户
-     */
-    private Integer role;
+    private Date freeTimeEnd;
 
     /**
      * 创建时间

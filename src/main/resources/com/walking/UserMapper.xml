@@ -3,9 +3,9 @@
 <mapper namespace="com.walking.meeting.mapper.UserMapper">
   <resultMap id="BaseResultMap" type="com.walking.meeting.dataobject.dao.UserDO">
     <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="user-id" jdbcType="VARCHAR" property="userId" />
     <result column="username" jdbcType="VARCHAR" property="username" />
     <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="department_name" jdbcType="VARCHAR" property="departmentName" />
     <result column="email" jdbcType="VARCHAR" property="email" />
     <result column="question" jdbcType="VARCHAR" property="question" />
     <result column="answer" jdbcType="VARCHAR" property="answer" />
@@ -15,7 +15,7 @@
     <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, user-id, username, `password`, email, question, answer, `role`, create_time, 
+    id, username, `password`, department_name, email, question, answer, `role`, create_time, 
     update_time, delete_time
   </sql>
 </mapper>

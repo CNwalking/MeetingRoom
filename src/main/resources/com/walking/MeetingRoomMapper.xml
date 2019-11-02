@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.walking.meeting.mapper.MeetingRoomMapper">
+  <resultMap id="BaseResultMap" type="com.walking.meeting.dataobject.dao.MeetingRoomDO">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="room_id" jdbcType="VARCHAR" property="roomId" />
+    <result column="scale" jdbcType="SMALLINT" property="scale" />
+    <result column="room_name" jdbcType="VARCHAR" property="roomName" />
+    <result column="free_time_start" jdbcType="TIMESTAMP" property="freeTimeStart" />
+    <result column="free_time_end" jdbcType="TIMESTAMP" property="freeTimeEnd" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, room_id, `scale`, room_name, free_time_start, free_time_end, create_time, update_time, 
+    delete_time
+  </sql>
+</mapper>

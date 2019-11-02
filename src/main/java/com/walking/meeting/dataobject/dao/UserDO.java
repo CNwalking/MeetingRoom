@@ -1,8 +1,11 @@
 /** 
  * UserDO.Java
+ * <p>
+ * Copyright(C) 2017-2019 Hangzhou Zhuo Jian Mdt InfoTech Ltd
+ * </p>
  * All rights reserved
  * ------------------------------------------
- * @Date: 2019-10-30 23:47:28 Created
+ * @Date: 2019-11-02 16:57:49 Created
  * @Author: Technical team of walking
  * @ProjectName: meeting
  */
@@ -26,15 +29,7 @@ public class UserDO implements Serializable {
     private Integer id;
 
     /**
-     * 数据库表字段注释 : 用户id
-     *
-     * 数据库表字段名称 : user.user-id
-     */
-    public static final String PROP_USER_ID="userId";
-    private String userId;
-
-    /**
-     * 数据库表字段注释 : 用户名
+     * 数据库表字段注释 : 用户名（不可重复）
      *
      * 数据库表字段名称 : user.username
      */
@@ -48,6 +43,14 @@ public class UserDO implements Serializable {
      */
     public static final String PROP_PASSWORD="password";
     private String password;
+
+    /**
+     * 数据库表字段注释 : 部门名字（不可重复）
+     *
+     * 数据库表字段名称 : user.department_name
+     */
+    public static final String PROP_DEPARTMENT_NAME="departmentName";
+    private String departmentName;
 
     /**
      *
