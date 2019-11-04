@@ -29,7 +29,7 @@ public class UserDTO {
     /**
      * 用户密码，MD5加密
      */
-    private String password;
+    private String pswd;
 
     /**
      * 部门名字（不可重复）

@@ -27,9 +27,9 @@ public class RoomBookingDTO {
     private String roomId;
 
     /**
-     * 定会议室事件
+     * 定会议室日期
      */
-    private String date;
+    private Date bookingDate;
 
     /**
      * 定会议室起始时间

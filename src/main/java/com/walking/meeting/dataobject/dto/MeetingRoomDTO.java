@@ -29,7 +29,7 @@ public class MeetingRoomDTO {
     /**
      * 会议室可容纳人数
      */
-    private Short scale;
+    private Short roomScale;
 
     /**
      * 中文房间名

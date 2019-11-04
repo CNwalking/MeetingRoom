@@ -39,7 +39,7 @@ public class RoomBookingDO implements Serializable {
      * 数据库表字段名称 : room_booking.booking_date
      */
     public static final String PROP_BOOKING_DATE="bookingDate";
-    private String bookingDate;
+    private Date bookingDate;
 
     /**
      * 数据库表字段注释 : 定会议室起始时间

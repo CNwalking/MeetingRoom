@@ -32,6 +32,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDO getUserByUserQuery(UserQuery userQuery) {
+//        Example example = new Example(UserDO.class);
+//        Example.Criteria criteria = example.createCriteria();
+//        criteria.andEqualTo(UserDO.PROP_DELETE_TIME, "");
+//        criteria.andEqualTo(UserDO.PROP_USERNAME, userQuery.getUserName());
+//        criteria.andEqualTo(UserDO.PROP_EMAIL, userQuery.getEmail());
+//        criteria.andEqualTo(UserDO.PROP_DEPARTMENT_NAME, userQuery.getDepartmentName());
+//
+//        List<UserDO> list=userMapper.selectByExample(example);
+//        return DbUtils.getOne(list).orElse(null);
         Example.Builder builder = DbUtils.newExampleBuilder(UserDO.class);
         DbUtils.setEqualToProp(builder, UserDO.PROP_USERNAME, userQuery.getUserName());
         DbUtils.setEqualToProp(builder, UserDO.PROP_DEPARTMENT_NAME, userQuery.getDepartmentName());
@@ -43,7 +52,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addUser(UserDTO userDTO) {
         UserDO userDO =  JSON.parseObject(JSON.toJSONString(userDTO), UserDO.class);
-        userDO.setRole(1); // 默认普通用户，0为管理员
+        userDO.setRoleId(1); // 默认普通用户，0为管理员
         userDO.setCreateTime(new Date());
         userMapper.insertSelective(userDO);
     }
@@ -54,6 +63,11 @@ public class UserServiceImpl implements UserService {
             return;
         }
         // 只更新有效字段
+//        Example example = new Example(UserDO.class);
+//        Example.Criteria criteria = example.createCriteria();
+//        criteria.andEqualTo(UserDO.PROP_DELETE_TIME, "");
+//        criteria.andEqualTo(UserDO.PROP_USERNAME, userDO.getUsername());
+//        userMapper.updateByExampleSelective(userDO,example);
         Example.Builder builder = DbUtils.newExampleBuilder(UserDO.class);
         DbUtils.setEqualToProp(builder, UserDO.PROP_USERNAME, userDO.getUsername());
         userDO.setUpdateTime(new Date());

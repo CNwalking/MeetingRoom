@@ -56,8 +56,8 @@ public class UserController {
             throw new ResponseException(StatusCodeEnu.USERNAME_NOT_EXIT);
         }
         // 判账号密码正确性，密码md5,不相等就抛异常
-        if (!StringUtils.equals(userDO.getPassword(),MD5Encrypt.md5Encrypt(password))){
-            log.info("数据库里的:{},加密完的数据:{}",userDO.getPassword(),MD5Encrypt.md5Encrypt(password));
+        if (!StringUtils.equals(userDO.getPswd(),MD5Encrypt.md5Encrypt(password))){
+            log.info("数据库里的:{},加密完的数据:{}",userDO.getPswd(),MD5Encrypt.md5Encrypt(password));
             throw new ResponseException(StatusCodeEnu.USERNAME_OR_PSWD_ERROR);
         }
         // session在
@@ -90,7 +90,7 @@ public class UserController {
         // 数据库录入操作，密码md5
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername(loginName);
-        userDTO.setPassword(MD5Encrypt.md5Encrypt(password));
+        userDTO.setPswd(MD5Encrypt.md5Encrypt(password));
         userDTO.setQuestion(question);
         userDTO.setAnswer(answer);
         userDTO.setEmail(email);
