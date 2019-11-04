@@ -10,5 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController("MeetingController")
 @RequestMapping("/meeting")
 public class MeetingController {
+    // TODO 预定会议接口（算法），查看会议预定历史接口（通用list，按人），删除会议室接口
+
 
 }

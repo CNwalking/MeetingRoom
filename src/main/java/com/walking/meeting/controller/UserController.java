@@ -7,6 +7,7 @@ import com.walking.meeting.common.SuccessResponse;
 import com.walking.meeting.dataobject.dao.UserDO;
 import com.walking.meeting.dataobject.dto.UserDTO;
 import com.walking.meeting.dataobject.query.UserQuery;
+import com.walking.meeting.utils.DateUtils;
 import com.walking.meeting.utils.MD5Encrypt;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -19,15 +20,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
+
+import static com.walking.meeting.utils.DateUtils.FORMAT_YYYY_MM_DD_HH_MM;
 
 @Slf4j
 @Api(tags = "UserController", description = "用户模块")
 @RestController("UserController")
 @RequestMapping("/user")
 public class UserController {
-    // TODO 用户登录，注册，删除接口（软删deletetime置值），人脸识别登录接口
+    // TODO 用户登录，注册，退出，删除接口（软删deletetime置值），人脸识别登录接口，查看会议预定历史接口
 
     @Autowired
     private UserService userService;
@@ -39,14 +43,16 @@ public class UserController {
             @ApiParam(name = "password", value = "密码") @RequestParam(value = "password") String password,
             @ApiParam(name = "user_role", value = "0:管理员 1:普通用户") @RequestParam(
                     value = "user_role") Integer userRole) {
+        log.info("[用户登录param], loginName:{}, password:{}, userRole:{}", loginName, password, userRole);
         if (StringUtils.isBlank(loginName) || StringUtils.isBlank(password) || Objects.isNull(userRole)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
         }
         UserQuery userQuery = new UserQuery();
         userQuery.setUserName(loginName);
         UserDO userDO = userService.getUserByUserQuery(userQuery);
+        log.info("====="+Optional.ofNullable(userDO).toString()+"=====");
         // 判username是否存在
-        if (ObjectUtils.isEmpty(userDO)){
+        if (Objects.isNull(userDO)){
             throw new ResponseException(StatusCodeEnu.USERNAME_NOT_EXIT);
         }
         // 判账号密码正确性，密码md5,不相等就抛异常
@@ -78,7 +84,7 @@ public class UserController {
         userQuery.setUserName(loginName);
         UserDO userDO = userService.getUserByUserQuery(userQuery);
         // 判username是否存在
-        if (!ObjectUtils.isEmpty(userDO)){
+        if (!Objects.isNull(userDO)){
             throw new ResponseException(StatusCodeEnu.USERNAME_EXIT);
         }
         // 数据库录入操作，密码md5
@@ -92,6 +98,20 @@ public class UserController {
         userService.addUser(userDTO);
         return SuccessResponse.defaultSuccess();
     }
+
+    @ApiOperation(value = "用户删除", notes = "用户删除")
+    @PostMapping(value = "/del")
+    public SuccessResponse userRegister(
+            @ApiParam(name = "login_name", value = "用户名") @RequestParam(value = "login_name") String loginName){
+        UserDO userDO = new UserDO();
+        userDO.setUsername(loginName);
+        userDO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
+        userService.updateUserSelective(userDO);
+        // room_booking表也要删除username相关字段
+
+        return SuccessResponse.defaultSuccess();
+    }
+
 
 //    public static void main(String[] args) {
 //        String password = "qwe123";

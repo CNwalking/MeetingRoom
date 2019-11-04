@@ -10,4 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController("ManagerController")
 @RequestMapping("/manager")
 public class ManagerController {
+    // TODO 添加，删除，修改会议室属性接口，强制修改会议室预约接口（算法），查看预定会议室历史（通用list，看会议室）
+
 }

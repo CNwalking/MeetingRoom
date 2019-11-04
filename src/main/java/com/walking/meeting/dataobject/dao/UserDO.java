@@ -102,7 +102,7 @@ public class UserDO implements Serializable {
      * 数据库表字段名称 : user.delete_time
      */
     public static final String PROP_DELETE_TIME="deleteTime";
-    private Date deleteTime;
+    private String deleteTime;
 
     private static final long serialVersionUID = 1L;
 }

@@ -10,7 +10,7 @@
     <result column="free_time_end" jdbcType="TIMESTAMP" property="freeTimeEnd" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
+    <result column="delete_time" jdbcType="VARCHAR" property="deleteTime" />
   </resultMap>
   <sql id="Base_Column_List">
     id, room_id, `scale`, room_name, free_time_start, free_time_end, create_time, update_time, 

@@ -9,4 +9,6 @@ public interface UserService {
     UserDO getUserByUserQuery(UserQuery userQuery);
 
     void addUser(UserDTO userDTO);
+
+    void updateUserSelective(UserDO userDO);
 }

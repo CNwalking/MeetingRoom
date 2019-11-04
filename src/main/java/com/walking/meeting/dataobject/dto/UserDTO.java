@@ -66,5 +66,5 @@ public class UserDTO {
     /**
      * 有值则已经被删除
      */
-    private Date deleteTime;
+    private String deleteTime;
 }

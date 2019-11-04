@@ -8,7 +8,7 @@
     <result column="room_id" jdbcType="VARCHAR" property="roomId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-    <result column="delete_time" jdbcType="TIMESTAMP" property="deleteTime" />
+    <result column="delete_time" jdbcType="VARCHAR" property="deleteTime" />
   </resultMap>
   <sql id="Base_Column_List">
     id, meeting_name, meeting_level, room_id, create_time, update_time, delete_time
