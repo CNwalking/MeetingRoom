@@ -2,7 +2,7 @@
  * RoomBookingDO.Java
  * All rights reserved
  * ------------------------------------------
- * @Date: 2019-11-04 12:42:11 Created
+ * @Date: 2019-11-04 16:40:22 Created
  * @Author: Technical team of walking
  * @ProjectName: meeting
  */
@@ -58,12 +58,12 @@ public class RoomBookingDO implements Serializable {
     private Date endTime;
 
     /**
-     * 数据库表字段注释 : 会议预订者
+     * 数据库表字段注释 : 所预定的会议
      *
-     * 数据库表字段名称 : room_booking.username
+     * 数据库表字段名称 : room_booking.meeting_id
      */
-    public static final String PROP_USERNAME="username";
-    private String username;
+    public static final String PROP_MEETING_ID="meetingId";
+    private String meetingId;
 
     /**
      * 数据库表字段注释 : 创建时间

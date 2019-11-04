@@ -1,9 +1,11 @@
 package com.walking.meeting.controller;
 
+import com.walking.meeting.Service.MeetingService;
 import com.walking.meeting.Service.UserService;
 import com.walking.meeting.common.ResponseException;
 import com.walking.meeting.common.StatusCodeEnu;
 import com.walking.meeting.common.SuccessResponse;
+import com.walking.meeting.dataobject.dao.MeetingDO;
 import com.walking.meeting.dataobject.dao.UserDO;
 import com.walking.meeting.dataobject.dto.UserDTO;
 import com.walking.meeting.dataobject.query.UserQuery;
@@ -13,13 +15,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
@@ -35,6 +34,8 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+    @Autowired
+    private MeetingService meetingService;
 
     @ApiOperation(value = "用户登录", notes = "用户登录")
     @PostMapping(value = "/login")
@@ -109,6 +110,10 @@ public class UserController {
         userService.updateUserSelective(userDO);
         // TODO room_booking表也要删除username相关字段
 
+        MeetingDO meetingDO = new MeetingDO();
+        meetingDO.setUsername(loginName);
+        meetingDO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
+        meetingService.updateMeetingSelective(meetingDO);
         return SuccessResponse.defaultSuccess();
     }
 

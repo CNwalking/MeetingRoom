@@ -2,7 +2,7 @@
  * MeetingDO.Java
  * All rights reserved
  * ------------------------------------------
- * @Date: 2019-11-02 16:56:06 Created
+ * @Date: 2019-11-04 16:38:07 Created
  * @Author: Technical team of walking
  * @ProjectName: meeting
  */
@@ -42,12 +42,28 @@ public class MeetingDO implements Serializable {
     private Integer meetingLevel;
 
     /**
+     * 数据库表字段注释 : 全局meeting
+     *
+     * 数据库表字段名称 : meeting.meeting_id
+     */
+    public static final String PROP_MEETING_ID="meetingId";
+    private String meetingId;
+
+    /**
      * 数据库表字段注释 : 会议室id
      *
      * 数据库表字段名称 : meeting.room_id
      */
     public static final String PROP_ROOM_ID="roomId";
     private String roomId;
+
+    /**
+     * 数据库表字段注释 : 会议预定者
+     *
+     * 数据库表字段名称 : meeting.username
+     */
+    public static final String PROP_USERNAME="username";
+    private String username;
 
     /**
      * 数据库表字段注释 : 创建时间

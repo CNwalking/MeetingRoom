@@ -2,7 +2,7 @@
  * MeetingRoomDTO.Java
  * All rights reserved
  * ------------------------------------------
- * @Date: 2019-11-02 16:56:01 Created
+ * @Date: 2019-11-04 16:39:20 Created
  * @Author: Technical team of walking
  * @ProjectName: meeting
  */

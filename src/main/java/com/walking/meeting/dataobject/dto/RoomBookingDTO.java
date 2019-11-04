@@ -2,7 +2,7 @@
  * RoomBookingDTO.Java
  * All rights reserved
  * ------------------------------------------
- * @Date: 2019-11-02 16:55:57 Created
+ * @Date: 2019-11-04 16:40:22 Created
  * @Author: Technical team of walking
  * @ProjectName: meeting
  */
@@ -42,9 +42,9 @@ public class RoomBookingDTO {
     private Date endTime;
 
     /**
-     * 会议预订者
+     * 所预定的会议
      */
-    private String username;
+    private String meetingId;
 
     /**
      * 创建时间

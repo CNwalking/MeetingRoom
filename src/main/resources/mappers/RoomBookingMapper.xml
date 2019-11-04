@@ -7,13 +7,13 @@
     <result column="booking_date" jdbcType="DATE" property="bookingDate" />
     <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
     <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
-    <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="meeting_id" jdbcType="VARCHAR" property="meetingId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="delete_time" jdbcType="VARCHAR" property="deleteTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, room_id, booking_date, start_time, end_time, username, create_time, update_time, 
+    id, room_id, booking_date, start_time, end_time, meeting_id, create_time, update_time, 
     delete_time
   </sql>
 </mapper>
