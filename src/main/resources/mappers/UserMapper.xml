@@ -4,18 +4,18 @@
   <resultMap id="BaseResultMap" type="com.walking.meeting.dataobject.dao.UserDO">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="username" jdbcType="VARCHAR" property="username" />
-    <result column="password" jdbcType="VARCHAR" property="password" />
+    <result column="pswd" jdbcType="VARCHAR" property="pswd" />
     <result column="department_name" jdbcType="VARCHAR" property="departmentName" />
     <result column="email" jdbcType="VARCHAR" property="email" />
     <result column="question" jdbcType="VARCHAR" property="question" />
     <result column="answer" jdbcType="VARCHAR" property="answer" />
-    <result column="role" jdbcType="INTEGER" property="role" />
+    <result column="role_id" jdbcType="INTEGER" property="roleId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="delete_time" jdbcType="VARCHAR" property="deleteTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, username, `password`, department_name, email, question, answer, `role`, create_time, 
+    id, username, pswd, department_name, email, question, answer, role_id, create_time, 
     update_time, delete_time
   </sql>
 </mapper>

@@ -4,7 +4,7 @@
   <resultMap id="BaseResultMap" type="com.walking.meeting.dataobject.dao.RoomBookingDO">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="room_id" jdbcType="VARCHAR" property="roomId" />
-    <result column="date" jdbcType="VARCHAR" property="date" />
+    <result column="booking_date" jdbcType="VARCHAR" property="bookingDate" />
     <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
     <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
     <result column="username" jdbcType="VARCHAR" property="username" />
@@ -13,6 +13,7 @@
     <result column="delete_time" jdbcType="VARCHAR" property="deleteTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, room_id, `date`, start_time, end_time, username, create_time, update_time, delete_time
+    id, room_id, booking_date, start_time, end_time, username, create_time, update_time, 
+    delete_time
   </sql>
 </mapper>

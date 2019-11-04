@@ -4,7 +4,7 @@
   <resultMap id="BaseResultMap" type="com.walking.meeting.dataobject.dao.MeetingRoomDO">
     <id column="id" jdbcType="INTEGER" property="id" />
     <result column="room_id" jdbcType="VARCHAR" property="roomId" />
-    <result column="scale" jdbcType="SMALLINT" property="scale" />
+    <result column="room_scale" jdbcType="SMALLINT" property="roomScale" />
     <result column="room_name" jdbcType="VARCHAR" property="roomName" />
     <result column="free_time_start" jdbcType="TIMESTAMP" property="freeTimeStart" />
     <result column="free_time_end" jdbcType="TIMESTAMP" property="freeTimeEnd" />
@@ -13,7 +13,7 @@
     <result column="delete_time" jdbcType="VARCHAR" property="deleteTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, room_id, `scale`, room_name, free_time_start, free_time_end, create_time, update_time, 
-    delete_time
+    id, room_id, room_scale, room_name, free_time_start, free_time_end, create_time, 
+    update_time, delete_time
   </sql>
 </mapper>

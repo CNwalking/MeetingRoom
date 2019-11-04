@@ -2,7 +2,7 @@
  * UserDO.Java
  * All rights reserved
  * ------------------------------------------
- * @Date: 2019-11-02 16:57:49 Created
+ * @Date: 2019-11-04 12:41:48 Created
  * @Author: Technical team of walking
  * @ProjectName: meeting
  */
@@ -36,10 +36,10 @@ public class UserDO implements Serializable {
     /**
      * 数据库表字段注释 : 用户密码，MD5加密
      *
-     * 数据库表字段名称 : user.password
+     * 数据库表字段名称 : user.pswd
      */
-    public static final String PROP_PASSWORD="password";
-    private String password;
+    public static final String PROP_PSWD="pswd";
+    private String pswd;
 
     /**
      * 数据库表字段注释 : 部门名字（不可重复）
@@ -75,10 +75,10 @@ public class UserDO implements Serializable {
     /**
      * 数据库表字段注释 : 角色0-管理员,1-普通用户
      *
-     * 数据库表字段名称 : user.role
+     * 数据库表字段名称 : user.role_id
      */
-    public static final String PROP_ROLE="role";
-    private Integer role;
+    public static final String PROP_ROLE_ID="roleId";
+    private Integer roleId;
 
     /**
      * 数据库表字段注释 : 创建时间

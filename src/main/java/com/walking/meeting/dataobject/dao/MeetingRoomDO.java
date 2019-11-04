@@ -2,7 +2,7 @@
  * MeetingRoomDO.Java
  * All rights reserved
  * ------------------------------------------
- * @Date: 2019-11-02 16:56:01 Created
+ * @Date: 2019-11-04 12:43:41 Created
  * @Author: Technical team of walking
  * @ProjectName: meeting
  */
@@ -36,10 +36,10 @@ public class MeetingRoomDO implements Serializable {
     /**
      * 数据库表字段注释 : 会议室可容纳人数
      *
-     * 数据库表字段名称 : meeting_room.scale
+     * 数据库表字段名称 : meeting_room.room_scale
      */
-    public static final String PROP_SCALE="scale";
-    private Short scale;
+    public static final String PROP_ROOM_SCALE="roomScale";
+    private Short roomScale;
 
     /**
      * 数据库表字段注释 : 中文房间名
