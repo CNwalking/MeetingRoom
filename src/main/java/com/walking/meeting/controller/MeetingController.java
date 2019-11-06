@@ -96,9 +96,10 @@ public class MeetingController {
         meetingDTO.setUsername(username);
         meetingDTO.setMeetingLevel(meetingLevel);
         meetingDTO.setRoomId(roomId);
-        // 如果 开始时间-结束时间 != 会议时间 ，那么报错
+        // 如果 开始时间-结束时间 != 会议时间 或开始时间 >结束时间 ，那么报错
         Date start = DateUtils.parse(startTime, FORMAT_YYYY_MM_DD_HH_MM);
         Date end = DateUtils.parse(endTime, FORMAT_YYYY_MM_DD_HH_MM);
+        log.info("startTime:{},endTime:{}",start,end);
         if (!new BigDecimal(DateUtils.getMeetingRequiredTime(startTime, endTime)).equals(requiredTime)
             || start.getTime() > end.getTime()) {
             throw new ResponseException(StatusCodeEnu.MEETING_TIME_ERROR);

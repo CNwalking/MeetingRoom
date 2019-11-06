@@ -2,6 +2,8 @@ package com.walking.meeting.utils;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.*;
@@ -63,13 +65,14 @@ public abstract class DateUtils {
         return LocalDateTime.now().plusMinutes(minutes).toInstant(ZoneOffset.of("+8")).toEpochMilli();
     }
 
-    public static double getMeetingRequiredTime(String startTime,String endTime){
-        Date startTimeParse = DateUtils.parse(startTime, FORMAT_YYYY_MM_DD_HH_MM_SS);
-        Date endTimeParse = DateUtils.parse(endTime, FORMAT_YYYY_MM_DD_HH_MM_SS);
+    public static double getMeetingRequiredTime(String startTime, String endTime){
+        Date startTimeParse = DateUtils.parse(startTime, FORMAT_YYYY_MM_DD_HH_MM);
+        Date endTimeParse = DateUtils.parse(endTime, FORMAT_YYYY_MM_DD_HH_MM);
         Long startTimeStamp = startTimeParse.getTime();
         Long endTimeStamp = endTimeParse.getTime();
-        double hours = (double) Math.round((endTimeStamp-startTimeStamp)/3600/1000 * 100) / 100;
-        return hours;
+        double hours = (double) (endTimeStamp-startTimeStamp)/3600/1000;
+        BigDecimal b = new BigDecimal(hours);
+        return b.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
     }
 
     public static double getMeetingRequiredTime(Date startTime,Date endTime){
@@ -79,10 +82,10 @@ public abstract class DateUtils {
         return hours;
     }
 
-//    public static void main(String[] args) {
-//        System.out.println(DateUtils.parse("2019-11-6 16:00:00", FORMAT_YYYY_MM_DD_HH_MM_SS));
-//        String t1 = "2019-11-06 16:25:02";
-//        String t2 = "2019-11-06 18:25:02";
-//        System.out.println(getRequiredTime(t1,t2));
-//    }
+    public static void main(String[] args) {
+        System.out.println(DateUtils.parse("2019-11-6 16:00:00", FORMAT_YYYY_MM_DD_HH_MM_SS));
+        String t1 = "2019-11-06 09:00";
+        String t2 = "2019-11-06 10:45";
+        System.out.println(getMeetingRequiredTime(t1,t2));
+    }
 }
