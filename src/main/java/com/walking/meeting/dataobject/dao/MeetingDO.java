@@ -2,7 +2,7 @@
  * MeetingDO.Java
  * All rights reserved
  * ------------------------------------------
- * @Date: 2019-11-04 16:38:07 Created
+ * @Date: 2019-11-05 19:59:12 Created
  * @Author: Technical team of walking
  * @ProjectName: meeting
  */
@@ -64,6 +64,30 @@ public class MeetingDO implements Serializable {
      */
     public static final String PROP_USERNAME="username";
     private String username;
+
+    /**
+     * 数据库表字段注释 : 会议预定日期
+     *
+     * 数据库表字段名称 : meeting.booking_date
+     */
+    public static final String PROP_BOOKING_DATE="bookingDate";
+    private Date bookingDate;
+
+    /**
+     * 数据库表字段注释 : 定会议室起始时间
+     *
+     * 数据库表字段名称 : meeting.booking_start_time
+     */
+    public static final String PROP_BOOKING_START_TIME="bookingStartTime";
+    private Date bookingStartTime;
+
+    /**
+     * 数据库表字段注释 : 定会议室结束时间
+     *
+     * 数据库表字段名称 : meeting.booking_end_time
+     */
+    public static final String PROP_BOOKING_END_TIME="bookingEndTime";
+    private Date bookingEndTime;
 
     /**
      * 数据库表字段注释 : 创建时间

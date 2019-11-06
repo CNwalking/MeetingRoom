@@ -1,11 +1,10 @@
 package com.walking.meeting.Service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import com.google.common.collect.Lists;
 import com.walking.meeting.Service.MeetingService;
 import com.walking.meeting.dataobject.dao.MeetingDO;
-import com.walking.meeting.dataobject.dao.UserDO;
 import com.walking.meeting.dataobject.dto.MeetingDTO;
 import com.walking.meeting.mapper.MeetingMapper;
 import com.walking.meeting.utils.DbUtils;
@@ -45,4 +44,12 @@ public class MeetingServiceImpl implements MeetingService {
         PageInfo<MeetingDO> pageInfo = new PageInfo<>(MeetingDOList);
         return pageInfo;
     }
+
+    @Override
+    public void addMeeting(MeetingDTO meetingDTO) {
+        MeetingDO meetingDO =  JSON.parseObject(JSON.toJSONString(meetingDTO), MeetingDO.class);
+        meetingDO.setCreateTime(new Date());
+        meetingMapper.insertSelective(meetingDO);
+    }
+
 }

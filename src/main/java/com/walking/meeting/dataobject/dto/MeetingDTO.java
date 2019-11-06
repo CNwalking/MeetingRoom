@@ -2,7 +2,7 @@
  * MeetingDTO.Java
  * All rights reserved
  * ------------------------------------------
- * @Date: 2019-11-04 16:38:07 Created
+ * @Date: 2019-11-05 19:59:12 Created
  * @Author: Technical team of walking
  * @ProjectName: meeting
  */
@@ -45,6 +45,21 @@ public class MeetingDTO {
      * 会议预定者
      */
     private String username;
+
+    /**
+     * 会议预定日期
+     */
+    private Date bookingDate;
+
+    /**
+     * 定会议室起始时间
+     */
+    private Date bookingStartTime;
+
+    /**
+     * 定会议室结束时间
+     */
+    private Date bookingEndTime;
 
     /**
      * 创建时间

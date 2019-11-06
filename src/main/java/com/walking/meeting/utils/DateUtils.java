@@ -3,6 +3,7 @@ package com.walking.meeting.utils;
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.*;
 import java.util.Date;
 
@@ -61,4 +62,21 @@ public abstract class DateUtils {
     public static Long getTimestamp(long minutes) {
         return LocalDateTime.now().plusMinutes(minutes).toInstant(ZoneOffset.of("+8")).toEpochMilli();
     }
+
+    public static double getRequiredTime(String startTime,String endTime){
+        Date startTimeParse = DateUtils.parse(startTime, FORMAT_YYYY_MM_DD_HH_MM_SS);
+        Date endTimeParse = DateUtils.parse(endTime, FORMAT_YYYY_MM_DD_HH_MM_SS);
+        Long startTimeStamp = startTimeParse.getTime();
+        Long endTimeStamp = endTimeParse.getTime();
+        double hours = (double) Math.round((endTimeStamp-startTimeStamp)/3600/1000 * 100) / 100;
+        System.out.println("时间差是："+hours+"（小时）");
+        return hours;
+    }
+
+//    public static void main(String[] args) {
+//        System.out.println(DateUtils.parse("2019-11-6 16:00:00", FORMAT_YYYY_MM_DD_HH_MM_SS));
+//        String t1 = "2019-11-06 16:25:02";
+//        String t2 = "2019-11-06 18:25:02";
+//        System.out.println(getRequiredTime(t1,t2));
+//    }
 }

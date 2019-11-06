@@ -8,12 +8,15 @@
     <result column="meeting_id" jdbcType="VARCHAR" property="meetingId" />
     <result column="room_id" jdbcType="VARCHAR" property="roomId" />
     <result column="username" jdbcType="VARCHAR" property="username" />
+    <result column="booking_date" jdbcType="DATE" property="bookingDate" />
+    <result column="booking_start_time" jdbcType="TIMESTAMP" property="bookingStartTime" />
+    <result column="booking_end_time" jdbcType="TIMESTAMP" property="bookingEndTime" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="delete_time" jdbcType="VARCHAR" property="deleteTime" />
   </resultMap>
   <sql id="Base_Column_List">
-    id, meeting_name, meeting_level, meeting_id, room_id, username, create_time, update_time, 
-    delete_time
+    id, meeting_name, meeting_level, meeting_id, room_id, username, booking_date, booking_start_time, 
+    booking_end_time, create_time, update_time, delete_time
   </sql>
 </mapper>

@@ -108,8 +108,8 @@ public class UserController {
         userDO.setUsername(loginName);
         userDO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
         userService.updateUserSelective(userDO);
-        // TODO room_booking表也要删除username相关字段
 
+        // room_booking表也要删除username相关字段
         MeetingDO meetingDO = new MeetingDO();
         meetingDO.setUsername(loginName);
         meetingDO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));

@@ -62,5 +62,9 @@ public class SnowFlakeIdGenerator {
         return idGenerator.nextId();
     }
 
+//    public static void main(String[] args) {
+//        String meetingId = String.valueOf(getIdGenerator());
+//        System.out.println(meetingId);
+//    }
 
 }
