@@ -2,12 +2,13 @@
  * MeetingDTO.Java
  * All rights reserved
  * ------------------------------------------
- * @Date: 2019-11-05 19:59:12 Created
+ * @Date: 2019-11-06 21:48:28 Created
  * @Author: Technical team of walking
  * @ProjectName: meeting
  */
 package com.walking.meeting.dataobject.dto;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.walking.meeting.common.IdEncryption;
@@ -60,6 +61,11 @@ public class MeetingDTO {
      * 定会议室结束时间
      */
     private Date bookingEndTime;
+
+    /**
+     * 会议时长
+     */
+    private BigDecimal requiredTime;
 
     /**
      * 创建时间

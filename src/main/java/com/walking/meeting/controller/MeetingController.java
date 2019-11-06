@@ -2,6 +2,8 @@ package com.walking.meeting.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.walking.meeting.Service.MeetingService;
+import com.walking.meeting.common.ResponseException;
+import com.walking.meeting.common.StatusCodeEnu;
 import com.walking.meeting.common.SuccessResponse;
 import com.walking.meeting.dataobject.dao.MeetingDO;
 import com.walking.meeting.dataobject.dto.MeetingDTO;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import static com.walking.meeting.utils.DateUtils.*;
@@ -63,6 +66,8 @@ public class MeetingController {
             @ApiParam(name = "booking_date", value = "会议日期") @RequestParam(value = "booking_date") String bookingDate,
             @ApiParam(name = "start_time", value = "会议开始时间") @RequestParam(value = "start_time") String startTime,
             @ApiParam(name = "end_time", value = "会议结束时间") @RequestParam(value = "end_time") String endTime,
+            @ApiParam(name = "required_time", value = "会议时长")
+            @RequestParam(value = "required_time") BigDecimal requiredTime,
             @ApiParam(name = "department_name", value = "会议室预定者的部门")
             @RequestParam(value = "department_name") String departmentName,
             @ApiParam(name = "meeting_level", value = "0面试1例会2高级3紧急")
@@ -91,9 +96,17 @@ public class MeetingController {
         meetingDTO.setUsername(username);
         meetingDTO.setMeetingLevel(meetingLevel);
         meetingDTO.setRoomId(roomId);
+        // 如果 开始时间-结束时间 != 会议时间 ，那么报错
+        Date start = DateUtils.parse(startTime, FORMAT_YYYY_MM_DD_HH_MM);
+        Date end = DateUtils.parse(endTime, FORMAT_YYYY_MM_DD_HH_MM);
+        if (!new BigDecimal(DateUtils.getMeetingRequiredTime(startTime, endTime)).equals(requiredTime)
+            || start.getTime() > end.getTime()) {
+            throw new ResponseException(StatusCodeEnu.MEETING_TIME_ERROR);
+        }
+        meetingDTO.setRequiredTime(requiredTime);
         meetingDTO.setBookingDate(DateUtils.parse(bookingDate,FORMAT_YYYY_MM_DD));
-        meetingDTO.setBookingStartTime(DateUtils.parse(startTime, FORMAT_YYYY_MM_DD_HH_MM));
-        meetingDTO.setBookingEndTime(DateUtils.parse(endTime, FORMAT_YYYY_MM_DD_HH_MM));
+        meetingDTO.setBookingStartTime(start);
+        meetingDTO.setBookingEndTime(end);
         meetingService.addMeeting(meetingDTO);
 
         return SuccessResponse.defaultSuccess();

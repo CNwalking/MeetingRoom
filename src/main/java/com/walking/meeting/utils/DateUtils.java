@@ -63,13 +63,19 @@ public abstract class DateUtils {
         return LocalDateTime.now().plusMinutes(minutes).toInstant(ZoneOffset.of("+8")).toEpochMilli();
     }
 
-    public static double getRequiredTime(String startTime,String endTime){
+    public static double getMeetingRequiredTime(String startTime,String endTime){
         Date startTimeParse = DateUtils.parse(startTime, FORMAT_YYYY_MM_DD_HH_MM_SS);
         Date endTimeParse = DateUtils.parse(endTime, FORMAT_YYYY_MM_DD_HH_MM_SS);
         Long startTimeStamp = startTimeParse.getTime();
         Long endTimeStamp = endTimeParse.getTime();
         double hours = (double) Math.round((endTimeStamp-startTimeStamp)/3600/1000 * 100) / 100;
-        System.out.println("时间差是："+hours+"（小时）");
+        return hours;
+    }
+
+    public static double getMeetingRequiredTime(Date startTime,Date endTime){
+        Long startTimeStamp = startTime.getTime();
+        Long endTimeStamp = endTime.getTime();
+        double hours = (double) Math.round((endTimeStamp-startTimeStamp)/3600/1000 * 100) / 100;
         return hours;
     }
 

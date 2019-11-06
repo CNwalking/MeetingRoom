@@ -6,6 +6,7 @@ public enum StatusCodeEnu {
     USERNAME_EXIT(new StatusCode(43002, "用户名已存在")),
     USERNAME_OR_PSWD_ERROR(new StatusCode(43003, "用户名或密码错误")),
     PORTION_PARAMS_NULL_ERROR(new StatusCode(43004, "部分参数为空")),
+    MEETING_TIME_ERROR(new StatusCode(43005, "会议时间参数问题")),
     DEFAULT_SUCCESS(new StatusCode(0, "请求成功")),
     PARAMS_VALID_FAIL(new StatusCode(40006, "入参校验失败"));
 

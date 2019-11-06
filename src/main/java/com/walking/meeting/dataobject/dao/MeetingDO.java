@@ -1,14 +1,18 @@
 /** 
  * MeetingDO.Java
+ * <p>
+ * Copyright(C) 2017-2019 Hangzhou Zhuo Jian Mdt InfoTech Ltd
+ * </p>
  * All rights reserved
  * ------------------------------------------
- * @Date: 2019-11-05 19:59:12 Created
+ * @Date: 2019-11-06 21:48:27 Created
  * @Author: Technical team of walking
  * @ProjectName: meeting
  */
 package com.walking.meeting.dataobject.dao;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.*;
 import lombok.Data;
@@ -88,6 +92,14 @@ public class MeetingDO implements Serializable {
      */
     public static final String PROP_BOOKING_END_TIME="bookingEndTime";
     private Date bookingEndTime;
+
+    /**
+     * 数据库表字段注释 : 会议时长
+     *
+     * 数据库表字段名称 : meeting.required_time
+     */
+    public static final String PROP_REQUIRED_TIME="requiredTime";
+    private BigDecimal requiredTime;
 
     /**
      * 数据库表字段注释 : 创建时间
