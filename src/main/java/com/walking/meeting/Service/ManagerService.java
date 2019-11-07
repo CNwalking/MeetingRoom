@@ -11,6 +11,10 @@ import com.walking.meeting.dataobject.query.MeetingRoomQuery;
 public interface ManagerService {
     void addDevice(DeviceDTO deviceDTO);
 
+    void updateDeviceSelective(DeviceDTO deviceDTO);
+
+    void updateRoomSelective(MeetingRoomDTO meetingRoomDTO);
+
     void addRoomDevice(RoomDeviceDTO roomDeviceDtO);
 
     void addMeetingRoom(MeetingRoomDTO meetingRoomDTO);

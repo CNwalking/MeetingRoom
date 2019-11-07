@@ -17,6 +17,7 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ManagerServiceImpl implements ManagerService {
@@ -33,6 +34,32 @@ public class ManagerServiceImpl implements ManagerService {
         DeviceDO deviceDO =  JSON.parseObject(JSON.toJSONString(deviceDTO), DeviceDO.class);
         deviceDO.setCreateTime(new Date());
         deviceMapper.insertSelective(deviceDO);
+    }
+
+    @Override
+    public void updateDeviceSelective(DeviceDTO deviceDTO) {
+        if(Objects.isNull(deviceDTO.getDeviceId())){
+            return;
+        }
+        DeviceDO deviceDO =  JSON.parseObject(JSON.toJSONString(deviceDTO), DeviceDO.class);
+        Example.Builder builder = DbUtils.newExampleBuilder(DeviceDO.class);
+        DbUtils.setEqualToProp(builder, DeviceDO.PROP_DEVICE_ID, deviceDO.getDeviceId());
+        deviceDO.setUpdateTime(new Date());
+        deviceMapper.updateByExampleSelective(deviceDO,builder.build());
+
+
+    }
+
+    @Override
+    public void updateRoomSelective(MeetingRoomDTO meetingRoomDTO) {
+        if(Objects.isNull(meetingRoomDTO.getRoomId())){
+            return;
+        }
+        MeetingRoomDO meetingRoomDO =  JSON.parseObject(JSON.toJSONString(meetingRoomDTO), MeetingRoomDO.class);
+        Example.Builder builder = DbUtils.newExampleBuilder(MeetingRoomDO.class);
+        DbUtils.setEqualToProp(builder, MeetingRoomDO.PROP_ROOM_ID, meetingRoomDO.getRoomId());
+        meetingRoomDO.setUpdateTime(new Date());
+        meetingRoomMapper.updateByExampleSelective(meetingRoomDO,builder.build());
     }
 
     @Override

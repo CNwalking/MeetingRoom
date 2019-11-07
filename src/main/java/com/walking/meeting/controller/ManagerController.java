@@ -24,10 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static com.walking.meeting.utils.DateUtils.*;
 
@@ -99,5 +96,29 @@ public class ManagerController {
         managerService.addDevice(deviceDTO);
         return SuccessResponse.defaultSuccess();
     }
+
+    @ApiOperation(value = "删除device", notes = "删除device")
+    @PostMapping(value = "/delDevice")
+    public SuccessResponse delDevice(
+            @ApiParam(name = "device_id", value = "设备id")
+            @RequestParam(value = "device_id") Integer deviceId){
+        DeviceDTO deviceDTO = new DeviceDTO();
+        deviceDTO.setDeviceId(deviceId);
+        deviceDTO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
+        managerService.updateDeviceSelective(deviceDTO);
+        return SuccessResponse.defaultSuccess();
+    }
+
+    @ApiOperation(value = "删除会议室", notes = "删除会议室")
+    @PostMapping(value = "/delRoom")
+    public SuccessResponse delRoom(
+            @ApiParam(name = "room_id", value = "会议室id") @RequestParam(value = "room_id") String roomId){
+        MeetingRoomDTO meetingRoomDTO = new MeetingRoomDTO();
+        meetingRoomDTO.setRoomId(roomId);
+        meetingRoomDTO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
+        managerService.updateRoomSelective(meetingRoomDTO);
+        return SuccessResponse.defaultSuccess();
+    }
+
 
 }
