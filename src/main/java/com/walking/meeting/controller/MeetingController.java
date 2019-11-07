@@ -6,7 +6,9 @@ import com.walking.meeting.common.ResponseException;
 import com.walking.meeting.common.StatusCodeEnu;
 import com.walking.meeting.common.SuccessResponse;
 import com.walking.meeting.dataobject.dao.MeetingDO;
+import com.walking.meeting.dataobject.dto.ListMeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingDTO;
+import com.walking.meeting.dataobject.dto.MeetingReturnDTO;
 import com.walking.meeting.utils.DateUtils;
 import com.walking.meeting.utils.SnowFlakeIdGenerator;
 import io.swagger.annotations.Api;
@@ -36,24 +38,26 @@ public class MeetingController {
 
     @ApiOperation(value = "查看所有会议预定列表", notes = "查看所有会议预定列表")
     @PostMapping(value = "/list")
-    public PageInfo<MeetingDO> meetingList(
+    public PageInfo<MeetingReturnDTO> meetingList(
             @ApiParam(name = "page_num", value = "页码") @RequestParam(value = "page_num",
                     defaultValue = "1", required = false) Integer pageNum,
             @ApiParam(name = "page_size", value = "每页数量：为0时查全部") @RequestParam(value = "page_size",
                     defaultValue = "20", required = false) Integer pageSize){
-        PageInfo<MeetingDO> meetingDOPageInfo = meetingService.listMeeting(pageNum, pageSize);
+        PageInfo<MeetingReturnDTO> meetingDOPageInfo = meetingService.listMeeting(null,pageNum, pageSize);
         return meetingDOPageInfo;
     }
 
     @ApiOperation(value = "查看某个用户的会议预定列表", notes = "查看会议预定列表")
     @PostMapping(value = "/listByUser")
-    public PageInfo<MeetingDO> meetingListOfUser(
+    public PageInfo<MeetingReturnDTO> meetingListOfUser(
+            @ApiParam(name = "username", value = "会议室预定者") @RequestParam(value = "username") String username,
             @ApiParam(name = "page_num", value = "页码") @RequestParam(value = "page_num",
                     defaultValue = "1", required = false) Integer pageNum,
             @ApiParam(name = "page_size", value = "每页数量：为0时查全部") @RequestParam(value = "page_size",
                     defaultValue = "20", required = false) Integer pageSize){
-
-        PageInfo<MeetingDO> meetingDOPageInfo = meetingService.listMeeting(pageNum, pageSize);
+        ListMeetingDTO listMeetingDTO = new ListMeetingDTO();
+        listMeetingDTO.setUsername(username);
+        PageInfo<MeetingReturnDTO> meetingDOPageInfo = meetingService.listMeeting(listMeetingDTO,pageNum, pageSize);
         return meetingDOPageInfo;
     }
 
@@ -96,6 +100,7 @@ public class MeetingController {
         meetingDTO.setUsername(username);
         meetingDTO.setMeetingLevel(meetingLevel);
         meetingDTO.setRoomId(roomId);
+        meetingDTO.setDepartmentName(departmentName);
         // 如果 开始时间-结束时间 != 会议时间 或开始时间 >结束时间 ，那么报错
         Date start = DateUtils.parse(startTime, FORMAT_YYYY_MM_DD_HH_MM);
         Date end = DateUtils.parse(endTime, FORMAT_YYYY_MM_DD_HH_MM);

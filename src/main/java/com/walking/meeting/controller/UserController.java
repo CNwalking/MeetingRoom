@@ -51,10 +51,9 @@ public class UserController {
         UserQuery userQuery = new UserQuery();
         userQuery.setUserName(loginName);
         UserDO userDO = userService.getUserByUserQuery(userQuery);
-        log.info("====="+Optional.ofNullable(userDO).toString()+"=====");
         // 判username是否存在
         if (Objects.isNull(userDO)){
-            throw new ResponseException(StatusCodeEnu.USERNAME_NOT_EXIT);
+            throw new ResponseException(StatusCodeEnu.USERNAME_NOT_EXIST);
         }
         // 判账号密码正确性，密码md5,不相等就抛异常
         if (!StringUtils.equals(userDO.getPswd(),MD5Encrypt.md5Encrypt(password))){
@@ -86,7 +85,7 @@ public class UserController {
         UserDO userDO = userService.getUserByUserQuery(userQuery);
         // 判username是否存在
         if (!Objects.isNull(userDO)){
-            throw new ResponseException(StatusCodeEnu.USERNAME_EXIT);
+            throw new ResponseException(StatusCodeEnu.USERNAME_EXIST);
         }
         // 数据库录入操作，密码md5
         UserDTO userDTO = new UserDTO();

@@ -5,7 +5,7 @@
  * </p>
  * All rights reserved
  * ------------------------------------------
- * @Date: 2019-11-06 21:48:27 Created
+ * @Date: 2019-11-07 09:16:59 Created
  * @Author: Technical team of walking
  * @ProjectName: meeting
  */
@@ -100,6 +100,14 @@ public class MeetingDO implements Serializable {
      */
     public static final String PROP_REQUIRED_TIME="requiredTime";
     private BigDecimal requiredTime;
+
+    /**
+     * 数据库表字段注释 : 预定的部门名
+     *
+     * 数据库表字段名称 : meeting.department_name
+     */
+    public static final String PROP_DEPARTMENT_NAME="departmentName";
+    private String departmentName;
 
     /**
      * 数据库表字段注释 : 创建时间

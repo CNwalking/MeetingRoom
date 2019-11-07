@@ -1,9 +1,36 @@
 package com.walking.meeting.controller;
 
+import com.walking.meeting.Service.ManagerService;
+import com.walking.meeting.common.ResponseException;
+import com.walking.meeting.common.StatusCodeEnu;
+import com.walking.meeting.common.SuccessResponse;
+import com.walking.meeting.dataobject.dao.DeviceDO;
+import com.walking.meeting.dataobject.dao.MeetingDO;
+import com.walking.meeting.dataobject.dao.MeetingRoomDO;
+import com.walking.meeting.dataobject.dao.RoomDeviceDO;
+import com.walking.meeting.dataobject.dto.DeviceDTO;
+import com.walking.meeting.dataobject.dto.MeetingRoomDTO;
+import com.walking.meeting.dataobject.dto.RoomDeviceDTO;
+import com.walking.meeting.dataobject.query.MeetingRoomQuery;
+import com.walking.meeting.utils.DateUtils;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+
+import static com.walking.meeting.utils.DateUtils.*;
+
 
 @Slf4j
 @Api(tags = "ManagerController", description = "管理端模块")
@@ -11,5 +38,66 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/manager")
 public class ManagerController {
     // TODO 添加，删除，修改会议室属性接口，强制修改会议室预约接口（算法），查看预定会议室历史（通用list，看会议室）
+
+    @Autowired
+    private ManagerService managerService;
+
+    @ApiOperation(value = "添加会议室", notes = "添加会议室")
+    @PostMapping(value = "/addRoom")
+    public SuccessResponse addRoom(
+            @ApiParam(name = "room_id", value = "会议室id") @RequestParam(value = "room_id") String roomId,
+            @ApiParam(name = "room_name", value = "会议室中文名") @RequestParam(value = "room_name") String roomName,
+            @ApiParam(name = "device_id_list", value = "设备id 1,2,3")
+            @RequestParam(value = "device_id_list") String deviceIdList,
+            @ApiParam(name = "free_time_start", value = "开放时间始")
+            @RequestParam(value = "free_time_start") String freeTimeStart,
+            @ApiParam(name = "free_time_end", value = "开放时间末")
+            @RequestParam(value = "free_time_end") String freeTimeEnd,
+            @ApiParam(name = "room_scale", value = "会议室可容纳人数")
+            @RequestParam(value = "room_scale") Integer roomScale
+            ){
+        // 先判断这个roomId和roomName已经存在
+        MeetingRoomQuery meetingRoomQuery = new MeetingRoomQuery();
+        meetingRoomQuery.setRoomId(roomId);
+        meetingRoomQuery.setRoomName(roomName);
+        MeetingRoomDO meetingRoomDO = managerService.getMeetingRoomByQuery(meetingRoomQuery);
+        // 存在则报错
+        if (!Objects.isNull(meetingRoomDO)){
+            throw new ResponseException(StatusCodeEnu.ROOM_EXIST);
+        }
+        // 添加到meeting_room表里
+        MeetingRoomDTO meetingRoomDTO = new MeetingRoomDTO();
+        meetingRoomDTO.setRoomId(roomId);
+        meetingRoomDTO.setRoomScale(roomScale.shortValue());
+        meetingRoomDTO.setRoomName(roomName);
+        meetingRoomDTO.setFreeTimeStart(DateUtils.parse(freeTimeStart, TIME));
+        meetingRoomDTO.setFreeTimeEnd(DateUtils.parse(freeTimeEnd, TIME));
+        managerService.addMeetingRoom(meetingRoomDTO);
+        // 添加到room_device表里
+        RoomDeviceDTO roomDeviceDTO = new RoomDeviceDTO();
+        roomDeviceDTO.setRoomId(roomId);
+        List deviceList = new ArrayList();
+        if (StringUtils.isNotBlank(deviceIdList)) {
+            deviceList = Arrays.asList(deviceIdList.split(","));
+        }
+        deviceList.forEach(deviceId -> {
+            // 把List每个元素加入room_device表
+            roomDeviceDTO.setDeviceId(Integer.parseInt(deviceId.toString()));
+            managerService.addRoomDevice(roomDeviceDTO);
+            });
+        return SuccessResponse.defaultSuccess();
+    }
+
+    @ApiOperation(value = "添加device", notes = "添加device")
+    @PostMapping(value = "/addDevice")
+    public SuccessResponse addDevice(
+            @ApiParam(name = "device_id", value = "设备id") @RequestParam(value = "device_id") Integer deviceId,
+            @ApiParam(name = "device_type", value = "设备类型") @RequestParam(value = "device_type") String deviceType){
+        DeviceDTO deviceDTO = new DeviceDTO();
+        deviceDTO.setDeviceId(deviceId);
+        deviceDTO.setDeviceType(deviceType);
+        managerService.addDevice(deviceDTO);
+        return SuccessResponse.defaultSuccess();
+    }
 
 }
