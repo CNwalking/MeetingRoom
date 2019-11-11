@@ -39,9 +39,10 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public PageInfo<MeetingReturnDTO> listMeeting(ListMeetingDTO listMeetingDTO, Integer pageNum, Integer pageSize) {
+    public PageInfo<MeetingReturnDTO> listMeeting(ListMeetingDTO listMeetingDTO) {
         // pageSize==0时查全部
-        PageHelper.startPage(pageNum, pageSize, true, null, true);
+        PageHelper.startPage(listMeetingDTO.getPageNum(), listMeetingDTO.getPageSize(),
+                true, null, true);
         Example.Builder builder = DbUtils.newExampleBuilder(MeetingDO.class);
         DbUtils.setEqualToProp(builder, MeetingDO.PROP_USERNAME, listMeetingDTO.getUsername());
         DbUtils.setEqualToProp(builder, MeetingDO.PROP_REQUIRED_TIME, listMeetingDTO.getRequiredTime());
@@ -63,6 +64,14 @@ public class MeetingServiceImpl implements MeetingService {
         MeetingDO meetingDO =  JSON.parseObject(JSON.toJSONString(meetingDTO), MeetingDO.class);
         meetingDO.setCreateTime(new Date());
         meetingMapper.insertSelective(meetingDO);
+    }
+
+    @Override
+    public MeetingDO searchMeetingByMeetingId(String meetingId) {
+        Example.Builder builder = DbUtils.newExampleBuilder(MeetingDO.class);
+        DbUtils.setEqualToProp(builder, MeetingDO.PROP_MEETING_ID, meetingId);
+        List<MeetingDO> listMeetingDOList = meetingMapper.selectByExample(builder.build());
+        return DbUtils.getOne(listMeetingDOList).orElse(null);
     }
 
 }

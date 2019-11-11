@@ -8,6 +8,8 @@ public enum StatusCodeEnu {
     PORTION_PARAMS_NULL_ERROR(new StatusCode(43004, "部分参数为空")),
     MEETING_TIME_ERROR(new StatusCode(43005, "会议时间参数问题")),
     ROOM_EXIST(new StatusCode(43006, "房间名或房间id已经存在")),
+    MEETING_ID_NOT_EXIST(new StatusCode(43007, "会议id不存在")),
+
 
     DEFAULT_SUCCESS(new StatusCode(0, "请求成功"));
 

@@ -15,6 +15,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -65,8 +66,9 @@ public class MeetingController {
             listMeetingDTO.setRequiredTime(new BigDecimal(requiredTime.trim()));
         }
         listMeetingDTO.setDepartmentName(departmentName);
-
-        PageInfo<MeetingReturnDTO> meetingDOPageInfo = meetingService.listMeeting(listMeetingDTO,pageNum, pageSize);
+        listMeetingDTO.setPageNum(pageNum);
+        listMeetingDTO.setPageSize(pageSize);
+        PageInfo<MeetingReturnDTO> meetingDOPageInfo = meetingService.listMeeting(listMeetingDTO);
         return meetingDOPageInfo;
     }
 
@@ -132,9 +134,11 @@ public class MeetingController {
     @PostMapping(value = "/cancel")
     public SuccessResponse meetingCancel(
             @ApiParam(name = "meeting_id", value = "会议id") @RequestParam(value = "meeting_id") String meetingId){
-        // TODO 判定是否已经取消了
-        MeetingDO meetingDO = new MeetingDO();
-        meetingDO.setMeetingId(meetingId);
+        MeetingDO meetingDO =  meetingService.searchMeetingByMeetingId(meetingId);
+        if (ObjectUtils.isEmpty(meetingDO)) {
+            // 说明没有这个会议,可能已经取消,可能meetingId输入错误
+            throw new ResponseException(StatusCodeEnu.MEETING_ID_NOT_EXIST);
+        }
         meetingDO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
         meetingService.updateMeetingSelective(meetingDO);
         return SuccessResponse.defaultSuccess();

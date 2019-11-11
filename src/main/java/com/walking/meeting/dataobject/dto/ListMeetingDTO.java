@@ -1,5 +1,6 @@
 package com.walking.meeting.dataobject.dto;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -46,5 +47,11 @@ public class ListMeetingDTO {
      * 按中文房间名搜
      */
     private String roomName;
+
+    @ApiModelProperty("页码")
+    private Integer pageNum;
+
+    @ApiModelProperty("每页数量")
+    private Integer pageSize;
 
 }

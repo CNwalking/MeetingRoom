@@ -10,8 +10,10 @@ public interface MeetingService {
 
     void updateMeetingSelective(MeetingDO meetingDO);
 
-    PageInfo<MeetingReturnDTO> listMeeting(ListMeetingDTO listMeetingDTO, Integer pageNum, Integer pageSize);
+    PageInfo<MeetingReturnDTO> listMeeting(ListMeetingDTO listMeetingDTO);
 
     void addMeeting(MeetingDTO meetingDTO);
+
+    MeetingDO searchMeetingByMeetingId(String meetingId);
 
 }
