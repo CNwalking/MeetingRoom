@@ -13,6 +13,11 @@ public class ListMeetingDTO {
     private String username;
 
     /**
+     * 按定会议室id
+     */
+    private String roomId;
+
+    /**
      * 按定会议的部门来搜
      */
     private String departmentName;
@@ -31,5 +36,15 @@ public class ListMeetingDTO {
      * 按会议等级搜 0面试1例会2高级3紧急
      */
     private Integer meetingLevel;
+
+    /**
+     * 按会议室可容纳人数搜
+     */
+    private Short roomScale;
+
+    /**
+     * 按中文房间名搜
+     */
+    private String roomName;
 
 }

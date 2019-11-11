@@ -85,6 +85,8 @@ public class ManagerController {
         return SuccessResponse.defaultSuccess();
     }
 
+
+
     @ApiOperation(value = "添加device", notes = "添加device")
     @PostMapping(value = "/addDevice")
     public SuccessResponse addDevice(

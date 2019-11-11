@@ -49,7 +49,7 @@ public class MeetingServiceImpl implements MeetingService {
         DbUtils.setEqualToProp(builder, MeetingDO.PROP_MEETING_LEVEL, listMeetingDTO.getMeetingLevel());
         DbUtils.setEqualToProp(builder, MeetingDO.PROP_DEPARTMENT_NAME, listMeetingDTO.getDepartmentName());
         List<MeetingDO> meetingDOList = meetingMapper.selectByExample(builder.build());
-        // TODO 把meetingDO转化为meetingReturnDTO
+        // 把meetingDO转化为meetingReturnDTO
         List<MeetingReturnDTO> meetingReturnDTOList = new ArrayList<>();
         meetingDOList.forEach(meetingDO -> {
             meetingReturnDTOList.add(JSON.parseObject(JSON.toJSONString(meetingDO), MeetingReturnDTO.class));

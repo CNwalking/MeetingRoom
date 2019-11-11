@@ -15,6 +15,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,27 +40,36 @@ public class MeetingController {
     @ApiOperation(value = "查看所有会议预定列表", notes = "查看所有会议预定列表")
     @PostMapping(value = "/list")
     public PageInfo<MeetingReturnDTO> meetingList(
-            @ApiParam(name = "page_num", value = "页码") @RequestParam(value = "page_num",
-                    defaultValue = "1", required = false) Integer pageNum,
-            @ApiParam(name = "page_size", value = "每页数量：为0时查全部") @RequestParam(value = "page_size",
-                    defaultValue = "20", required = false) Integer pageSize){
-        PageInfo<MeetingReturnDTO> meetingDOPageInfo = meetingService.listMeeting(null,pageNum, pageSize);
-        return meetingDOPageInfo;
-    }
-
-    @ApiOperation(value = "查看某个用户的会议预定列表", notes = "查看会议预定列表")
-    @PostMapping(value = "/listByUser")
-    public PageInfo<MeetingReturnDTO> meetingListOfUser(
-            @ApiParam(name = "username", value = "会议室预定者") @RequestParam(value = "username") String username,
+            @ApiParam(name = "username", value = "会议室预定者")
+            @RequestParam(value = "username",required = false) String username,
+            @ApiParam(name = "room_id", value = "会议室id")
+            @RequestParam(value = "room_id",required = false) String roomId,
+            @ApiParam(name = "room_scale", value = "会议室可容纳人数")
+            @RequestParam(value = "room_scale",required = false) Short roomScale,
+            @ApiParam(name = "room_name", value = "会议室名字")
+            @RequestParam(value = "room_name",required = false) String roomName,
+            @ApiParam(name = "required_time", value = "会议时长")
+            @RequestParam(value = "required_time",required = false) String requiredTime,
+            @ApiParam(name = "department_name", value = "定会议的部门")
+            @RequestParam(value = "department_name",required = false) String departmentName,
             @ApiParam(name = "page_num", value = "页码") @RequestParam(value = "page_num",
                     defaultValue = "1", required = false) Integer pageNum,
             @ApiParam(name = "page_size", value = "每页数量：为0时查全部") @RequestParam(value = "page_size",
                     defaultValue = "20", required = false) Integer pageSize){
         ListMeetingDTO listMeetingDTO = new ListMeetingDTO();
         listMeetingDTO.setUsername(username);
+        listMeetingDTO.setRoomId(roomId);
+        listMeetingDTO.setRoomScale(roomScale);
+        listMeetingDTO.setRoomName(roomName);
+        if (StringUtils.isNotBlank(requiredTime) && requiredTime != "") {
+            listMeetingDTO.setRequiredTime(new BigDecimal(requiredTime.trim()));
+        }
+        listMeetingDTO.setDepartmentName(departmentName);
+
         PageInfo<MeetingReturnDTO> meetingDOPageInfo = meetingService.listMeeting(listMeetingDTO,pageNum, pageSize);
         return meetingDOPageInfo;
     }
+
 
     @ApiOperation(value = "预定会议", notes = "预定会议")
     @PostMapping(value = "/booking")
@@ -122,13 +132,13 @@ public class MeetingController {
     @PostMapping(value = "/cancel")
     public SuccessResponse meetingCancel(
             @ApiParam(name = "meeting_id", value = "会议id") @RequestParam(value = "meeting_id") String meetingId){
+        // TODO 判定是否已经取消了
         MeetingDO meetingDO = new MeetingDO();
         meetingDO.setMeetingId(meetingId);
         meetingDO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
         meetingService.updateMeetingSelective(meetingDO);
         return SuccessResponse.defaultSuccess();
     }
-
 
 
 }
