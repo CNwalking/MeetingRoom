@@ -11,19 +11,19 @@ import com.walking.meeting.dataobject.dao.MeetingRoomDO;
 import com.walking.meeting.dataobject.dto.ListMeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingReturnDTO;
+import com.walking.meeting.dataobject.dto.RoomDeviceSearchResultDTO;
 import com.walking.meeting.dataobject.query.MeetingRoomQuery;
 import com.walking.meeting.mapper.MeetingMapper;
+import com.walking.meeting.mapper.RoomDeviceMapper;
 import com.walking.meeting.utils.DateUtils;
 import com.walking.meeting.utils.DbUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.unit.DataUnit;
 import tk.mybatis.mapper.entity.Example;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static com.walking.meeting.utils.DateUtils.*;
 
@@ -34,6 +34,8 @@ public class MeetingServiceImpl implements MeetingService {
     private MeetingMapper meetingMapper;
     @Autowired
     private ManagerServiceImpl managerService;
+    @Autowired
+    private RoomDeviceMapper roomDeviceMapper;
 
 
     @Override
@@ -93,6 +95,7 @@ public class MeetingServiceImpl implements MeetingService {
         MeetingRoomQuery meetingRoomQuery = new MeetingRoomQuery();
         meetingRoomQuery.setRoomId(roomId);
         MeetingRoomDO meetingRoomDO = managerService.getMeetingRoomByQuery(meetingRoomQuery);
+        // TODO 会议室freeTime转换成每天的时间!!!
         Date freeStartTime = meetingRoomDO.getFreeTimeStart();
         Date freeEndTime = meetingRoomDO.getFreeTimeEnd();
         double totalFreeTime = DateUtils.getMeetingRequiredTime(freeStartTime, freeEndTime);
@@ -150,6 +153,23 @@ public class MeetingServiceImpl implements MeetingService {
             }
         });
         return true;
+    }
+
+    @Override
+    public List<Integer> searchDeviceByRoomId(String roomId) {
+        List<RoomDeviceSearchResultDTO> roomDeviceSearchResultDTOList =
+                roomDeviceMapper.meetingRoomSearchingByDevice(roomId);
+        List<Integer> MeetingRoomDeviceList = new ArrayList<>();
+        roomDeviceSearchResultDTOList.forEach(roomDeviceSearchResultDTO -> {
+                if (StringUtils.isNotBlank(roomDeviceSearchResultDTO.getDeviceIdList())) {
+                    Arrays.asList(roomDeviceSearchResultDTO.getDeviceIdList().split(",")).forEach(
+                            deviceId ->{
+                                MeetingRoomDeviceList.add(Integer.parseInt(deviceId));
+                            }
+                    );
+                }
+        });
+        return MeetingRoomDeviceList;
     }
 
 }

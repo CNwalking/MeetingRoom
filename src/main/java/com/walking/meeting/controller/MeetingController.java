@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -89,14 +91,19 @@ public class MeetingController {
             @RequestParam(value = "department_name") String departmentName,
             @ApiParam(name = "meeting_level", value = "0面试1例会2高级3紧急")
             @RequestParam(value = "meeting_level") Integer meetingLevel){
-        // TODO 先判断会议室所选日期是否有空，再是时间是否有空，这两个判定完以后addMeeting到数据库表
+        // 先判断会议室所选日期是否有空，再是时间是否有空，这两个判定完以后addMeeting到数据库表
         Boolean isTimeFree = meetingService.selectTimeByDateAndRoomID(parseDateFormatToSQLNeed(bookingDate),roomId);
         // false则没空
         if (!isTimeFree){
             throw new ResponseException(StatusCodeEnu.MEETING_ROOM_FULL);
         }
-        // TODO 开始时间结束时间判定,先写sql数据库方法遍历当天时间,判断想预定的时间是否合法。
-        // TODO 设备相关！！！要判定
+        // 开始时间、结束时间判定,判断想预定的时间是否合法。
+        Boolean isMeetingTimeAvailable = meetingService.isTimeAvailable(startTime, endTime, bookingDate, roomId);
+        // false则这个想定的会议时间不合理
+        if (!isMeetingTimeAvailable){
+            throw new ResponseException(StatusCodeEnu.MEETING_ROOM_FULL);
+        }
+        // TODO 设备相关要判定。但这个方法另写，通过设备选出roomId，不在此方法中体现，见下面方法meetingRoomSearchingByDevice
 
 
         // 下面先什么都不管，add一个会议，到时候会判条件判了以后再add
@@ -151,6 +158,28 @@ public class MeetingController {
         meetingDO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
         meetingService.updateMeetingSelective(meetingDO);
         return SuccessResponse.defaultSuccess();
+    }
+
+    @ApiOperation(value = "通过会议室设备选出会议室", notes = "通过会议室设备选出会议室")
+    @PostMapping(value = "/select")
+    public String meetingRoomSearchingByDevice(
+            @ApiParam(name = "device_id_list", value = "设备id列表，格式例如:1,2,3")
+            @RequestParam(value = "device_id_list") String deviceIdList){
+        List deviceList = new ArrayList();
+        if (StringUtils.isNotBlank(deviceIdList)) {
+            deviceList = Arrays.asList(deviceIdList.split(","));
+        }
+        //TODO
+        return null;
+
+    }
+
+    @ApiOperation(value = "查看会议室的设备", notes = "查看会议室的设备")
+    @PostMapping(value = "/search_device_by_room_id")
+    public List<Integer> searchDeviceByRoomId(
+            @ApiParam(name = "room_id", value = "房间id")
+            @RequestParam(value = "room_id") String roomId){
+        return meetingService.searchDeviceByRoomId(roomId);
     }
 
     private String parseDateFormatToSQLNeed(String date){
