@@ -8,6 +8,7 @@ import com.walking.meeting.dataobject.dao.DeviceDO;
 import com.walking.meeting.dataobject.dao.MeetingDO;
 import com.walking.meeting.dataobject.dao.MeetingRoomDO;
 import com.walking.meeting.dataobject.dao.RoomDeviceDO;
+import com.walking.meeting.dataobject.dto.DepartmentDTO;
 import com.walking.meeting.dataobject.dto.DeviceDTO;
 import com.walking.meeting.dataobject.dto.MeetingRoomDTO;
 import com.walking.meeting.dataobject.dto.RoomDeviceDTO;
@@ -121,6 +122,33 @@ public class ManagerController {
         managerService.updateRoomSelective(meetingRoomDTO);
         return SuccessResponse.defaultSuccess();
     }
+
+    @ApiOperation(value = "添加department", notes = "添加department")
+    @PostMapping(value = "/addDepartment")
+    public SuccessResponse addDepartment(
+            @ApiParam(name = "department_name", value = "部门名字")
+            @RequestParam(value = "department_name")String departmentName,
+            @ApiParam(name = "department_level", value = "部门等级")
+            @RequestParam(value = "department_level") Integer departmentLevel){
+        DepartmentDTO departmentDTO = new DepartmentDTO();
+        departmentDTO.setDepartmentLevel(departmentLevel);
+        departmentDTO.setDepartmentName(departmentName);
+        managerService.addDepartment(departmentDTO);
+        return SuccessResponse.defaultSuccess();
+    }
+
+    @ApiOperation(value = "删除department", notes = "删除department")
+    @PostMapping(value = "/delDepartment")
+    public SuccessResponse delDepartment(
+            @ApiParam(name = "department_name", value = "部门名字")
+            @RequestParam(value = "department_name") String departmentName){
+        DepartmentDTO departmentDTO = new DepartmentDTO();
+        departmentDTO.setDepartmentName(departmentName);
+        departmentDTO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
+        managerService.updateDepartmentSelective(departmentDTO);
+        return SuccessResponse.defaultSuccess();
+    }
+
 
 
 }

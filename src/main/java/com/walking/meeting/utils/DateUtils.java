@@ -19,6 +19,7 @@ public abstract class DateUtils {
     public static final String FORMAT_FIVE = "yyyy年MM月dd日 HH:mm";
     public static final String FORMAT_YYYY_MM_DD_HH = "yyyy-MM-dd HH";
     public static final String FORMAT_YYYY_MM_DD = "yyyy-MM-dd";
+    public static final String FORMAT_YYYY_MM_DD_UNIT = "yyyyMMdd";
     public static final String FORMAT_THREE = "yyyy/MM/dd";
     public static final String FORMAT_FOUR = "yyyy年MM月dd日";
     public static final String FORMAT_YYYY_MM = "yyyy-MM";

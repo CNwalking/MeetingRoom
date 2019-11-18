@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 import static com.walking.meeting.utils.DateUtils.*;
 
@@ -89,6 +90,14 @@ public class MeetingController {
             @ApiParam(name = "meeting_level", value = "0面试1例会2高级3紧急")
             @RequestParam(value = "meeting_level") Integer meetingLevel){
         // TODO 先判断会议室所选日期是否有空，再是时间是否有空，这两个判定完以后addMeeting到数据库表
+        Boolean isTimeFree = meetingService.selectTimeByDateAndRoomID(parseDateFormatToSQLNeed(bookingDate),roomId);
+        // false则没空
+        if (!isTimeFree){
+            throw new ResponseException(StatusCodeEnu.MEETING_ROOM_FULL);
+        }
+        // TODO 开始时间结束时间判定,先写sql数据库方法遍历当天时间,判断想预定的时间是否合法。
+        // TODO 设备相关！！！要判定
+
 
         // 下面先什么都不管，add一个会议，到时候会判条件判了以后再add
         MeetingDTO meetingDTO = new MeetingDTO();
@@ -144,5 +153,10 @@ public class MeetingController {
         return SuccessResponse.defaultSuccess();
     }
 
+    private String parseDateFormatToSQLNeed(String date){
+        // 2019-11-04 转成 20191104
+        String result = date.replaceAll("-","");
+        return result;
+    }
 
 }

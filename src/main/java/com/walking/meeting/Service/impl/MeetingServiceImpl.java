@@ -4,14 +4,20 @@ import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.walking.meeting.Service.MeetingService;
+import com.walking.meeting.common.ResponseException;
+import com.walking.meeting.common.StatusCodeEnu;
 import com.walking.meeting.dataobject.dao.MeetingDO;
+import com.walking.meeting.dataobject.dao.MeetingRoomDO;
 import com.walking.meeting.dataobject.dto.ListMeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingReturnDTO;
+import com.walking.meeting.dataobject.query.MeetingRoomQuery;
 import com.walking.meeting.mapper.MeetingMapper;
+import com.walking.meeting.utils.DateUtils;
 import com.walking.meeting.utils.DbUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.unit.DataUnit;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.ArrayList;
@@ -19,11 +25,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import static com.walking.meeting.utils.DateUtils.*;
+
 @Service
 public class MeetingServiceImpl implements MeetingService {
 
     @Autowired
     private MeetingMapper meetingMapper;
+    @Autowired
+    private ManagerServiceImpl managerService;
+
 
     @Override
     public void updateMeetingSelective(MeetingDO meetingDO) {
@@ -72,6 +83,73 @@ public class MeetingServiceImpl implements MeetingService {
         DbUtils.setEqualToProp(builder, MeetingDO.PROP_MEETING_ID, meetingId);
         List<MeetingDO> listMeetingDOList = meetingMapper.selectByExample(builder.build());
         return DbUtils.getOne(listMeetingDOList).orElse(null);
+    }
+
+    @Override
+    public Boolean selectTimeByDateAndRoomID(String date,String roomId) {
+        List<MeetingDTO> meetingDTOList = meetingMapper.selectTimeByDateAndRoomID(date,roomId);
+        // 判断这个日期的这个room是否有空
+        // 选出这个会议室的freeTime
+        MeetingRoomQuery meetingRoomQuery = new MeetingRoomQuery();
+        meetingRoomQuery.setRoomId(roomId);
+        MeetingRoomDO meetingRoomDO = managerService.getMeetingRoomByQuery(meetingRoomQuery);
+        Date freeStartTime = meetingRoomDO.getFreeTimeStart();
+        Date freeEndTime = meetingRoomDO.getFreeTimeEnd();
+        double totalFreeTime = DateUtils.getMeetingRequiredTime(freeStartTime, freeEndTime);
+        // 如何meetingList里有开始时间早于freeStartTime结束时间迟于freeEndTime的就error
+        meetingDTOList.forEach(meetingDTO -> {
+            // date1.compareTo(date2) ,date1<date2返回-1,date1>date2返回1，相等返回0
+            if (meetingDTO.getBookingStartTime().compareTo(freeStartTime)<0) {
+                throw new ResponseException(StatusCodeEnu.MEETING_TIME_TOO_EARLY);
+            }
+            if (meetingDTO.getBookingEndTime().compareTo(freeEndTime)>0){
+                throw new ResponseException(StatusCodeEnu.MEETING_TIME_TOO_LATE);
+            }
+        });
+        // 按时长来判断是否定满
+        List<Double> MeetingTimeList = new ArrayList<>();
+        double totalMeetingTime=0;
+        meetingDTOList.forEach(meetingDTO -> {
+            MeetingTimeList.add(DateUtils.getMeetingRequiredTime(meetingDTO.getBookingStartTime()
+                    , meetingDTO.getBookingEndTime()));
+        });
+        for (int i = 0; i < MeetingTimeList.size(); i++) {
+            totalMeetingTime += MeetingTimeList.get(i);
+        }
+        if (totalMeetingTime == totalFreeTime) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public Boolean isTimeAvailable(String startTime, String endTime, String date, String roomId) {
+        List<MeetingDTO> meetingDTOList = meetingMapper.selectTimeByDateAndRoomID(date,roomId);
+        Date sTime = DateUtils.parse(startTime,FORMAT_YYYY_MM_DD_HH_MM_SS);
+        Date eTime = DateUtils.parse(endTime, FORMAT_YYYY_MM_DD_HH_MM_SS);
+        meetingDTOList.forEach(meetingDTO -> {
+            // 开始时间（！和！）结束时间都在时间段内
+            if (meetingDTO.getBookingStartTime().compareTo(sTime)<0 &&
+                meetingDTO.getBookingEndTime().compareTo(sTime)>0) {
+                throw new ResponseException(StatusCodeEnu.MEETING_TIME_ILLEGAL);
+            }
+            if (meetingDTO.getBookingStartTime().compareTo(eTime) < 0 &&
+                    meetingDTO.getBookingEndTime().compareTo(eTime) > 0) {
+                throw new ResponseException(StatusCodeEnu.MEETING_TIME_ILLEGAL);
+            }
+            // 开始时间等于搜出来的开始时间（！或！）结束时间等于搜出来的结束时间，则一定重合
+            if (meetingDTO.getBookingStartTime().compareTo(sTime) == 0 ||
+                    meetingDTO.getBookingEndTime().compareTo(eTime) == 0){
+                throw new ResponseException(StatusCodeEnu.MEETING_TIME_ILLEGAL);
+            }
+            // 上面两个比较，是定会议室时间和已存在会议室时间的比较
+            // 下面的比较是，已存在会议室时间来比定会议室时间
+            if (sTime.compareTo(meetingDTO.getBookingStartTime()) < 0 &&
+                    eTime.compareTo(meetingDTO.getBookingEndTime()) >0) {
+                throw new ResponseException(StatusCodeEnu.MEETING_TIME_ILLEGAL);
+            }
+        });
+        return true;
     }
 
 }

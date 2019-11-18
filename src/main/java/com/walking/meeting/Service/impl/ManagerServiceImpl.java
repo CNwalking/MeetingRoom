@@ -3,10 +3,12 @@ package com.walking.meeting.Service.impl;
 import com.alibaba.fastjson.JSON;
 import com.walking.meeting.Service.ManagerService;
 import com.walking.meeting.dataobject.dao.*;
+import com.walking.meeting.dataobject.dto.DepartmentDTO;
 import com.walking.meeting.dataobject.dto.DeviceDTO;
 import com.walking.meeting.dataobject.dto.MeetingRoomDTO;
 import com.walking.meeting.dataobject.dto.RoomDeviceDTO;
 import com.walking.meeting.dataobject.query.MeetingRoomQuery;
+import com.walking.meeting.mapper.DepartmentMapper;
 import com.walking.meeting.mapper.DeviceMapper;
 import com.walking.meeting.mapper.MeetingRoomMapper;
 import com.walking.meeting.mapper.RoomDeviceMapper;
@@ -25,6 +27,8 @@ public class ManagerServiceImpl implements ManagerService {
     @Autowired
     private DeviceMapper deviceMapper;
     @Autowired
+    private DepartmentMapper departmentMapper;
+    @Autowired
     private RoomDeviceMapper roomDeviceMapper;
     @Autowired
     private MeetingRoomMapper meetingRoomMapper;
@@ -34,6 +38,13 @@ public class ManagerServiceImpl implements ManagerService {
         DeviceDO deviceDO =  JSON.parseObject(JSON.toJSONString(deviceDTO), DeviceDO.class);
         deviceDO.setCreateTime(new Date());
         deviceMapper.insertSelective(deviceDO);
+    }
+
+    @Override
+    public void addDepartment(DepartmentDTO departmentDTO) {
+        DepartmentDO departmentDO =  JSON.parseObject(JSON.toJSONString(departmentDTO), DepartmentDO.class);
+        departmentDO.setCreateTime(new Date());
+        departmentMapper.insertSelective(departmentDO);
     }
 
     @Override
@@ -48,6 +59,18 @@ public class ManagerServiceImpl implements ManagerService {
         deviceMapper.updateByExampleSelective(deviceDO,builder.build());
 
 
+    }
+
+    @Override
+    public void updateDepartmentSelective(DepartmentDTO departmentDTO) {
+        if(Objects.isNull(departmentDTO.getDepartmentName())){
+            return;
+        }
+        DepartmentDO departmentDO =  JSON.parseObject(JSON.toJSONString(departmentDTO), DepartmentDO.class);
+        Example.Builder builder = DbUtils.newExampleBuilder(DeviceDO.class);
+        DbUtils.setEqualToProp(builder, DepartmentDO.PROP_DEPARTMENT_NAME, departmentDTO.getDepartmentName());
+        departmentDO.setUpdateTime(new Date());
+        departmentMapper.updateByExampleSelective(departmentDO,builder.build());
     }
 
     @Override

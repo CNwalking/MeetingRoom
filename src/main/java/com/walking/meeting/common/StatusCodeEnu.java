@@ -9,6 +9,12 @@ public enum StatusCodeEnu {
     MEETING_TIME_ERROR(new StatusCode(43005, "会议时间参数问题")),
     ROOM_EXIST(new StatusCode(43006, "房间名或房间id已经存在")),
     MEETING_ID_NOT_EXIST(new StatusCode(43007, "会议id不存在")),
+    MEETING_TIME_TOO_EARLY(new StatusCode(43008, "会议开始时间不能早于会议室能预定的时间")),
+    MEETING_TIME_TOO_LATE(new StatusCode(43009, "会议结束时间不能晚于会议室能预定的时间")),
+    MEETING_ROOM_FULL(new StatusCode(43010, "该会议室当天已被订满")),
+    MEETING_TIME_ILLEGAL(new StatusCode(43011, "该会议室当天已被订满")),
+
+
 
 
     DEFAULT_SUCCESS(new StatusCode(0, "请求成功"));
