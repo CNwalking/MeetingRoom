@@ -83,10 +83,22 @@ public abstract class DateUtils {
         return hours;
     }
 
-    public static void main(String[] args) {
-        System.out.println(DateUtils.parse("2019-11-6 16:00:00", FORMAT_YYYY_MM_DD_HH_MM_SS));
-        String t1 = "2019-11-06 09:00";
-        String t2 = "2019-11-06 10:45";
-        System.out.println(getMeetingRequiredTime(t1,t2));
+    public static String parseDateToEveryDayTime(Date time) {
+        return DateFormatUtils.format(time,"HHmm");
     }
+
+    // HHmm的compare方法
+    public static int timeCompare(Date dateTime, Date anotherDate) {
+        int thisTime = Integer.parseInt(parseDateToEveryDayTime(dateTime));
+        int anotherTime = Integer.parseInt(parseDateToEveryDayTime(anotherDate));
+        return (thisTime<anotherTime ? -1 : (thisTime == anotherTime ? 0 : 1));
+    }
+
+//    public static void main(String[] args) {
+////        System.out.println(DateUtils.parse("2019-11-6 16:00:00", FORMAT_YYYY_MM_DD_HH_MM_SS));
+//        String t1 = "2019-11-06 09:00";
+//        String t2 = "2019-11-06 10:45";
+////        System.out.println(getMeetingRequiredTime(t1,t2));
+//        System.out.println(parseDateToEveryDayTime(new Date()));
+//    }
 }

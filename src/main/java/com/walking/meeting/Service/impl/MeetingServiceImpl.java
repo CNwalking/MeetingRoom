@@ -95,17 +95,21 @@ public class MeetingServiceImpl implements MeetingService {
         MeetingRoomQuery meetingRoomQuery = new MeetingRoomQuery();
         meetingRoomQuery.setRoomId(roomId);
         MeetingRoomDO meetingRoomDO = managerService.getMeetingRoomByQuery(meetingRoomQuery);
-        // TODO 会议室freeTime转换成每天的时间!!!
+        // 会议室freeTime转换成每天的时间!例如中午的 11：11：00 会变成 1111
         Date freeStartTime = meetingRoomDO.getFreeTimeStart();
+        String everyDayFreeTimeStart = DateUtils.parseDateToEveryDayTime(freeStartTime);
         Date freeEndTime = meetingRoomDO.getFreeTimeEnd();
+        String everyDayFreeTimeEnd = DateUtils.parseDateToEveryDayTime(freeEndTime);
+
         double totalFreeTime = DateUtils.getMeetingRequiredTime(freeStartTime, freeEndTime);
         // 如何meetingList里有开始时间早于freeStartTime结束时间迟于freeEndTime的就error
+        //TODO 重写compareTo，转成String之间的比较共4位，前两位时，后两位分
         meetingDTOList.forEach(meetingDTO -> {
             // date1.compareTo(date2) ,date1<date2返回-1,date1>date2返回1，相等返回0
-            if (meetingDTO.getBookingStartTime().compareTo(freeStartTime)<0) {
+            if (timeCompare(meetingDTO.getBookingStartTime(),freeStartTime)<0) {
                 throw new ResponseException(StatusCodeEnu.MEETING_TIME_TOO_EARLY);
             }
-            if (meetingDTO.getBookingEndTime().compareTo(freeEndTime)>0){
+            if (timeCompare(meetingDTO.getBookingEndTime(),freeEndTime)>0){
                 throw new ResponseException(StatusCodeEnu.MEETING_TIME_TOO_LATE);
             }
         });
@@ -131,24 +135,24 @@ public class MeetingServiceImpl implements MeetingService {
         Date sTime = DateUtils.parse(startTime,FORMAT_YYYY_MM_DD_HH_MM_SS);
         Date eTime = DateUtils.parse(endTime, FORMAT_YYYY_MM_DD_HH_MM_SS);
         meetingDTOList.forEach(meetingDTO -> {
-            // 开始时间（！和！）结束时间都在时间段内
-            if (meetingDTO.getBookingStartTime().compareTo(sTime)<0 &&
-                meetingDTO.getBookingEndTime().compareTo(sTime)>0) {
+            // 开始时间（！和！）结束时间都在时间段内timeCompare
+            if (timeCompare(meetingDTO.getBookingStartTime(),sTime)<0 &&
+                    timeCompare(meetingDTO.getBookingEndTime(),sTime)>0) {
                 throw new ResponseException(StatusCodeEnu.MEETING_TIME_ILLEGAL);
             }
-            if (meetingDTO.getBookingStartTime().compareTo(eTime) < 0 &&
-                    meetingDTO.getBookingEndTime().compareTo(eTime) > 0) {
+            if (timeCompare(meetingDTO.getBookingStartTime(),eTime) < 0 &&
+                    timeCompare(meetingDTO.getBookingEndTime(),eTime) > 0) {
                 throw new ResponseException(StatusCodeEnu.MEETING_TIME_ILLEGAL);
             }
             // 开始时间等于搜出来的开始时间（！或！）结束时间等于搜出来的结束时间，则一定重合
-            if (meetingDTO.getBookingStartTime().compareTo(sTime) == 0 ||
-                    meetingDTO.getBookingEndTime().compareTo(eTime) == 0){
+            if (timeCompare(meetingDTO.getBookingStartTime(),sTime) == 0 ||
+                    timeCompare(meetingDTO.getBookingEndTime(),eTime) == 0){
                 throw new ResponseException(StatusCodeEnu.MEETING_TIME_ILLEGAL);
             }
             // 上面两个比较，是定会议室时间和已存在会议室时间的比较
             // 下面的比较是，已存在会议室时间来比定会议室时间
-            if (sTime.compareTo(meetingDTO.getBookingStartTime()) < 0 &&
-                    eTime.compareTo(meetingDTO.getBookingEndTime()) >0) {
+            if (timeCompare(sTime,meetingDTO.getBookingStartTime()) < 0 &&
+                    timeCompare(eTime,meetingDTO.getBookingEndTime()) >0) {
                 throw new ResponseException(StatusCodeEnu.MEETING_TIME_ILLEGAL);
             }
         });

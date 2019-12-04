@@ -20,16 +20,16 @@ public class Swagger {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("cn.ucmed.petra.center.account.controller"))
+                .apis(RequestHandlerSelectors.basePackage("com.walking.meeting.controller"))
                 .paths(PathSelectors.any())
                 .build();
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("中台--账号中心接口")
-                .description("")
-                .termsOfServiceUrl("")
+                .title("meetingApp")
+                .description("API of meetingAPP")
+                .termsOfServiceUrl("localhost:9080/")
                 .version("1.0")
                 .build();
     }
