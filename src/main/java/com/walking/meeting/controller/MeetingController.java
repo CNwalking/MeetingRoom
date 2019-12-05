@@ -101,7 +101,7 @@ public class MeetingController {
         Boolean isMeetingTimeAvailable = meetingService.isTimeAvailable(startTime, endTime, bookingDate, roomId);
         // false则这个想定的会议时间不合理
         if (!isMeetingTimeAvailable){
-            throw new ResponseException(StatusCodeEnu.MEETING_ROOM_FULL);
+            throw new ResponseException(StatusCodeEnu.MEETING_TIME_ILLEGAL);
         }
         // TODO 设备相关要判定。但这个方法另写，通过设备选出roomId，不在此方法中体现，见下面方法meetingRoomSearchingByDevice
 
@@ -116,9 +116,9 @@ public class MeetingController {
             meetingLevelName = "面试";
         } else if (meetingLevel == 1) {
             meetingLevelName = "例会";
-        }else if (meetingLevel == 2) {
+        } else if (meetingLevel == 2) {
             meetingLevelName = "高级会议";
-        }else if (meetingLevel == 3) {
+        } else if (meetingLevel == 3) {
             meetingLevelName = "紧急会议";
         }
         StringBuilder meetingNameBuilder = new StringBuilder();
@@ -129,6 +129,7 @@ public class MeetingController {
         meetingDTO.setMeetingLevel(meetingLevel);
         meetingDTO.setRoomId(roomId);
         meetingDTO.setDepartmentName(departmentName);
+        // 此处判定了时长是否正确
         // 如果 开始时间-结束时间 != 会议时间 或开始时间 >结束时间 ，那么报错
         Date start = DateUtils.parse(startTime, FORMAT_YYYY_MM_DD_HH_MM);
         Date end = DateUtils.parse(endTime, FORMAT_YYYY_MM_DD_HH_MM);

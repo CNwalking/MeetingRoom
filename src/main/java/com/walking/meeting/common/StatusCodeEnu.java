@@ -12,7 +12,7 @@ public enum StatusCodeEnu {
     MEETING_TIME_TOO_EARLY(new StatusCode(43008, "会议开始时间不能早于会议室能预定的时间")),
     MEETING_TIME_TOO_LATE(new StatusCode(43009, "会议结束时间不能晚于会议室能预定的时间")),
     MEETING_ROOM_FULL(new StatusCode(43010, "该会议室当天已被订满")),
-    MEETING_TIME_ILLEGAL(new StatusCode(43011, "该会议室当天已被订满")),
+    MEETING_TIME_ILLEGAL(new StatusCode(43011, "这个时间不能被预定哦")),
 
 
 

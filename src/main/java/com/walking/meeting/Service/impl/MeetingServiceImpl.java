@@ -99,7 +99,7 @@ public class MeetingServiceImpl implements MeetingService {
         Date freeEndTime = meetingRoomDO.getFreeTimeEnd();
         // 转成小时数，用于后面比较是否有空
         double totalFreeTime = DateUtils.getMeetingRequiredTime(freeStartTime, freeEndTime);
-        // TODO 此处比较存疑，是否需要在这里比较？
+        // TODO 此处比较存疑，是否需要在这里比较？ 先前想的是这里取出了MeetingRoom的属性，就在这里比较了
         // 如果meetingList里有开始时间早于freeStartTime结束时间迟于freeEndTime的就error
         // timeCompare方法，转成Integer之间的比较共4位，前两位时，后两位分
         meetingDTOList.forEach(meetingDTO -> {
@@ -133,28 +133,48 @@ public class MeetingServiceImpl implements MeetingService {
         List<MeetingDTO> meetingDTOList = meetingMapper.selectTimeByDateAndRoomID(date,roomId);
         Date sTime = DateUtils.parse(startTime,FORMAT_YYYY_MM_DD_HH_MM);
         Date eTime = DateUtils.parse(endTime, FORMAT_YYYY_MM_DD_HH_MM);
-        meetingDTOList.forEach(meetingDTO -> {
-            // 开始时间（！和！）结束时间都在时间段内timeCompare
-            if (timeCompare(meetingDTO.getBookingStartTime(),sTime)<0 &&
-                    timeCompare(meetingDTO.getBookingEndTime(),sTime)>0) {
-                throw new ResponseException(StatusCodeEnu.MEETING_TIME_ILLEGAL);
+        // lambda表达式的forEach不是循环，不能break或continue或return来终止
+//        meetingDTOList.forEach(meetingDTO -> {
+//            // 开始时间（！和！）结束时间都在时间段内timeCompare
+//            if (timeCompare(meetingDTO.getBookingStartTime(),sTime)<0 &&
+//                    timeCompare(meetingDTO.getBookingEndTime(),sTime)>0) {
+//                throw new ResponseException(StatusCodeEnu.MEETING_TIME_ILLEGAL);
+//            }
+//            if (timeCompare(meetingDTO.getBookingStartTime(),eTime) < 0 &&
+//                    timeCompare(meetingDTO.getBookingEndTime(),eTime) > 0) {
+//                throw new ResponseException(StatusCodeEnu.MEETING_TIME_ILLEGAL);
+//            }
+//            // 开始时间等于搜出来的开始时间（！或！）结束时间等于搜出来的结束时间，则一定重合
+//            if (timeCompare(meetingDTO.getBookingStartTime(),sTime) == 0 ||
+//                    timeCompare(meetingDTO.getBookingEndTime(),eTime) == 0){
+//                throw new ResponseException(StatusCodeEnu.MEETING_TIME_ILLEGAL);
+//            }
+//            // 上面两个比较，是定会议室时间和已存在会议室时间的比较
+//            // 下面的比较是，已存在会议室时间来比定会议室时间
+//            if (timeCompare(sTime,meetingDTO.getBookingStartTime()) < 0 &&
+//                    timeCompare(eTime,meetingDTO.getBookingEndTime()) >0) {
+//                throw new ResponseException(StatusCodeEnu.MEETING_TIME_ILLEGAL);
+//            }
+//        });
+        // 用for循环可以return false
+        for (int i = 0; i < meetingDTOList.size(); i++) {
+            if (timeCompare(meetingDTOList.get(i).getBookingStartTime(),sTime)<0 &&
+                    timeCompare(meetingDTOList.get(i).getBookingEndTime(),sTime)>0) {
+                return false;
             }
-            if (timeCompare(meetingDTO.getBookingStartTime(),eTime) < 0 &&
-                    timeCompare(meetingDTO.getBookingEndTime(),eTime) > 0) {
-                throw new ResponseException(StatusCodeEnu.MEETING_TIME_ILLEGAL);
+            if (timeCompare(meetingDTOList.get(i).getBookingStartTime(),eTime)<0 &&
+                    timeCompare(meetingDTOList.get(i).getBookingEndTime(),eTime)>0) {
+                return false;
             }
-            // 开始时间等于搜出来的开始时间（！或！）结束时间等于搜出来的结束时间，则一定重合
-            if (timeCompare(meetingDTO.getBookingStartTime(),sTime) == 0 ||
-                    timeCompare(meetingDTO.getBookingEndTime(),eTime) == 0){
-                throw new ResponseException(StatusCodeEnu.MEETING_TIME_ILLEGAL);
+            if (timeCompare(meetingDTOList.get(i).getBookingStartTime(),sTime) == 0 ||
+                    timeCompare(meetingDTOList.get(i).getBookingEndTime(),eTime) == 0) {
+                return false;
             }
-            // 上面两个比较，是定会议室时间和已存在会议室时间的比较
-            // 下面的比较是，已存在会议室时间来比定会议室时间
-            if (timeCompare(sTime,meetingDTO.getBookingStartTime()) < 0 &&
-                    timeCompare(eTime,meetingDTO.getBookingEndTime()) >0) {
-                throw new ResponseException(StatusCodeEnu.MEETING_TIME_ILLEGAL);
+            if (timeCompare(sTime,meetingDTOList.get(i).getBookingStartTime()) < 0 &&
+                    timeCompare(eTime,meetingDTOList.get(i).getBookingEndTime()) > 0) {
+                return false;
             }
-        });
+        }
         return true;
     }
 
