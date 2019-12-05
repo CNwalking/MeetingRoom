@@ -91,21 +91,20 @@ public class MeetingServiceImpl implements MeetingService {
     public Boolean selectTimeByDateAndRoomID(String date,String roomId) {
         List<MeetingDTO> meetingDTOList = meetingMapper.selectTimeByDateAndRoomID(date,roomId);
         // 判断这个日期的这个room是否有空
-        // 选出这个会议室的freeTime
+        // 取出这个会议室的freeTime
         MeetingRoomQuery meetingRoomQuery = new MeetingRoomQuery();
         meetingRoomQuery.setRoomId(roomId);
         MeetingRoomDO meetingRoomDO = managerService.getMeetingRoomByQuery(meetingRoomQuery);
-        // 会议室freeTime转换成每天的时间!例如中午的 11：11：00 会变成 1111
         Date freeStartTime = meetingRoomDO.getFreeTimeStart();
-        String everyDayFreeTimeStart = DateUtils.parseDateToEveryDayTime(freeStartTime);
         Date freeEndTime = meetingRoomDO.getFreeTimeEnd();
-        String everyDayFreeTimeEnd = DateUtils.parseDateToEveryDayTime(freeEndTime);
-
+        // 转成小时数，用于后面比较是否有空
         double totalFreeTime = DateUtils.getMeetingRequiredTime(freeStartTime, freeEndTime);
-        // 如何meetingList里有开始时间早于freeStartTime结束时间迟于freeEndTime的就error
-        //TODO 重写compareTo，转成String之间的比较共4位，前两位时，后两位分
+        // TODO 此处比较存疑，是否需要在这里比较？
+        // 如果meetingList里有开始时间早于freeStartTime结束时间迟于freeEndTime的就error
+        // timeCompare方法，转成Integer之间的比较共4位，前两位时，后两位分
         meetingDTOList.forEach(meetingDTO -> {
-            // date1.compareTo(date2) ,date1<date2返回-1,date1>date2返回1，相等返回0
+            // 会议室freeTime转换成每天的时间再进行比较!例如中午的 11：11：00 会变成 1111
+            // timeCompare(date1，date2) ,date1<date2返回-1,date1>date2返回1,相等返回0
             if (timeCompare(meetingDTO.getBookingStartTime(),freeStartTime)<0) {
                 throw new ResponseException(StatusCodeEnu.MEETING_TIME_TOO_EARLY);
             }
@@ -132,8 +131,8 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public Boolean isTimeAvailable(String startTime, String endTime, String date, String roomId) {
         List<MeetingDTO> meetingDTOList = meetingMapper.selectTimeByDateAndRoomID(date,roomId);
-        Date sTime = DateUtils.parse(startTime,FORMAT_YYYY_MM_DD_HH_MM_SS);
-        Date eTime = DateUtils.parse(endTime, FORMAT_YYYY_MM_DD_HH_MM_SS);
+        Date sTime = DateUtils.parse(startTime,FORMAT_YYYY_MM_DD_HH_MM);
+        Date eTime = DateUtils.parse(endTime, FORMAT_YYYY_MM_DD_HH_MM);
         meetingDTOList.forEach(meetingDTO -> {
             // 开始时间（！和！）结束时间都在时间段内timeCompare
             if (timeCompare(meetingDTO.getBookingStartTime(),sTime)<0 &&

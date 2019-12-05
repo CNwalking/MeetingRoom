@@ -94,11 +94,16 @@ public abstract class DateUtils {
         return (thisTime<anotherTime ? -1 : (thisTime == anotherTime ? 0 : 1));
     }
 
-//    public static void main(String[] args) {
-////        System.out.println(DateUtils.parse("2019-11-6 16:00:00", FORMAT_YYYY_MM_DD_HH_MM_SS));
-//        String t1 = "2019-11-06 09:00";
-//        String t2 = "2019-11-06 10:45";
-////        System.out.println(getMeetingRequiredTime(t1,t2));
+    public static void main(String[] args) {
+//        System.out.println(DateUtils.parse("2019-11-6 16:00:00", FORMAT_YYYY_MM_DD_HH_MM_SS));
+        String t1 = "2019-11-06 09:00";
+        String t2 = "2019-11-06 09:00";
+        String t3 = "2019-11-06 21:00";
+        String t4 = "2019-11-06 22:00";
+        System.out.println(Integer.parseInt(parseDateToEveryDayTime(DateUtils.parse(t2, FORMAT_YYYY_MM_DD_HH_MM))));
+        System.out.println(timeCompare(DateUtils.parse(t3,FORMAT_YYYY_MM_DD_HH_MM),
+                DateUtils.parse(t1,FORMAT_YYYY_MM_DD_HH_MM)));
+//        System.out.println(getMeetingRequiredTime(t1,t2));
 //        System.out.println(parseDateToEveryDayTime(new Date()));
-//    }
+    }
 }
