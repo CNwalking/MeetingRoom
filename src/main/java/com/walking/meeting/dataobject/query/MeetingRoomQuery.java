@@ -13,6 +13,6 @@ public class MeetingRoomQuery {
 
     private String roomId;
 
-    private List deviceList;
+//    private List deviceList;
 
 }

@@ -12,10 +12,7 @@ import com.walking.meeting.dataobject.dao.MeetingRoomDO;
 import com.walking.meeting.dataobject.dao.RoomDeviceDO;
 import com.walking.meeting.dataobject.dto.MeetingDTO;
 import com.walking.meeting.dataobject.dto.RoomDeviceSearchResultDTO;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.common.Mapper;
 
@@ -31,26 +28,29 @@ public interface RoomDeviceMapper extends Mapper<RoomDeviceDO> {
     @Select({
             "SELECT rd.room_id,GROUP_CONCAT(rd.device_id)",
                     "FROM room_device rd",
-                    "WHERE rd.room_id = #{room_id}",
+                    "WHERE rd.room_id = #{roomId}",
                     "GROUP BY rd.room_id"
     })
     @Results({
-            @Result(column = "room_id", property = "roomId"),
-            @Result(column = "GROUP_CONCAT(rd.device_id)", property = "deviceIdList")
+        @Result(column = "room_id", property = "roomId"),
+        @Result(column = "GROUP_CONCAT(rd.device_id)", property = "deviceIdList")
     })
-    List<RoomDeviceSearchResultDTO> searchDeviceByRoomId(@Param("room_id") String roomId);
+    List<RoomDeviceSearchResultDTO> searchDeviceByRoomId(@Param("roomId") String roomId);
+
 
     /**
      * 通过设备搜符合的roomId
-     * @param deviceId
      * @param roomScale
      * @return
      */
     @Select({
-
+        "SELECT room_id",
+                "FROM meeting_room",
+                "WHERE room_scale = #{roomScale}"
     })
     @Results({
-
+        @Result(column = "room_id",property = "roomId",javaType = String.class,
+        many=@Many(select = "com.walking.meeting.mapper.RoomDeviceMapper.searchDeviceByRoomId"))
     })
-    List<MeetingRoomDO> searchRoomIdByDevice(@Param("device_id")Integer deviceId,@Param("roomScale") Integer roomScale);
+    List<RoomDeviceSearchResultDTO> searchRoomIdByDevice(@Param("roomScale") Integer roomScale);
 }

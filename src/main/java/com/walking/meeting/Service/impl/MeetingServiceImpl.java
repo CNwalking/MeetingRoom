@@ -94,7 +94,8 @@ public class MeetingServiceImpl implements MeetingService {
         // 取出这个会议室的freeTime
         MeetingRoomQuery meetingRoomQuery = new MeetingRoomQuery();
         meetingRoomQuery.setRoomId(roomId);
-        MeetingRoomDO meetingRoomDO = managerService.getMeetingRoomByQuery(meetingRoomQuery);
+        MeetingRoomDO meetingRoomDO = DbUtils.getOne(managerService.getMeetingRoomByQuery(meetingRoomQuery))
+                .orElse(null);
         Date freeStartTime = meetingRoomDO.getFreeTimeStart();
         Date freeEndTime = meetingRoomDO.getFreeTimeEnd();
         // 转成小时数，用于后面比较是否有空
@@ -134,7 +135,8 @@ public class MeetingServiceImpl implements MeetingService {
         // 先和会议室的freeTime比较，再和meeting列表里的会议比较
         MeetingRoomQuery meetingRoomQuery = new MeetingRoomQuery();
         meetingRoomQuery.setRoomId(roomId);
-        MeetingRoomDO meetingRoomDO = managerService.getMeetingRoomByQuery(meetingRoomQuery);
+        MeetingRoomDO meetingRoomDO = DbUtils.getOne(managerService.getMeetingRoomByQuery(meetingRoomQuery))
+                .orElse(null);
         Date freeStartTime = meetingRoomDO.getFreeTimeStart();
         Date freeEndTime = meetingRoomDO.getFreeTimeEnd();
         if (timeCompare(DateUtils.parse(startTime,FORMAT_YYYY_MM_DD_HH_MM),freeStartTime)<0) {

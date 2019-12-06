@@ -26,6 +26,7 @@ public abstract class DateUtils {
     public static final String FORMAT_FOUR = "yyyy年MM月dd日";
     public static final String FORMAT_YYYY_MM = "yyyy-MM";
     public static final String TIME = "HH:mm:ss";
+    public static final String SHOWTIME = "HH:mm";
 
     private DateUtils() {
     }

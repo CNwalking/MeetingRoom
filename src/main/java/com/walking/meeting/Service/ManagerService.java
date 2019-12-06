@@ -29,11 +29,12 @@ public interface ManagerService {
     /**
      *   只限于会议室名字、Id和规模三种属性
      */
-    MeetingRoomDO getMeetingRoomByQuery(MeetingRoomQuery meetingRoomQuery);
+//    MeetingRoomDO getMeetingRoomByQuery(MeetingRoomQuery meetingRoomQuery);
+    List<MeetingRoomDO> getMeetingRoomByQuery(MeetingRoomQuery meetingRoomQuery);
 
     /**
      *   会议室device列表和规模来选出会议室
      */
-    List<MeetingRoomDO> searchRoomByQuery(List<String> deviceIdList,Integer roomScale);
+    List<MeetingRoomDO> searchRoomByQuery(String deviceIdList,Integer roomScale);
 
 }

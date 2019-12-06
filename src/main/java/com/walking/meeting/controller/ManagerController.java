@@ -1,5 +1,6 @@
 package com.walking.meeting.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.walking.meeting.Service.ManagerService;
 import com.walking.meeting.common.ResponseException;
 import com.walking.meeting.common.StatusCodeEnu;
@@ -13,7 +14,9 @@ import com.walking.meeting.dataobject.dto.DeviceDTO;
 import com.walking.meeting.dataobject.dto.MeetingRoomDTO;
 import com.walking.meeting.dataobject.dto.RoomDeviceDTO;
 import com.walking.meeting.dataobject.query.MeetingRoomQuery;
+import com.walking.meeting.dataobject.vo.MeetingRoomVO;
 import com.walking.meeting.utils.DateUtils;
+import com.walking.meeting.utils.DbUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -58,7 +61,8 @@ public class ManagerController {
         MeetingRoomQuery meetingRoomQuery = new MeetingRoomQuery();
         meetingRoomQuery.setRoomId(roomId);
         meetingRoomQuery.setRoomName(roomName);
-        MeetingRoomDO meetingRoomDO = managerService.getMeetingRoomByQuery(meetingRoomQuery);
+        MeetingRoomDO meetingRoomDO = DbUtils.getOne(managerService.getMeetingRoomByQuery(meetingRoomQuery))
+                .orElse(null);
         // 存在则报错
         if (!Objects.isNull(meetingRoomDO)){
             throw new ResponseException(StatusCodeEnu.ROOM_EXIST);
@@ -89,19 +93,24 @@ public class ManagerController {
 
     @ApiOperation(value = "通过会议室设备和规模选出会议室", notes = "通过会议室设备和规模选出会议室")
     @PostMapping(value = "/select")
-    public String meetingRoomSearchingByDQuery(
+    public List<MeetingRoomVO> meetingRoomSearchingByDQuery(
             @ApiParam(name = "device_id_list", value = "设备id列表，格式例如:1,2,3")
             @RequestParam(value = "device_id_list") String deviceIdList,
             @ApiParam(name = "room_scale", value = "会议室可容纳人数")
             @RequestParam(value = "room_scale") Integer roomScale){
-        List<String> deviceList = new ArrayList();
-        if (StringUtils.isNotBlank(deviceIdList)) {
-            deviceList = Arrays.asList(deviceIdList.split(","));
-        }
-        //TODO 选出包含这些设备的会议室
-        List<MeetingRoomDO> roomList = managerService.searchRoomByQuery(deviceList, roomScale);
-        return null;
-
+        // 选出包含这些设备的该规格的会议室
+        List<MeetingRoomVO> resultList = new ArrayList<>();
+        List<MeetingRoomDO> roomList = managerService.searchRoomByQuery(deviceIdList, roomScale);
+        roomList.forEach(meetingRoomDO -> {
+            // 时间转化成看的清楚一些的时间，例如18：00
+            String StartTime = DateUtils.formatDate(meetingRoomDO.getFreeTimeStart(),SHOWTIME);
+            String endTime = DateUtils.formatDate(meetingRoomDO.getFreeTimeEnd(),SHOWTIME);
+            MeetingRoomVO meetingRoomVO = JSON.parseObject(JSON.toJSONString(meetingRoomDO), MeetingRoomVO.class);
+            meetingRoomVO.setFreeTimeStart(StartTime);
+            meetingRoomVO.setFreeTimeEnd(endTime);
+            resultList.add(meetingRoomVO);
+        });
+        return resultList;
     }
 
 
