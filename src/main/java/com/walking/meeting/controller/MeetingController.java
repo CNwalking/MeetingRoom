@@ -6,6 +6,7 @@ import com.walking.meeting.common.ResponseException;
 import com.walking.meeting.common.StatusCodeEnu;
 import com.walking.meeting.common.SuccessResponse;
 import com.walking.meeting.dataobject.dao.MeetingDO;
+import com.walking.meeting.dataobject.dao.MeetingRoomDO;
 import com.walking.meeting.dataobject.dto.ListMeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingReturnDTO;
@@ -98,12 +99,14 @@ public class MeetingController {
             throw new ResponseException(StatusCodeEnu.MEETING_ROOM_FULL);
         }
         // 开始时间、结束时间判定,判断想预定的时间是否合法。
-        Boolean isMeetingTimeAvailable = meetingService.isTimeAvailable(startTime, endTime, bookingDate, roomId);
+        Boolean isMeetingTimeAvailable = meetingService.isTimeAvailable(startTime, endTime,
+                parseDateFormatToSQLNeed(bookingDate), roomId);
         // false则这个想定的会议时间不合理
         if (!isMeetingTimeAvailable){
             throw new ResponseException(StatusCodeEnu.MEETING_TIME_ILLEGAL);
         }
-        // TODO 设备相关要判定。但这个方法另写，通过设备选出roomId，不在此方法中体现，见下面方法meetingRoomSearchingByDevice
+        // TODO 先进行设备相关的判定，判定完以后让用户选择room，然后读取roomId当这个方法的入参。
+        //  取会议室ID这个方法另写，通过设备选出roomId，不在此方法中体现，见下面方法meetingRoomSearchingByDevice
 
 
         // 下面先什么都不管，add一个会议，到时候会判条件判了以后再add
@@ -161,19 +164,6 @@ public class MeetingController {
         return SuccessResponse.defaultSuccess();
     }
 
-    @ApiOperation(value = "通过会议室设备选出会议室", notes = "通过会议室设备选出会议室")
-    @PostMapping(value = "/select")
-    public String meetingRoomSearchingByDevice(
-            @ApiParam(name = "device_id_list", value = "设备id列表，格式例如:1,2,3")
-            @RequestParam(value = "device_id_list") String deviceIdList){
-        List deviceList = new ArrayList();
-        if (StringUtils.isNotBlank(deviceIdList)) {
-            deviceList = Arrays.asList(deviceIdList.split(","));
-        }
-        //TODO
-        return null;
-
-    }
 
     @ApiOperation(value = "查看会议室的设备", notes = "查看会议室的设备")
     @PostMapping(value = "/search_device_by_room_id")

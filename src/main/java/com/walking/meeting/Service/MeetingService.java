@@ -2,6 +2,7 @@ package com.walking.meeting.Service;
 
 import com.github.pagehelper.PageInfo;
 import com.walking.meeting.dataobject.dao.MeetingDO;
+import com.walking.meeting.dataobject.dao.MeetingRoomDO;
 import com.walking.meeting.dataobject.dto.ListMeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingReturnDTO;
@@ -24,5 +25,6 @@ public interface MeetingService {
     Boolean isTimeAvailable(String startTime,String endTime,String date,String roomId);
 
     List<Integer> searchDeviceByRoomId(String roomId);
+
 
 }

@@ -105,7 +105,14 @@ public class ManagerServiceImpl implements ManagerService {
         DbUtils.setEqualToProp(builder, MeetingRoomDO.PROP_ROOM_NAME, meetingRoomQuery.getRoomName());
         DbUtils.setEqualToProp(builder, MeetingRoomDO.PROP_ROOM_ID, meetingRoomQuery.getRoomId());
         DbUtils.setEqualToProp(builder, MeetingRoomDO.PROP_ROOM_SCALE, meetingRoomQuery.getRoomScale());
+        // 选出有所需device的room列表,device在room_device表,该方法不适用。需要用sql写。
         List<MeetingRoomDO> meetingRoomDOList = meetingRoomMapper.selectByExample(builder.build());
         return DbUtils.getOne(meetingRoomDOList).orElse(null);
+    }
+
+    @Override
+    public List<MeetingRoomDO> searchRoomByQuery(List<String> deviceIdList, Integer roomScale) {
+
+        return null;
     }
 }

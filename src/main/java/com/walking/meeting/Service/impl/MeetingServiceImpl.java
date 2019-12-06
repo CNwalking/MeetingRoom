@@ -100,6 +100,7 @@ public class MeetingServiceImpl implements MeetingService {
         // 转成小时数，用于后面比较是否有空
         double totalFreeTime = DateUtils.getMeetingRequiredTime(freeStartTime, freeEndTime);
         // TODO 此处比较存疑，是否需要在这里比较？ 先前想的是这里取出了MeetingRoom的属性，就在这里比较了
+        // TODO 此处有问题，此处只检测了数据库里是否有超时的，没有先检测要定的那个时间是否超过，应修改。
         // 如果meetingList里有开始时间早于freeStartTime结束时间迟于freeEndTime的就error
         // timeCompare方法，转成Integer之间的比较共4位，前两位时，后两位分
         meetingDTOList.forEach(meetingDTO -> {
@@ -130,6 +131,21 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Override
     public Boolean isTimeAvailable(String startTime, String endTime, String date, String roomId) {
+        // 先和会议室的freeTime比较，再和meeting列表里的会议比较
+        MeetingRoomQuery meetingRoomQuery = new MeetingRoomQuery();
+        meetingRoomQuery.setRoomId(roomId);
+        MeetingRoomDO meetingRoomDO = managerService.getMeetingRoomByQuery(meetingRoomQuery);
+        Date freeStartTime = meetingRoomDO.getFreeTimeStart();
+        Date freeEndTime = meetingRoomDO.getFreeTimeEnd();
+        if (timeCompare(DateUtils.parse(startTime,FORMAT_YYYY_MM_DD_HH_MM),freeStartTime)<0) {
+//            throw new ResponseException(StatusCodeEnu.MEETING_TIME_TOO_EARLY);
+            return false;
+        }
+        if (timeCompare(DateUtils.parse(endTime,FORMAT_YYYY_MM_DD_HH_MM),freeEndTime)>0){
+//            throw new ResponseException(StatusCodeEnu.MEETING_TIME_TOO_LATE);
+            return false;
+        }
+        // 以下穷举所有会议预定情况判断
         List<MeetingDTO> meetingDTOList = meetingMapper.selectTimeByDateAndRoomID(date,roomId);
         Date sTime = DateUtils.parse(startTime,FORMAT_YYYY_MM_DD_HH_MM);
         Date eTime = DateUtils.parse(endTime, FORMAT_YYYY_MM_DD_HH_MM);
@@ -157,6 +173,7 @@ public class MeetingServiceImpl implements MeetingService {
 //            }
 //        });
         // 用for循环可以return false
+        // TODO 这个meetingDTOList是空的？？BUG
         for (int i = 0; i < meetingDTOList.size(); i++) {
             if (timeCompare(meetingDTOList.get(i).getBookingStartTime(),sTime)<0 &&
                     timeCompare(meetingDTOList.get(i).getBookingEndTime(),sTime)>0) {
@@ -181,7 +198,7 @@ public class MeetingServiceImpl implements MeetingService {
     @Override
     public List<Integer> searchDeviceByRoomId(String roomId) {
         List<RoomDeviceSearchResultDTO> roomDeviceSearchResultDTOList =
-                roomDeviceMapper.meetingRoomSearchingByDevice(roomId);
+                roomDeviceMapper.searchDeviceByRoomId(roomId);
         List<Integer> MeetingRoomDeviceList = new ArrayList<>();
         roomDeviceSearchResultDTOList.forEach(roomDeviceSearchResultDTO -> {
                 if (StringUtils.isNotBlank(roomDeviceSearchResultDTO.getDeviceIdList())) {
