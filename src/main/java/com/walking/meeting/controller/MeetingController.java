@@ -159,7 +159,7 @@ public class MeetingController {
             // 说明没有这个会议,可能已经取消,可能meetingId输入错误
             throw new ResponseException(StatusCodeEnu.MEETING_ID_NOT_EXIST);
         }
-        meetingDO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
+        meetingDO.setDeleteTime(formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
         meetingService.updateMeetingSelective(meetingDO);
         return SuccessResponse.defaultSuccess();
     }
