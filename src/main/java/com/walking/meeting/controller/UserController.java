@@ -60,7 +60,7 @@ public class UserController {
             log.info("数据库里的:{},加密完的数据:{}",userDO.getPswd(),MD5Encrypt.md5Encrypt(password));
             throw new ResponseException(StatusCodeEnu.USERNAME_OR_PSWD_ERROR);
         }
-        // session在
+        // TODO 加session相关
         return SuccessResponse.defaultSuccess();
     }
 
