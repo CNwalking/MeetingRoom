@@ -38,7 +38,6 @@ public class UserServiceImpl implements UserService {
 //        criteria.andEqualTo(UserDO.PROP_USERNAME, userQuery.getUserName());
 //        criteria.andEqualTo(UserDO.PROP_EMAIL, userQuery.getEmail());
 //        criteria.andEqualTo(UserDO.PROP_DEPARTMENT_NAME, userQuery.getDepartmentName());
-//
 //        List<UserDO> list=userMapper.selectByExample(example);
 //        return DbUtils.getOne(list).orElse(null);
         Example.Builder builder = DbUtils.newExampleBuilder(UserDO.class);

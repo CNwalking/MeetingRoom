@@ -97,7 +97,11 @@ public abstract class DateUtils {
         return (thisTime<anotherTime ? -1 : (thisTime == anotherTime ? 0 : 1));
     }
 
+
+
 //    public static void main(String[] args) {
+//        System.out.println(new Date());
+//        System.out.println(prettyTime(new Date()));
 //        System.out.println(DateUtils.parse("2019-11-6 16:00:00", FORMAT_YYYY_MM_DD_HH_MM_SS));
 //        String t1 = "2019-11-06 09:00";
 //        String t2 = "2019-11-06 09:00";

@@ -17,6 +17,7 @@ import com.walking.meeting.mapper.MeetingMapper;
 import com.walking.meeting.mapper.RoomDeviceMapper;
 import com.walking.meeting.utils.DateUtils;
 import com.walking.meeting.utils.DbUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -137,6 +138,10 @@ public class MeetingServiceImpl implements MeetingService {
         meetingRoomQuery.setRoomId(roomId);
         MeetingRoomDO meetingRoomDO = DbUtils.getOne(managerService.getMeetingRoomByQuery(meetingRoomQuery))
                 .orElse(null);
+        // roomId有错，没有这个room，不校验则下面会报空指针
+        if (ObjectUtils.isEmpty(meetingRoomDO)){
+            return false;
+        }
         Date freeStartTime = meetingRoomDO.getFreeTimeStart();
         Date freeEndTime = meetingRoomDO.getFreeTimeEnd();
         if (timeCompare(DateUtils.parse(startTime,FORMAT_YYYY_MM_DD_HH_MM),freeStartTime)<0) {

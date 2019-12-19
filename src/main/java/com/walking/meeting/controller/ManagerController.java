@@ -175,6 +175,13 @@ public class ManagerController {
         return SuccessResponse.defaultSuccess();
     }
 
+    @ApiOperation(value = "测试连接", notes = "测试连接")
+    @PostMapping(value = "/test")
+    public String testConnection(
+            @ApiParam(name = "input", value = "入参")
+            @RequestParam(value = "input") String input){
+        return input;
+    }
 
 
 }

@@ -6,7 +6,6 @@ import com.walking.meeting.common.ResponseException;
 import com.walking.meeting.common.StatusCodeEnu;
 import com.walking.meeting.common.SuccessResponse;
 import com.walking.meeting.dataobject.dao.MeetingDO;
-import com.walking.meeting.dataobject.dao.MeetingRoomDO;
 import com.walking.meeting.dataobject.dto.ListMeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingReturnDTO;
@@ -25,8 +24,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -73,6 +70,7 @@ public class MeetingController {
         listMeetingDTO.setPageNum(pageNum);
         listMeetingDTO.setPageSize(pageSize);
         PageInfo<MeetingReturnDTO> meetingDOPageInfo = meetingService.listMeeting(listMeetingDTO);
+
         return meetingDOPageInfo;
     }
 
@@ -105,8 +103,8 @@ public class MeetingController {
         if (!isMeetingTimeAvailable){
             throw new ResponseException(StatusCodeEnu.MEETING_TIME_ILLEGAL);
         }
-        // TODO 先进行设备相关的判定，判定完以后让用户选择room，然后读取roomId当这个方法的入参。
-        //  取会议室ID这个方法另写，通过设备选出roomId，不在此方法中体现，见下面方法meetingRoomSearchingByDevice
+        //  先进行设备相关的判定，判定完以后让用户选择room，然后读取roomId当这个方法的入参。
+        //  取会议室ID这个方法另写，通过设备选出roomId，不在此方法中体现，见managerController中的方法meetingRoomSearchingByDevice
 
 
         // 下面先什么都不管，add一个会议，到时候会判条件判了以后再add

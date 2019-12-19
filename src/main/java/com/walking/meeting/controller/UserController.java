@@ -43,7 +43,7 @@ public class UserController {
             @ApiParam(name = "login_name", value = "用户名") @RequestParam(value = "login_name") String loginName,
             @ApiParam(name = "password", value = "密码") @RequestParam(value = "password") String password,
             @ApiParam(name = "user_role", value = "0:管理员 1:普通用户") @RequestParam(
-                    value = "user_role") Integer userRole) {
+                    value = "user_role",required=false,defaultValue="1") Integer userRole) {
         log.info("[用户登录param], loginName:{}, password:{}, userRole:{}", loginName, password, userRole);
         if (StringUtils.isBlank(loginName) || StringUtils.isBlank(password) || Objects.isNull(userRole)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
