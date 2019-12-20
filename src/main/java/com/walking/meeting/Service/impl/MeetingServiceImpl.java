@@ -89,7 +89,7 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public Boolean selectTimeByDateAndRoomID(String date,String roomId) {
+    public Integer selectTimeByDateAndRoomID(String date,String roomId) {
         List<MeetingDTO> meetingDTOList = meetingMapper.selectTimeByDateAndRoomID(date,roomId);
         // 判断这个日期的这个room是否有空
         // 取出这个会议室的freeTime
@@ -97,6 +97,10 @@ public class MeetingServiceImpl implements MeetingService {
         meetingRoomQuery.setRoomId(roomId);
         MeetingRoomDO meetingRoomDO = DbUtils.getOne(managerService.getMeetingRoomByQuery(meetingRoomQuery))
                 .orElse(null);
+        // 不能通过会议室Id搜出来则会议室不存在
+        if (ObjectUtils.isEmpty(meetingRoomDO)) {
+            throw new ResponseException(StatusCodeEnu.MEETING_ROOM_NOT_EXIST);
+        }
         Date freeStartTime = meetingRoomDO.getFreeTimeStart();
         Date freeEndTime = meetingRoomDO.getFreeTimeEnd();
         // 转成小时数，用于后面比较是否有空
@@ -117,7 +121,9 @@ public class MeetingServiceImpl implements MeetingService {
         });
         // 按时长来判断是否定满
         List<Double> MeetingTimeList = new ArrayList<>();
+        // 一个会议室在当天的已预订时长
         double totalMeetingTime=0;
+        // 每个会议的时长的一个list
         meetingDTOList.forEach(meetingDTO -> {
             MeetingTimeList.add(DateUtils.getMeetingRequiredTime(meetingDTO.getBookingStartTime()
                     , meetingDTO.getBookingEndTime()));
@@ -125,10 +131,14 @@ public class MeetingServiceImpl implements MeetingService {
         for (int i = 0; i < MeetingTimeList.size(); i++) {
             totalMeetingTime += MeetingTimeList.get(i);
         }
-        if (totalMeetingTime == totalFreeTime) {
-            return false;
+        // 如果某个会议室当天可用时长小于2小时，则开始算法
+        if (totalFreeTime-totalMeetingTime<=2){
+            return 1;
         }
-        return true;
+        if (totalMeetingTime == totalFreeTime) {
+            return 2;
+        }
+        return 0;
     }
 
     @Override

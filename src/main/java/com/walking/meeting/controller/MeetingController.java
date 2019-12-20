@@ -90,11 +90,24 @@ public class MeetingController {
             @RequestParam(value = "department_name") String departmentName,
             @ApiParam(name = "meeting_level", value = "0面试1例会2高级3紧急")
             @RequestParam(value = "meeting_level") Integer meetingLevel){
+        // 参数判空
+        if (StringUtils.isBlank(meetingName) || StringUtils.isBlank(roomId) || StringUtils.isBlank(username) ||
+            StringUtils.isBlank(bookingDate) || StringUtils.isBlank(startTime) || StringUtils.isBlank(endTime) ||
+            StringUtils.isBlank(departmentName) || meetingLevel == null || requiredTime == null
+        ) {
+            throw new ResponseException(StatusCodeEnu.MEETING_PARAMETER_ERROR);
+        }
         // 先判断会议室所选日期是否有空，再是时间是否有空，这两个判定完以后addMeeting到数据库表
-        Boolean isTimeFree = meetingService.selectTimeByDateAndRoomID(parseDateFormatToSQLNeed(bookingDate),roomId);
-        // false则没空
-        if (!isTimeFree){
+        Integer isTimeFree = meetingService.selectTimeByDateAndRoomID(parseDateFormatToSQLNeed(bookingDate),roomId);
+        // 2则满了，1则可用时间小于2小时，0则可被预定
+        if (isTimeFree == 2){
             throw new ResponseException(StatusCodeEnu.MEETING_ROOM_FULL);
+        }
+        if (isTimeFree == 1) {
+            // TODO 进入候补队列
+        }
+        if (isTimeFree == 0) {
+            log.info("会议室:{},在日期:{}时可被直接预定",roomId,bookingDate);
         }
         // 开始时间、结束时间判定,判断想预定的时间是否合法。
         Boolean isMeetingTimeAvailable = meetingService.isTimeAvailable(startTime, endTime,
@@ -105,7 +118,6 @@ public class MeetingController {
         }
         //  先进行设备相关的判定，判定完以后让用户选择room，然后读取roomId当这个方法的入参。
         //  取会议室ID这个方法另写，通过设备选出roomId，不在此方法中体现，见managerController中的方法meetingRoomSearchingByDevice
-
 
         // 下面先什么都不管，add一个会议，到时候会判条件判了以后再add
         MeetingDTO meetingDTO = new MeetingDTO();
