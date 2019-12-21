@@ -2,6 +2,7 @@ package com.walking.meeting.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.walking.meeting.Service.MeetingService;
+import com.walking.meeting.common.Const;
 import com.walking.meeting.common.ResponseException;
 import com.walking.meeting.common.StatusCodeEnu;
 import com.walking.meeting.common.SuccessResponse;
@@ -90,6 +91,9 @@ public class MeetingController {
             @RequestParam(value = "department_name") String departmentName,
             @ApiParam(name = "meeting_level", value = "0面试1例会2高级3紧急")
             @RequestParam(value = "meeting_level") Integer meetingLevel){
+        log.info("预定信息参数：会议室id:{},会议室预定者:{},会议日期:{},会议开始时间:{},会议结束时间:{},会议时长:{}," +
+                "会议室预定者的部门:{},会议等级:{}",roomId,username,bookingDate,startTime,
+                endTime,requiredTime,departmentName,meetingLevel);
         // 参数判空
         if (StringUtils.isBlank(meetingName) || StringUtils.isBlank(roomId) || StringUtils.isBlank(username) ||
             StringUtils.isBlank(bookingDate) || StringUtils.isBlank(startTime) || StringUtils.isBlank(endTime) ||
@@ -98,15 +102,14 @@ public class MeetingController {
             throw new ResponseException(StatusCodeEnu.MEETING_PARAMETER_ERROR);
         }
         // 先判断会议室所选日期是否有空，再是时间是否有空，这两个判定完以后addMeeting到数据库表
-        Integer isTimeFree = meetingService.selectTimeByDateAndRoomID(parseDateFormatToSQLNeed(bookingDate),roomId);
-        // 2则满了，1则可用时间小于2小时，0则可被预定
-        if (isTimeFree == 2){
+        String isTimeFree = meetingService.selectTimeByDateAndRoomID(parseDateFormatToSQLNeed(bookingDate),roomId);
+        if (isTimeFree.equals(Const.ROOM_FULL_TIME)){
             throw new ResponseException(StatusCodeEnu.MEETING_ROOM_FULL);
         }
-        if (isTimeFree == 1) {
+        if (isTimeFree.equals(Const.ROOM_CROWDED)) {
             // TODO 进入候补队列
         }
-        if (isTimeFree == 0) {
+        if (isTimeFree.equals(Const.ROOM_AVAILABLE)) {
             log.info("会议室:{},在日期:{}时可被直接预定",roomId,bookingDate);
         }
         // 开始时间、结束时间判定,判断想预定的时间是否合法。

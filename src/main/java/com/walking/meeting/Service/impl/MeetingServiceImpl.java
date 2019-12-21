@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.walking.meeting.Service.MeetingService;
+import com.walking.meeting.common.Const;
 import com.walking.meeting.common.ResponseException;
 import com.walking.meeting.common.StatusCodeEnu;
 import com.walking.meeting.dataobject.dao.MeetingDO;
@@ -89,7 +90,7 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     @Override
-    public Integer selectTimeByDateAndRoomID(String date,String roomId) {
+    public String selectTimeByDateAndRoomID(String date,String roomId) {
         List<MeetingDTO> meetingDTOList = meetingMapper.selectTimeByDateAndRoomID(date,roomId);
         // 判断这个日期的这个room是否有空
         // 取出这个会议室的freeTime
@@ -131,14 +132,14 @@ public class MeetingServiceImpl implements MeetingService {
         for (int i = 0; i < MeetingTimeList.size(); i++) {
             totalMeetingTime += MeetingTimeList.get(i);
         }
-        // 如果某个会议室当天可用时长小于2小时，则开始算法
+        // 如果某个会议室当天可用时长小于2小时，则进入候补队列开始算法
         if (totalFreeTime-totalMeetingTime<=2){
-            return 1;
+            return Const.ROOM_CROWDED;
         }
         if (totalMeetingTime == totalFreeTime) {
-            return 2;
+            return Const.ROOM_FULL_TIME;
         }
-        return 0;
+        return Const.ROOM_AVAILABLE;
     }
 
     @Override

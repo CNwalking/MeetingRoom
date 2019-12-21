@@ -20,7 +20,7 @@ public interface MeetingService {
 
     MeetingDO searchMeetingByMeetingId(String meetingId);
 
-    Integer selectTimeByDateAndRoomID(String date,String roomId);
+    String selectTimeByDateAndRoomID(String date,String roomId);
 
     Boolean isTimeAvailable(String startTime,String endTime,String date,String roomId);
 
