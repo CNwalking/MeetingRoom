@@ -5,10 +5,7 @@ import com.walking.meeting.Service.ManagerService;
 import com.walking.meeting.common.ResponseException;
 import com.walking.meeting.common.StatusCodeEnu;
 import com.walking.meeting.common.SuccessResponse;
-import com.walking.meeting.dataobject.dao.DeviceDO;
-import com.walking.meeting.dataobject.dao.MeetingDO;
-import com.walking.meeting.dataobject.dao.MeetingRoomDO;
-import com.walking.meeting.dataobject.dao.RoomDeviceDO;
+import com.walking.meeting.dataobject.dao.*;
 import com.walking.meeting.dataobject.dto.DepartmentDTO;
 import com.walking.meeting.dataobject.dto.DeviceDTO;
 import com.walking.meeting.dataobject.dto.MeetingRoomDTO;
@@ -23,10 +20,7 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -48,7 +42,7 @@ public class ManagerController {
     public SuccessResponse addRoom(
             @ApiParam(name = "room_id", value = "会议室id") @RequestParam(value = "room_id") String roomId,
             @ApiParam(name = "room_name", value = "会议室中文名") @RequestParam(value = "room_name") String roomName,
-            @ApiParam(name = "device_id_list", value = "设备id 1,2,3")
+            @ApiParam(name = "device_id_list", value = "设备id列表，格式例如:1,2,3")
             @RequestParam(value = "device_id_list") String deviceIdList,
             @ApiParam(name = "free_time_start", value = "开放时间始")
             @RequestParam(value = "free_time_start") String freeTimeStart,
@@ -67,6 +61,20 @@ public class ManagerController {
         if (!Objects.isNull(meetingRoomDO)){
             throw new ResponseException(StatusCodeEnu.ROOM_EXIST);
         }
+        List<Integer> existDeviceList = new ArrayList<>();
+        managerService.listDevice().forEach(ele->{
+            existDeviceList.add(ele.getDeviceId());
+        });
+        List deviceList = new ArrayList();
+        if (StringUtils.isNotBlank(deviceIdList)) {
+            deviceList = Arrays.asList(deviceIdList.split(","));
+        }
+        // 没有这种设备就抛异常
+        deviceList.forEach(ele ->{
+            if (!existDeviceList.contains(ele)) {
+                throw new ResponseException(StatusCodeEnu.NO_SUCH_DEVICE);
+            }
+        });
         // 添加到meeting_room表里
         MeetingRoomDTO meetingRoomDTO = new MeetingRoomDTO();
         meetingRoomDTO.setRoomId(roomId);
@@ -78,15 +86,11 @@ public class ManagerController {
         // 添加到room_device表里
         RoomDeviceDTO roomDeviceDTO = new RoomDeviceDTO();
         roomDeviceDTO.setRoomId(roomId);
-        List deviceList = new ArrayList();
-        if (StringUtils.isNotBlank(deviceIdList)) {
-            deviceList = Arrays.asList(deviceIdList.split(","));
-        }
         deviceList.forEach(deviceId -> {
             // 把List每个元素加入room_device表
             roomDeviceDTO.setDeviceId(Integer.parseInt(deviceId.toString()));
             managerService.addRoomDevice(roomDeviceDTO);
-            });
+        });
         return SuccessResponse.defaultSuccess();
     }
 
@@ -156,11 +160,28 @@ public class ManagerController {
             @RequestParam(value = "department_name")String departmentName,
             @ApiParam(name = "department_level", value = "部门等级")
             @RequestParam(value = "department_level") Integer departmentLevel){
+        if (departmentLevel > 3) {
+            throw new ResponseException(StatusCodeEnu.LEVEL_TOO_HIGH);
+        }
         DepartmentDTO departmentDTO = new DepartmentDTO();
         departmentDTO.setDepartmentLevel(departmentLevel);
         departmentDTO.setDepartmentName(departmentName);
         managerService.addDepartment(departmentDTO);
         return SuccessResponse.defaultSuccess();
+    }
+
+    @ApiOperation(value = "列出department列表", notes = "列出department列表")
+    @GetMapping(value = "/listDepartment")
+    public List<DepartmentDTO> listDepartment(){
+        List<DepartmentDTO> resultList = managerService.listDepartment();
+        return resultList;
+    }
+
+    @ApiOperation(value = "列出device列表", notes = "列出device列表")
+    @GetMapping(value = "/listDevice")
+    public List<DeviceDTO> listDevice(){
+        List<DeviceDTO> resultList = managerService.listDevice();
+        return resultList;
     }
 
     @ApiOperation(value = "删除department", notes = "删除department")

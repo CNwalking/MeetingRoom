@@ -15,6 +15,9 @@ public enum StatusCodeEnu {
     MEETING_TIME_ILLEGAL(new StatusCode(43011, "这个时间不能被预定哦")),
     MEETING_PARAMETER_ERROR(new StatusCode(43012, "预定会议参数不全")),
     MEETING_ROOM_NOT_EXIST(new StatusCode(43013, "会议室不存在")),
+    LEVEL_TOO_HIGH(new StatusCode(43014, "等级设置的太高啦")),
+    NO_SUCH_DEVICE(new StatusCode(43015, "没有这种设备哦")),
+
 
 
 

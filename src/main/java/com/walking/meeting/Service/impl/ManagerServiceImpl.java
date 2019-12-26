@@ -9,6 +9,7 @@ import com.walking.meeting.mapper.DepartmentMapper;
 import com.walking.meeting.mapper.DeviceMapper;
 import com.walking.meeting.mapper.MeetingRoomMapper;
 import com.walking.meeting.mapper.RoomDeviceMapper;
+import com.walking.meeting.utils.DateUtils;
 import com.walking.meeting.utils.DbUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +31,28 @@ public class ManagerServiceImpl implements ManagerService {
     private RoomDeviceMapper roomDeviceMapper;
     @Autowired
     private MeetingRoomMapper meetingRoomMapper;
+
+    @Override
+    public List<DepartmentDTO> listDepartment() {
+        Example.Builder builder = DbUtils.newExampleBuilder(DepartmentDO.class);
+        List<DepartmentDO> departmentDOS = departmentMapper.selectByExample(builder.build());
+        List<DepartmentDTO> resultList = new ArrayList<>();
+        departmentDOS.forEach(ele -> {
+            resultList.add(JSON.parseObject(JSON.toJSONString(ele), DepartmentDTO.class));
+        });
+        return resultList;
+    }
+
+    @Override
+    public List<DeviceDTO> listDevice() {
+        Example.Builder builder = DbUtils.newExampleBuilder(DeviceDO.class);
+        List<DeviceDO> deviceDOS = deviceMapper.selectByExample(builder.build());
+        List<DeviceDTO> resultList = new ArrayList<>();
+        deviceDOS.forEach(ele -> {
+            resultList.add(JSON.parseObject(JSON.toJSONString(ele), DeviceDTO.class));
+        });
+        return resultList;
+    }
 
     @Override
     public void addDevice(DeviceDTO deviceDTO) {
@@ -55,8 +78,6 @@ public class ManagerServiceImpl implements ManagerService {
         DbUtils.setEqualToProp(builder, DeviceDO.PROP_DEVICE_ID, deviceDO.getDeviceId());
         deviceDO.setUpdateTime(new Date());
         deviceMapper.updateByExampleSelective(deviceDO,builder.build());
-
-
     }
 
     @Override

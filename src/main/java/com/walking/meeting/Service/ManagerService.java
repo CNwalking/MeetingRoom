@@ -12,6 +12,10 @@ import com.walking.meeting.dataobject.query.MeetingRoomQuery;
 import java.util.List;
 
 public interface ManagerService {
+    List<DepartmentDTO> listDepartment();
+
+    List<DeviceDTO> listDevice();
+
     void addDevice(DeviceDTO deviceDTO);
 
     void addDepartment(DepartmentDTO departmentDTO);
