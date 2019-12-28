@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.walking.meeting.Service.ManagerService;
 import com.walking.meeting.dataobject.dao.*;
 import com.walking.meeting.dataobject.dto.*;
+import com.walking.meeting.dataobject.query.DepartmentQuery;
+import com.walking.meeting.dataobject.query.DeviceQuery;
 import com.walking.meeting.dataobject.query.MeetingRoomQuery;
 import com.walking.meeting.mapper.DepartmentMapper;
 import com.walking.meeting.mapper.DeviceMapper;
@@ -12,6 +14,8 @@ import com.walking.meeting.mapper.RoomDeviceMapper;
 import com.walking.meeting.utils.DateUtils;
 import com.walking.meeting.utils.DbUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -176,6 +180,36 @@ public class ManagerServiceImpl implements ManagerService {
 //        log.info(resultList.toString());
         return resultList;
     }
+
+    @Override
+    public DeviceDTO getDeviceByDeviceQuery(DeviceQuery deviceQuery) {
+        Example.Builder builder = DbUtils.newExampleBuilder(DeviceDO.class);
+        DbUtils.setEqualToProp(builder, DeviceDO.PROP_DEVICE_ID, deviceQuery.getDeviceId());
+        DbUtils.setEqualToProp(builder, DeviceDO.PROP_DEVICE_TYPE, deviceQuery.getDeviceType());
+        // 选出有所需device的room列表,device在room_device表,该方法不适用。需要用sql写。
+        DeviceDO deviceDO = deviceMapper.selectOneByExample(builder.build());
+        DeviceDTO deviceDTO = null;
+        if (ObjectUtils.isNotEmpty(deviceDO)) {
+            deviceDTO = JSON.parseObject(JSON.toJSONString(deviceDO), DeviceDTO.class);
+        }
+        return deviceDTO;
+    }
+    @Override
+    public List<DepartmentDTO> getDepartmentByDepartmentQuery(DepartmentQuery departmentQuery) {
+        Example.Builder builder = DbUtils.newExampleBuilder(DepartmentDO.class);
+        DbUtils.setEqualToProp(builder, DepartmentDO.PROP_DEPARTMENT_NAME, departmentQuery.getDepartmentName());
+        DbUtils.setEqualToProp(builder, DepartmentDO.PROP_DEPARTMENT_LEVEL, departmentQuery.getDepartmentLevel());
+        // 选出有所需device的room列表,device在room_device表,该方法不适用。需要用sql写。
+        List<DepartmentDO> departmentDOList = departmentMapper.selectByExample(builder.build());
+        List<DepartmentDTO> departmentDTOList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(departmentDOList)) {
+            departmentDOList.forEach(ele ->{
+                departmentDTOList.add(JSON.parseObject(JSON.toJSONString(ele), DepartmentDTO.class));
+            });
+        }
+        return departmentDTOList;
+    }
+
 
     private Boolean isContainDevice(String roomDevice, String needDevice) {
         List<String> needDeviceList = new ArrayList();

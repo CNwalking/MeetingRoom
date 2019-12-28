@@ -7,6 +7,8 @@ import com.walking.meeting.dataobject.dto.DepartmentDTO;
 import com.walking.meeting.dataobject.dto.DeviceDTO;
 import com.walking.meeting.dataobject.dto.MeetingRoomDTO;
 import com.walking.meeting.dataobject.dto.RoomDeviceDTO;
+import com.walking.meeting.dataobject.query.DepartmentQuery;
+import com.walking.meeting.dataobject.query.DeviceQuery;
 import com.walking.meeting.dataobject.query.MeetingRoomQuery;
 
 import java.util.List;
@@ -40,5 +42,10 @@ public interface ManagerService {
      *   会议室device列表和规模来选出会议室
      */
     List<MeetingRoomDO> searchRoomByQuery(String deviceIdList,Integer roomScale);
+
+    DeviceDTO getDeviceByDeviceQuery(DeviceQuery deviceQuery);
+
+    List<DepartmentDTO> getDepartmentByDepartmentQuery(DepartmentQuery departmentQuery);
+
 
 }

@@ -10,6 +10,8 @@ import com.walking.meeting.dataobject.dto.DepartmentDTO;
 import com.walking.meeting.dataobject.dto.DeviceDTO;
 import com.walking.meeting.dataobject.dto.MeetingRoomDTO;
 import com.walking.meeting.dataobject.dto.RoomDeviceDTO;
+import com.walking.meeting.dataobject.query.DepartmentQuery;
+import com.walking.meeting.dataobject.query.DeviceQuery;
 import com.walking.meeting.dataobject.query.MeetingRoomQuery;
 import com.walking.meeting.dataobject.vo.MeetingRoomVO;
 import com.walking.meeting.utils.DateUtils;
@@ -18,6 +20,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -123,6 +127,14 @@ public class ManagerController {
     public SuccessResponse addDevice(
             @ApiParam(name = "device_id", value = "设备id") @RequestParam(value = "device_id") Integer deviceId,
             @ApiParam(name = "device_type", value = "设备类型") @RequestParam(value = "device_type") String deviceType){
+        DeviceQuery deviceQuery = new DeviceQuery();
+        deviceQuery.setDeviceId(deviceId);
+        deviceQuery.setDeviceType(deviceType);
+        DeviceDTO device= managerService.getDeviceByDeviceQuery(deviceQuery);
+        // 如果这种设备已经存在，就报错
+        if (ObjectUtils.isNotEmpty(device)) {
+            throw new ResponseException(StatusCodeEnu.DEVICE_ALREADY_EXIST);
+        }
         DeviceDTO deviceDTO = new DeviceDTO();
         deviceDTO.setDeviceId(deviceId);
         deviceDTO.setDeviceType(deviceType);
@@ -135,6 +147,14 @@ public class ManagerController {
     public SuccessResponse delDevice(
             @ApiParam(name = "device_id", value = "设备id")
             @RequestParam(value = "device_id") Integer deviceId){
+        // 删除设备前先校验设备是否存在
+        DeviceQuery deviceQuery = new DeviceQuery();
+        deviceQuery.setDeviceId(deviceId);
+        DeviceDTO device= managerService.getDeviceByDeviceQuery(deviceQuery);
+        // 如果这种设备不存在，就报错
+        if (ObjectUtils.isEmpty(device)) {
+            throw new ResponseException(StatusCodeEnu.NO_SUCH_DEVICE);
+        }
         DeviceDTO deviceDTO = new DeviceDTO();
         deviceDTO.setDeviceId(deviceId);
         deviceDTO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
@@ -146,6 +166,14 @@ public class ManagerController {
     @PostMapping(value = "/delRoom")
     public SuccessResponse delRoom(
             @ApiParam(name = "room_id", value = "会议室id") @RequestParam(value = "room_id") String roomId){
+        MeetingRoomQuery meetingRoomQuery = new MeetingRoomQuery();
+        meetingRoomQuery.setRoomId(roomId);
+        MeetingRoomDO meetingRoomDO = DbUtils.getOne(managerService.getMeetingRoomByQuery(meetingRoomQuery))
+                .orElse(null);
+        // 没有这个会议室就报错
+        if (ObjectUtils.isNotEmpty(meetingRoomDO)) {
+            throw new ResponseException(StatusCodeEnu.MEETING_ROOM_NOT_EXIST);
+        }
         MeetingRoomDTO meetingRoomDTO = new MeetingRoomDTO();
         meetingRoomDTO.setRoomId(roomId);
         meetingRoomDTO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
@@ -160,6 +188,14 @@ public class ManagerController {
             @RequestParam(value = "department_name")String departmentName,
             @ApiParam(name = "department_level", value = "部门等级")
             @RequestParam(value = "department_level") Integer departmentLevel){
+        DepartmentQuery departmentQuery = new DepartmentQuery();
+        departmentQuery.setDepartmentLevel(departmentLevel);
+        departmentQuery.setDepartmentName(departmentName);
+        List<DepartmentDTO> departmentDTOList = managerService.getDepartmentByDepartmentQuery(departmentQuery);
+        // 这个部门已经存在了，就报错
+        if (CollectionUtils.isEmpty(departmentDTOList)) {
+            throw new ResponseException(StatusCodeEnu.DEPARTMENT_ALREADY_EXIST);
+        }
         if (departmentLevel > 3) {
             throw new ResponseException(StatusCodeEnu.LEVEL_TOO_HIGH);
         }
