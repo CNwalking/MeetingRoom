@@ -19,6 +19,8 @@ public enum StatusCodeEnu {
     NO_SUCH_DEVICE(new StatusCode(43015, "没有这种设备哦")),
     DEVICE_ALREADY_EXIST(new StatusCode(43016, "该设备已经存在了哦")),
     DEPARTMENT_ALREADY_EXIST(new StatusCode(43017, "该部门已经存在了哦")),
+    DEPARTMENT_NOT_EXIST(new StatusCode(43018, "该部门不存在哦")),
+
 
 
 

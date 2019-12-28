@@ -18,6 +18,8 @@ public interface ManagerService {
 
     List<DeviceDTO> listDevice();
 
+    List<MeetingRoomDTO> listMeetingRoom();
+
     void addDevice(DeviceDTO deviceDTO);
 
     void addDepartment(DepartmentDTO departmentDTO);

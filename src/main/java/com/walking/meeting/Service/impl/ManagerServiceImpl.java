@@ -39,22 +39,39 @@ public class ManagerServiceImpl implements ManagerService {
     @Override
     public List<DepartmentDTO> listDepartment() {
         Example.Builder builder = DbUtils.newExampleBuilder(DepartmentDO.class);
-        List<DepartmentDO> departmentDOS = departmentMapper.selectByExample(builder.build());
+        List<DepartmentDO> departmentDOList = departmentMapper.selectByExample(builder.build());
         List<DepartmentDTO> resultList = new ArrayList<>();
-        departmentDOS.forEach(ele -> {
-            resultList.add(JSON.parseObject(JSON.toJSONString(ele), DepartmentDTO.class));
-        });
+        if (CollectionUtils.isNotEmpty(departmentDOList)) {
+            departmentDOList.forEach(ele -> {
+                resultList.add(JSON.parseObject(JSON.toJSONString(ele), DepartmentDTO.class));
+            });
+        }
         return resultList;
     }
 
     @Override
     public List<DeviceDTO> listDevice() {
         Example.Builder builder = DbUtils.newExampleBuilder(DeviceDO.class);
-        List<DeviceDO> deviceDOS = deviceMapper.selectByExample(builder.build());
+        List<DeviceDO> deviceDOList = deviceMapper.selectByExample(builder.build());
         List<DeviceDTO> resultList = new ArrayList<>();
-        deviceDOS.forEach(ele -> {
-            resultList.add(JSON.parseObject(JSON.toJSONString(ele), DeviceDTO.class));
-        });
+        if (CollectionUtils.isNotEmpty(deviceDOList)) {
+            deviceDOList.forEach(ele -> {
+                resultList.add(JSON.parseObject(JSON.toJSONString(ele), DeviceDTO.class));
+            });
+        }
+        return resultList;
+    }
+
+    @Override
+    public List<MeetingRoomDTO> listMeetingRoom() {
+        Example.Builder builder = DbUtils.newExampleBuilder(MeetingRoomDO.class);
+        List<MeetingRoomDO> meetingRoomDOList = meetingRoomMapper.selectByExample(builder.build());
+        List<MeetingRoomDTO> resultList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(meetingRoomDOList)) {
+            meetingRoomDOList.forEach(ele -> {
+                resultList.add(JSON.parseObject(JSON.toJSONString(ele), MeetingRoomDTO.class));
+            });
+        }
         return resultList;
     }
 

@@ -69,13 +69,13 @@ public class ManagerController {
         managerService.listDevice().forEach(ele->{
             existDeviceList.add(ele.getDeviceId());
         });
-        List deviceList = new ArrayList();
+        List<String> deviceList = new ArrayList();
         if (StringUtils.isNotBlank(deviceIdList)) {
             deviceList = Arrays.asList(deviceIdList.split(","));
         }
         // 没有这种设备就抛异常
         deviceList.forEach(ele ->{
-            if (!existDeviceList.contains(ele)) {
+            if (!existDeviceList.contains(Integer.parseInt(ele))) {
                 throw new ResponseException(StatusCodeEnu.NO_SUCH_DEVICE);
             }
         });
@@ -171,7 +171,7 @@ public class ManagerController {
         MeetingRoomDO meetingRoomDO = DbUtils.getOne(managerService.getMeetingRoomByQuery(meetingRoomQuery))
                 .orElse(null);
         // 没有这个会议室就报错
-        if (ObjectUtils.isNotEmpty(meetingRoomDO)) {
+        if (ObjectUtils.isEmpty(meetingRoomDO)) {
             throw new ResponseException(StatusCodeEnu.MEETING_ROOM_NOT_EXIST);
         }
         MeetingRoomDTO meetingRoomDTO = new MeetingRoomDTO();
@@ -193,7 +193,7 @@ public class ManagerController {
         departmentQuery.setDepartmentName(departmentName);
         List<DepartmentDTO> departmentDTOList = managerService.getDepartmentByDepartmentQuery(departmentQuery);
         // 这个部门已经存在了，就报错
-        if (CollectionUtils.isEmpty(departmentDTOList)) {
+        if (CollectionUtils.isNotEmpty(departmentDTOList)) {
             throw new ResponseException(StatusCodeEnu.DEPARTMENT_ALREADY_EXIST);
         }
         if (departmentLevel > 3) {
@@ -220,11 +220,25 @@ public class ManagerController {
         return resultList;
     }
 
+    @ApiOperation(value = "列出会议室列表", notes = "列出会议室列表")
+    @GetMapping(value = "/listMeetingRoom")
+    public List<MeetingRoomDTO> listMeetingRoom(){
+        List<MeetingRoomDTO> resultList = managerService.listMeetingRoom();
+        return resultList;
+    }
+
+
     @ApiOperation(value = "删除department", notes = "删除department")
     @PostMapping(value = "/delDepartment")
     public SuccessResponse delDepartment(
             @ApiParam(name = "department_name", value = "部门名字")
             @RequestParam(value = "department_name") String departmentName){
+        DepartmentQuery departmentQuery = new DepartmentQuery();
+        departmentQuery.setDepartmentName(departmentName);
+        List<DepartmentDTO> departmentDTOList = managerService.getDepartmentByDepartmentQuery(departmentQuery);
+        if (CollectionUtils.isEmpty(departmentDTOList)) {
+            throw new ResponseException(StatusCodeEnu.DEPARTMENT_NOT_EXIST);
+        }
         DepartmentDTO departmentDTO = new DepartmentDTO();
         departmentDTO.setDepartmentName(departmentName);
         departmentDTO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
