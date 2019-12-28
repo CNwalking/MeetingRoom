@@ -44,7 +44,7 @@ public class UserController {
             @ApiParam(name = "password", value = "密码") @RequestParam(value = "password") String password,
             @ApiParam(name = "user_role", value = "0:管理员 1:普通用户") @RequestParam(
                     value = "user_role",required=false,defaultValue="1") Integer userRole) {
-        log.info("[用户登录param], loginName:{}, password:{}, userRole:{}", loginName, password, userRole);
+        log.info("用户登录, loginName:{}, password:{}, userRole:{}", loginName, password, userRole);
         if (StringUtils.isBlank(loginName) || StringUtils.isBlank(password) || Objects.isNull(userRole)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
         }
@@ -71,14 +71,13 @@ public class UserController {
             @ApiParam(name = "password", value = "密码") @RequestParam(value = "password") String password,
             @ApiParam(name = "question", value = "密保问题") @RequestParam(value = "question") String question,
             @ApiParam(name = "email", value = "email") @RequestParam(value = "email") String email,
-            @ApiParam(name = "department_name", value = "部门名字") @RequestParam(value = "department_name") String departmentName,
             @ApiParam(name = "answer", value = "密保问题回答") @RequestParam(value = "answer") String answer) {
+        log.info("用户注册,username:{},password:{},question:{},answer:{},email:{}",loginName,password,question,answer,email);
         // 参数判空
-        if (StringUtils.isBlank(loginName) || StringUtils.isBlank(password) ||
-                StringUtils.isBlank(question) || StringUtils.isBlank(answer)) {
+        if (Objects.isNull(loginName)||Objects.isNull(password) || Objects.isNull(question) ||
+                Objects.isNull(email) || Objects.isNull(answer)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
         }
-        log.info("username:{},pswd:{},question:{},answer:{}",loginName,password,question,answer);
         // 数据库判username是否存在
         UserQuery userQuery = new UserQuery();
         userQuery.setUserName(loginName);
@@ -94,7 +93,6 @@ public class UserController {
         userDTO.setQuestion(question);
         userDTO.setAnswer(answer);
         userDTO.setEmail(email);
-        userDTO.setDepartmentName(departmentName);
         userService.addUser(userDTO);
         return SuccessResponse.defaultSuccess();
     }
@@ -115,6 +113,8 @@ public class UserController {
         meetingService.updateMeetingSelective(meetingDO);
         return SuccessResponse.defaultSuccess();
     }
+
+    // TODO 给用户添加部门，再写个通过部门来搜出用户列表
 
 
 //    public static void main(String[] args) {

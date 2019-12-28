@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import static com.walking.meeting.utils.DateUtils.*;
 
@@ -47,8 +48,6 @@ public class MeetingController {
             @RequestParam(value = "username",required = false) String username,
             @ApiParam(name = "room_id", value = "会议室id")
             @RequestParam(value = "room_id",required = false) String roomId,
-            @ApiParam(name = "room_scale", value = "会议室可容纳人数")
-            @RequestParam(value = "room_scale",required = false) Short roomScale,
             @ApiParam(name = "room_name", value = "会议室名字")
             @RequestParam(value = "room_name",required = false) String roomName,
             @ApiParam(name = "required_time", value = "会议时长")
@@ -59,10 +58,11 @@ public class MeetingController {
                     defaultValue = "1", required = false) Integer pageNum,
             @ApiParam(name = "page_size", value = "每页数量：为0时查全部") @RequestParam(value = "page_size",
                     defaultValue = "20", required = false) Integer pageSize){
+        log.info("查看会议预定列表, username:{}, roomId:{}, roomName:{}, requiredTime:{}, departmentName:{}, pageNum:{}, pageSize:{}",
+                username, roomId, roomName, requiredTime, departmentName, pageNum, pageSize);
         ListMeetingDTO listMeetingDTO = new ListMeetingDTO();
         listMeetingDTO.setUsername(username);
         listMeetingDTO.setRoomId(roomId);
-        listMeetingDTO.setRoomScale(roomScale);
         listMeetingDTO.setRoomName(roomName);
         if (StringUtils.isNotBlank(requiredTime) && requiredTime != "") {
             listMeetingDTO.setRequiredTime(new BigDecimal(requiredTime.trim()));
@@ -167,6 +167,10 @@ public class MeetingController {
     @PostMapping(value = "/cancel")
     public SuccessResponse meetingCancel(
             @ApiParam(name = "meeting_id", value = "会议id") @RequestParam(value = "meeting_id") String meetingId){
+        log.info("取消会议, meetingId:{}", meetingId);
+        if (Objects.isNull(meetingId)) {
+            throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
+        }
         MeetingDO meetingDO =  meetingService.searchMeetingByMeetingId(meetingId);
         if (ObjectUtils.isEmpty(meetingDO)) {
             // 说明没有这个会议,可能已经取消,可能meetingId输入错误
@@ -183,6 +187,10 @@ public class MeetingController {
     public List<Integer> searchDeviceByRoomId(
             @ApiParam(name = "room_id", value = "房间id")
             @RequestParam(value = "room_id") String roomId){
+        log.info("查看会议室的设备, roomId:{}", roomId);
+        if (Objects.isNull(roomId)) {
+            throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
+        }
         return meetingService.searchDeviceByRoomId(roomId);
     }
 

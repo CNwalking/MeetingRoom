@@ -55,6 +55,12 @@ public class ManagerController {
             @ApiParam(name = "room_scale", value = "会议室可容纳人数")
             @RequestParam(value = "room_scale") Integer roomScale
             ){
+        log.info("添加会议室, roomId:{}, roomName:{}, deviceIdList:{}, freeTimeStart:{}, freeTimeEnd:{}, roomScale:{}",
+                roomId, roomName, deviceIdList, freeTimeStart, freeTimeEnd, roomScale);
+        if (Objects.isNull(roomId) || Objects.isNull(roomName)|| Objects.isNull(deviceIdList)||
+                Objects.isNull(freeTimeStart)|| Objects.isNull(freeTimeEnd)|| Objects.isNull(roomScale)) {
+            throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
+        }
         // 先判断这个roomId和roomName已经存在
         MeetingRoomQuery meetingRoomQuery = new MeetingRoomQuery();
         meetingRoomQuery.setRoomId(roomId);
@@ -106,6 +112,10 @@ public class ManagerController {
             @RequestParam(value = "device_id_list") String deviceIdList,
             @ApiParam(name = "room_scale", value = "会议室可容纳人数")
             @RequestParam(value = "room_scale") Integer roomScale){
+        log.info("通过会议室设备和规模选出会议室, deviceIdList:{}, roomScale:{}", deviceIdList, roomScale);
+        if (Objects.isNull(deviceIdList) || Objects.isNull(roomScale)) {
+            throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
+        }
         // 选出包含这些设备的该规格的会议室
         List<MeetingRoomVO> resultList = new ArrayList<>();
         List<MeetingRoomDO> roomList = managerService.searchRoomByQuery(deviceIdList, roomScale);
@@ -127,6 +137,10 @@ public class ManagerController {
     public SuccessResponse addDevice(
             @ApiParam(name = "device_id", value = "设备id") @RequestParam(value = "device_id") Integer deviceId,
             @ApiParam(name = "device_type", value = "设备类型") @RequestParam(value = "device_type") String deviceType){
+        log.info("添加device, deviceId:{}, deviceType:{}", deviceId, deviceType);
+        if (Objects.isNull(deviceId) || Objects.isNull(deviceType)) {
+            throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
+        }
         DeviceQuery deviceQuery = new DeviceQuery();
         deviceQuery.setDeviceId(deviceId);
         deviceQuery.setDeviceType(deviceType);
@@ -147,6 +161,10 @@ public class ManagerController {
     public SuccessResponse delDevice(
             @ApiParam(name = "device_id", value = "设备id")
             @RequestParam(value = "device_id") Integer deviceId){
+        log.info("删除device, deviceId:{}", deviceId);
+        if (Objects.isNull(deviceId)) {
+            throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
+        }
         // 删除设备前先校验设备是否存在
         DeviceQuery deviceQuery = new DeviceQuery();
         deviceQuery.setDeviceId(deviceId);
@@ -166,6 +184,10 @@ public class ManagerController {
     @PostMapping(value = "/delRoom")
     public SuccessResponse delRoom(
             @ApiParam(name = "room_id", value = "会议室id") @RequestParam(value = "room_id") String roomId){
+        log.info("删除会议室, roomId:{}", roomId);
+        if (Objects.isNull(roomId)) {
+            throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
+        }
         MeetingRoomQuery meetingRoomQuery = new MeetingRoomQuery();
         meetingRoomQuery.setRoomId(roomId);
         MeetingRoomDO meetingRoomDO = DbUtils.getOne(managerService.getMeetingRoomByQuery(meetingRoomQuery))
@@ -188,6 +210,10 @@ public class ManagerController {
             @RequestParam(value = "department_name")String departmentName,
             @ApiParam(name = "department_level", value = "部门等级")
             @RequestParam(value = "department_level") Integer departmentLevel){
+        log.info("添加department, departmentName:{}, departmentLevel:{}", departmentName, departmentLevel);
+        if (Objects.isNull(departmentName) || Objects.isNull(departmentLevel)) {
+            throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
+        }
         DepartmentQuery departmentQuery = new DepartmentQuery();
         departmentQuery.setDepartmentLevel(departmentLevel);
         departmentQuery.setDepartmentName(departmentName);
@@ -209,6 +235,7 @@ public class ManagerController {
     @ApiOperation(value = "列出department列表", notes = "列出department列表")
     @GetMapping(value = "/listDepartment")
     public List<DepartmentDTO> listDepartment(){
+        log.info("列出department列表");
         List<DepartmentDTO> resultList = managerService.listDepartment();
         return resultList;
     }
@@ -216,6 +243,7 @@ public class ManagerController {
     @ApiOperation(value = "列出device列表", notes = "列出device列表")
     @GetMapping(value = "/listDevice")
     public List<DeviceDTO> listDevice(){
+        log.info("列出device列表");
         List<DeviceDTO> resultList = managerService.listDevice();
         return resultList;
     }
@@ -223,6 +251,7 @@ public class ManagerController {
     @ApiOperation(value = "列出会议室列表", notes = "列出会议室列表")
     @GetMapping(value = "/listMeetingRoom")
     public List<MeetingRoomDTO> listMeetingRoom(){
+        log.info("列出会议室列表");
         List<MeetingRoomDTO> resultList = managerService.listMeetingRoom();
         return resultList;
     }
@@ -233,6 +262,10 @@ public class ManagerController {
     public SuccessResponse delDepartment(
             @ApiParam(name = "department_name", value = "部门名字")
             @RequestParam(value = "department_name") String departmentName){
+        log.info("添加department, departmentName:{}", departmentName);
+        if (Objects.isNull(departmentName)) {
+            throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
+        }
         DepartmentQuery departmentQuery = new DepartmentQuery();
         departmentQuery.setDepartmentName(departmentName);
         List<DepartmentDTO> departmentDTOList = managerService.getDepartmentByDepartmentQuery(departmentQuery);
@@ -251,6 +284,7 @@ public class ManagerController {
     public String testConnection(
             @ApiParam(name = "input", value = "入参")
             @RequestParam(value = "input") String input){
+        log.info("有人在测试连接, input:{}", input);
         return input;
     }
 
