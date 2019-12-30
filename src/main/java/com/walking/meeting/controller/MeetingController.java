@@ -2,15 +2,13 @@ package com.walking.meeting.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.walking.meeting.Service.MeetingService;
-import com.walking.meeting.common.Const;
-import com.walking.meeting.common.ResponseException;
-import com.walking.meeting.common.StatusCodeEnu;
-import com.walking.meeting.common.SuccessResponse;
+import com.walking.meeting.common.*;
 import com.walking.meeting.dataobject.dao.MeetingDO;
 import com.walking.meeting.dataobject.dto.ListMeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingReturnDTO;
 import com.walking.meeting.utils.DateUtils;
+import com.walking.meeting.utils.ResponseUtils;
 import com.walking.meeting.utils.SnowFlakeIdGenerator;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -19,10 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -31,6 +26,7 @@ import java.util.Objects;
 
 import static com.walking.meeting.utils.DateUtils.*;
 
+@CrossOrigin
 @Slf4j
 @Api(tags = "MeetingController", description = "会议模块")
 @RestController("MeetingController")
@@ -43,7 +39,7 @@ public class MeetingController {
 
     @ApiOperation(value = "查看所有会议预定列表", notes = "查看所有会议预定列表")
     @PostMapping(value = "/list")
-    public PageInfo<MeetingReturnDTO> meetingList(
+    public Response<PageInfo<MeetingReturnDTO>> meetingList(
             @ApiParam(name = "username", value = "会议室预定者")
             @RequestParam(value = "username",required = false) String username,
             @ApiParam(name = "room_id", value = "会议室id")
@@ -72,13 +68,13 @@ public class MeetingController {
         listMeetingDTO.setPageSize(pageSize);
         PageInfo<MeetingReturnDTO> meetingDOPageInfo = meetingService.listMeeting(listMeetingDTO);
 
-        return meetingDOPageInfo;
+        return ResponseUtils.returnSuccess(meetingDOPageInfo);
     }
 
 
     @ApiOperation(value = "预定会议", notes = "预定会议")
     @PostMapping(value = "/booking")
-    public SuccessResponse meetingBooking(
+    public Response meetingBooking(
             @ApiParam(name = "meeting_name", value = "会议名称") @RequestParam(value = "meeting_name") String meetingName,
             @ApiParam(name = "room_id", value = "会议室id") @RequestParam(value = "room_id") String roomId,
             @ApiParam(name = "username", value = "会议室预定者") @RequestParam(value = "username") String username,
@@ -160,12 +156,12 @@ public class MeetingController {
         meetingDTO.setBookingEndTime(end);
         meetingService.addMeeting(meetingDTO);
 
-        return SuccessResponse.defaultSuccess();
+        return ResponseUtils.returnDefaultSuccess();
     }
 
     @ApiOperation(value = "取消会议", notes = "取消会议")
     @PostMapping(value = "/cancel")
-    public SuccessResponse meetingCancel(
+    public Response meetingCancel(
             @ApiParam(name = "meeting_id", value = "会议id") @RequestParam(value = "meeting_id") String meetingId){
         log.info("取消会议, meetingId:{}", meetingId);
         if (Objects.isNull(meetingId)) {
@@ -178,20 +174,21 @@ public class MeetingController {
         }
         meetingDO.setDeleteTime(formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
         meetingService.updateMeetingSelective(meetingDO);
-        return SuccessResponse.defaultSuccess();
+        return ResponseUtils.returnDefaultSuccess();
+
     }
 
 
     @ApiOperation(value = "查看会议室的设备", notes = "查看会议室的设备")
     @PostMapping(value = "/search_device_by_room_id")
-    public List<Integer> searchDeviceByRoomId(
+    public Response<List<Integer>> searchDeviceByRoomId(
             @ApiParam(name = "room_id", value = "房间id")
             @RequestParam(value = "room_id") String roomId){
         log.info("查看会议室的设备, roomId:{}", roomId);
         if (Objects.isNull(roomId)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
         }
-        return meetingService.searchDeviceByRoomId(roomId);
+        return ResponseUtils.returnSuccess(meetingService.searchDeviceByRoomId(roomId));
     }
 
     private String parseDateFormatToSQLNeed(String date){

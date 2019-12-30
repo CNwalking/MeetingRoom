@@ -2,6 +2,7 @@ package com.walking.meeting.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.walking.meeting.Service.ManagerService;
+import com.walking.meeting.common.Response;
 import com.walking.meeting.common.ResponseException;
 import com.walking.meeting.common.StatusCodeEnu;
 import com.walking.meeting.common.SuccessResponse;
@@ -16,6 +17,7 @@ import com.walking.meeting.dataobject.query.MeetingRoomQuery;
 import com.walking.meeting.dataobject.vo.MeetingRoomVO;
 import com.walking.meeting.utils.DateUtils;
 import com.walking.meeting.utils.DbUtils;
+import com.walking.meeting.utils.ResponseUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -26,11 +28,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.*;
 
 import static com.walking.meeting.utils.DateUtils.*;
 
-
+@CrossOrigin
 @Slf4j
 @Api(tags = "ManagerController", description = "管理端模块")
 @RestController("ManagerController")
@@ -43,7 +46,7 @@ public class ManagerController {
 
     @ApiOperation(value = "添加会议室", notes = "添加会议室")
     @PostMapping(value = "/addRoom")
-    public SuccessResponse addRoom(
+    public Response addRoom(
             @ApiParam(name = "room_id", value = "会议室id") @RequestParam(value = "room_id") String roomId,
             @ApiParam(name = "room_name", value = "会议室中文名") @RequestParam(value = "room_name") String roomName,
             @ApiParam(name = "device_id_list", value = "设备id列表，格式例如:1,2,3")
@@ -101,13 +104,13 @@ public class ManagerController {
             roomDeviceDTO.setDeviceId(Integer.parseInt(deviceId.toString()));
             managerService.addRoomDevice(roomDeviceDTO);
         });
-        return SuccessResponse.defaultSuccess();
+        return ResponseUtils.returnDefaultSuccess();
     }
 
 
     @ApiOperation(value = "通过会议室设备和规模选出会议室", notes = "通过会议室设备和规模选出会议室")
     @PostMapping(value = "/select")
-    public List<MeetingRoomVO> meetingRoomSearchingByDQuery(
+    public Response<List<MeetingRoomVO>> meetingRoomSearchingByDQuery(
             @ApiParam(name = "device_id_list", value = "设备id列表，格式例如:1,2,3")
             @RequestParam(value = "device_id_list") String deviceIdList,
             @ApiParam(name = "room_scale", value = "会议室可容纳人数")
@@ -128,13 +131,13 @@ public class ManagerController {
             meetingRoomVO.setFreeTimeEnd(endTime);
             resultList.add(meetingRoomVO);
         });
-        return resultList;
+        return ResponseUtils.returnSuccess(resultList);
     }
 
 
     @ApiOperation(value = "添加device", notes = "添加device")
     @PostMapping(value = "/addDevice")
-    public SuccessResponse addDevice(
+    public Response addDevice(
             @ApiParam(name = "device_id", value = "设备id") @RequestParam(value = "device_id") Integer deviceId,
             @ApiParam(name = "device_type", value = "设备类型") @RequestParam(value = "device_type") String deviceType){
         log.info("添加device, deviceId:{}, deviceType:{}", deviceId, deviceType);
@@ -153,12 +156,12 @@ public class ManagerController {
         deviceDTO.setDeviceId(deviceId);
         deviceDTO.setDeviceType(deviceType);
         managerService.addDevice(deviceDTO);
-        return SuccessResponse.defaultSuccess();
+        return ResponseUtils.returnDefaultSuccess();
     }
 
     @ApiOperation(value = "删除device", notes = "删除device")
     @PostMapping(value = "/delDevice")
-    public SuccessResponse delDevice(
+    public Response delDevice(
             @ApiParam(name = "device_id", value = "设备id")
             @RequestParam(value = "device_id") Integer deviceId){
         log.info("删除device, deviceId:{}", deviceId);
@@ -177,12 +180,12 @@ public class ManagerController {
         deviceDTO.setDeviceId(deviceId);
         deviceDTO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
         managerService.updateDeviceSelective(deviceDTO);
-        return SuccessResponse.defaultSuccess();
+        return ResponseUtils.returnDefaultSuccess();
     }
 
     @ApiOperation(value = "删除会议室", notes = "删除会议室")
     @PostMapping(value = "/delRoom")
-    public SuccessResponse delRoom(
+    public Response delRoom(
             @ApiParam(name = "room_id", value = "会议室id") @RequestParam(value = "room_id") String roomId){
         log.info("删除会议室, roomId:{}", roomId);
         if (Objects.isNull(roomId)) {
@@ -200,12 +203,12 @@ public class ManagerController {
         meetingRoomDTO.setRoomId(roomId);
         meetingRoomDTO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
         managerService.updateRoomSelective(meetingRoomDTO);
-        return SuccessResponse.defaultSuccess();
+        return ResponseUtils.returnDefaultSuccess();
     }
 
     @ApiOperation(value = "添加department", notes = "添加department")
     @PostMapping(value = "/addDepartment")
-    public SuccessResponse addDepartment(
+    public Response addDepartment(
             @ApiParam(name = "department_name", value = "部门名字")
             @RequestParam(value = "department_name")String departmentName,
             @ApiParam(name = "department_level", value = "部门等级")
@@ -229,37 +232,37 @@ public class ManagerController {
         departmentDTO.setDepartmentLevel(departmentLevel);
         departmentDTO.setDepartmentName(departmentName);
         managerService.addDepartment(departmentDTO);
-        return SuccessResponse.defaultSuccess();
+        return ResponseUtils.returnDefaultSuccess();
     }
 
     @ApiOperation(value = "列出department列表", notes = "列出department列表")
     @GetMapping(value = "/listDepartment")
-    public List<DepartmentDTO> listDepartment(){
+    public Response<List<DepartmentDTO>> listDepartment(){
         log.info("列出department列表");
         List<DepartmentDTO> resultList = managerService.listDepartment();
-        return resultList;
+        return ResponseUtils.returnSuccess(resultList);
     }
 
     @ApiOperation(value = "列出device列表", notes = "列出device列表")
     @GetMapping(value = "/listDevice")
-    public List<DeviceDTO> listDevice(){
+    public Response<List<DeviceDTO>> listDevice(){
         log.info("列出device列表");
         List<DeviceDTO> resultList = managerService.listDevice();
-        return resultList;
+        return ResponseUtils.returnSuccess(resultList);
     }
 
     @ApiOperation(value = "列出会议室列表", notes = "列出会议室列表")
     @GetMapping(value = "/listMeetingRoom")
-    public List<MeetingRoomDTO> listMeetingRoom(){
+    public Response<List<MeetingRoomDTO>> listMeetingRoom(){
         log.info("列出会议室列表");
         List<MeetingRoomDTO> resultList = managerService.listMeetingRoom();
-        return resultList;
+        return ResponseUtils.returnSuccess(resultList);
     }
 
 
     @ApiOperation(value = "删除department", notes = "删除department")
     @PostMapping(value = "/delDepartment")
-    public SuccessResponse delDepartment(
+    public Response delDepartment(
             @ApiParam(name = "department_name", value = "部门名字")
             @RequestParam(value = "department_name") String departmentName){
         log.info("添加department, departmentName:{}", departmentName);
@@ -276,16 +279,18 @@ public class ManagerController {
         departmentDTO.setDepartmentName(departmentName);
         departmentDTO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
         managerService.updateDepartmentSelective(departmentDTO);
-        return SuccessResponse.defaultSuccess();
+        return ResponseUtils.returnDefaultSuccess();
     }
 
     @ApiOperation(value = "测试连接", notes = "测试连接")
     @PostMapping(value = "/test")
-    public String testConnection(
+    public Response testConnection(
             @ApiParam(name = "input", value = "入参")
-            @RequestParam(value = "input") String input){
+            @RequestParam(value = "input") String input,
+            HttpSession httpSession) {
+        httpSession.setAttribute("测试入参",input);
         log.info("有人在测试连接, input:{}", input);
-        return input;
+        return ResponseUtils.returnSuccess(input);
     }
 
 

@@ -2,15 +2,14 @@ package com.walking.meeting.controller;
 
 import com.walking.meeting.Service.MeetingService;
 import com.walking.meeting.Service.UserService;
-import com.walking.meeting.common.ResponseException;
-import com.walking.meeting.common.StatusCodeEnu;
-import com.walking.meeting.common.SuccessResponse;
+import com.walking.meeting.common.*;
 import com.walking.meeting.dataobject.dao.MeetingDO;
 import com.walking.meeting.dataobject.dao.UserDO;
 import com.walking.meeting.dataobject.dto.UserDTO;
 import com.walking.meeting.dataobject.query.UserQuery;
 import com.walking.meeting.utils.DateUtils;
 import com.walking.meeting.utils.MD5Encrypt;
+import com.walking.meeting.utils.ResponseUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -19,12 +18,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
 import static com.walking.meeting.utils.DateUtils.FORMAT_YYYY_MM_DD_HH_MM;
 
+@CrossOrigin
 @Slf4j
 @Api(tags = "UserController", description = "用户模块")
 @RestController("UserController")
@@ -39,11 +42,12 @@ public class UserController {
 
     @ApiOperation(value = "用户登录", notes = "用户登录")
     @PostMapping(value = "/login")
-    public SuccessResponse userLogin(
+    public Response userLogin(
             @ApiParam(name = "login_name", value = "用户名") @RequestParam(value = "login_name") String loginName,
             @ApiParam(name = "password", value = "密码") @RequestParam(value = "password") String password,
             @ApiParam(name = "user_role", value = "0:管理员 1:普通用户") @RequestParam(
-                    value = "user_role",required=false,defaultValue="1") Integer userRole) {
+                    value = "user_role",required=false,defaultValue="1") Integer userRole,
+            HttpServletRequest request) {
         log.info("用户登录, loginName:{}, password:{}, userRole:{}", loginName, password, userRole);
         if (StringUtils.isBlank(loginName) || StringUtils.isBlank(password) || Objects.isNull(userRole)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
@@ -61,12 +65,13 @@ public class UserController {
             throw new ResponseException(StatusCodeEnu.USERNAME_OR_PSWD_ERROR);
         }
         // TODO 加session相关
-        return SuccessResponse.defaultSuccess();
+        request.getSession().setAttribute(Const.CURRENT_USER,loginName);
+        return ResponseUtils.returnDefaultSuccess();
     }
 
     @ApiOperation(value = "用户注册", notes = "用户注册")
     @PostMapping(value = "/register")
-    public SuccessResponse userRegister(
+    public Response userRegister(
             @ApiParam(name = "login_name", value = "用户名") @RequestParam(value = "login_name") String loginName,
             @ApiParam(name = "password", value = "密码") @RequestParam(value = "password") String password,
             @ApiParam(name = "question", value = "密保问题") @RequestParam(value = "question") String question,
@@ -94,13 +99,22 @@ public class UserController {
         userDTO.setAnswer(answer);
         userDTO.setEmail(email);
         userService.addUser(userDTO);
-        return SuccessResponse.defaultSuccess();
+        return ResponseUtils.returnDefaultSuccess();
     }
 
     @ApiOperation(value = "用户删除", notes = "用户删除")
     @PostMapping(value = "/del")
-    public SuccessResponse userRegister(
-            @ApiParam(name = "login_name", value = "用户名") @RequestParam(value = "login_name") String loginName){
+    public Response userRegister(
+            @ApiParam(name = "login_name", value = "用户名") @RequestParam(value = "login_name") String loginName,
+            HttpServletRequest request){
+        String username = (String) request.getSession().getAttribute(Const.CURRENT_USER);
+        UserQuery userQuery = new UserQuery();
+        userQuery.setUserName(username);
+        UserDO isUserRoleExist = userService.getUserByUserQuery(userQuery);
+        // 不是管理员无法删除用户
+        if (isUserRoleExist.getRoleId()!=0) {
+            throw new ResponseException(StatusCodeEnu.NO_RIGHT);
+        }
         UserDO userDO = new UserDO();
         userDO.setUsername(loginName);
         userDO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
@@ -111,8 +125,23 @@ public class UserController {
         meetingDO.setUsername(loginName);
         meetingDO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
         meetingService.updateMeetingSelective(meetingDO);
-        return SuccessResponse.defaultSuccess();
+        return ResponseUtils.returnDefaultSuccess();
     }
+
+    @ApiOperation(value = "用户退出", notes = "用户退出")
+    @PostMapping(value = "/logout")
+    public Response userLogout(HttpSession httpSession){
+        log.info("用户 "+httpSession.getAttribute(Const.CURRENT_USER)+" 退出");
+        httpSession.removeAttribute(Const.CURRENT_USER);
+        return ResponseUtils.returnDefaultSuccess();
+    }
+
+//    @ApiOperation(value = "session已经过期，请登录", notes = "session已经过期，请登录")
+//    @PostMapping(value = "/session/timeout")
+//    public Response reLogin(){
+//        return ResponseUtils.returnError(400,"session已经过期，请登录");
+//    }
+
 
     // TODO 给用户添加部门，再写个通过部门来搜出用户列表
 
