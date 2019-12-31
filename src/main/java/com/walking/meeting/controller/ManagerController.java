@@ -5,7 +5,6 @@ import com.walking.meeting.Service.ManagerService;
 import com.walking.meeting.common.Response;
 import com.walking.meeting.common.ResponseException;
 import com.walking.meeting.common.StatusCodeEnu;
-import com.walking.meeting.common.SuccessResponse;
 import com.walking.meeting.dataobject.dao.*;
 import com.walking.meeting.dataobject.dto.DepartmentDTO;
 import com.walking.meeting.dataobject.dto.DeviceDTO;
