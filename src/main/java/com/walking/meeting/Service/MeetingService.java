@@ -26,5 +26,10 @@ public interface MeetingService {
 
     List<Integer> searchDeviceByRoomId(String roomId);
 
+    /**
+     *   会议室device列表和规模来选出会议室
+     */
+    List<MeetingRoomDO> searchRoomByQuery(String deviceIdList,Integer roomScale);
+
 
 }

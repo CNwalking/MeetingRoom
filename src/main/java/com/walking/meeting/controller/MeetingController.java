@@ -1,12 +1,15 @@
 package com.walking.meeting.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.github.pagehelper.PageInfo;
 import com.walking.meeting.Service.MeetingService;
 import com.walking.meeting.common.*;
 import com.walking.meeting.dataobject.dao.MeetingDO;
+import com.walking.meeting.dataobject.dao.MeetingRoomDO;
 import com.walking.meeting.dataobject.dto.ListMeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingReturnDTO;
+import com.walking.meeting.dataobject.vo.MeetingRoomVO;
 import com.walking.meeting.utils.DateUtils;
 import com.walking.meeting.utils.ResponseUtils;
 import com.walking.meeting.utils.SnowFlakeIdGenerator;
@@ -20,9 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 import static com.walking.meeting.utils.DateUtils.*;
 
@@ -46,7 +47,7 @@ public class MeetingController {
             @RequestParam(value = "room_id",required = false) String roomId,
             @ApiParam(name = "room_name", value = "会议室名字")
             @RequestParam(value = "room_name",required = false) String roomName,
-            @ApiParam(name = "required_time", value = "会议时长")
+            @ApiParam(name = "required_time", value = "会议时长例如1.5")
             @RequestParam(value = "required_time",required = false) String requiredTime,
             @ApiParam(name = "department_name", value = "定会议的部门")
             @RequestParam(value = "department_name",required = false) String departmentName,
@@ -78,9 +79,9 @@ public class MeetingController {
             @ApiParam(name = "meeting_name", value = "会议名称") @RequestParam(value = "meeting_name") String meetingName,
             @ApiParam(name = "room_id", value = "会议室id") @RequestParam(value = "room_id") String roomId,
             @ApiParam(name = "username", value = "会议室预定者") @RequestParam(value = "username") String username,
-            @ApiParam(name = "booking_date", value = "会议日期") @RequestParam(value = "booking_date") String bookingDate,
-            @ApiParam(name = "start_time", value = "会议开始时间") @RequestParam(value = "start_time") String startTime,
-            @ApiParam(name = "end_time", value = "会议结束时间") @RequestParam(value = "end_time") String endTime,
+            @ApiParam(name = "booking_date", value = "会议日期yyyy-MM-dd") @RequestParam(value = "booking_date") String bookingDate,
+            @ApiParam(name = "start_time", value = "会议开始时间yyyy-MM-dd HH:mm") @RequestParam(value = "start_time") String startTime,
+            @ApiParam(name = "end_time", value = "会议结束时间yyyy-MM-dd HH:mm") @RequestParam(value = "end_time") String endTime,
             @ApiParam(name = "required_time", value = "会议时长")
             @RequestParam(value = "required_time") BigDecimal requiredTime,
             @ApiParam(name = "department_name", value = "会议室预定者的部门")
@@ -116,7 +117,7 @@ public class MeetingController {
             throw new ResponseException(StatusCodeEnu.MEETING_TIME_ILLEGAL);
         }
         //  先进行设备相关的判定，判定完以后让用户选择room，然后读取roomId当这个方法的入参。
-        //  取会议室ID这个方法另写，通过设备选出roomId，不在此方法中体现，见managerController中的方法meetingRoomSearchingByDevice
+        //  取会议室ID这个方法另写，通过设备选出roomId，不在此方法中体现，见下面方法meetingRoomSearchingByDevice
 
         // 下面先什么都不管，add一个会议，到时候会判条件判了以后再add
         MeetingDTO meetingDTO = new MeetingDTO();
@@ -189,6 +190,46 @@ public class MeetingController {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
         }
         return ResponseUtils.returnSuccess(meetingService.searchDeviceByRoomId(roomId));
+    }
+
+
+    @ApiOperation(value = "通过会议室设备、规模和时间选出会议室", notes = "通过会议室设备、规模和时间选出会议室")
+    @PostMapping(value = "/select")
+    public Response<List<MeetingRoomVO>> meetingRoomSearchingByDQuery(
+            @ApiParam(name = "device_id_list", value = "设备id列表，格式例如:1,2,3")
+            @RequestParam(value = "device_id_list") String deviceIdList,
+            @ApiParam(name = "room_scale", value = "会议室可容纳人数")
+            @RequestParam(value = "room_scale") Integer roomScale,
+            @ApiParam(name = "booking_date", value = "会议日期yyyy-MM-dd")
+            @RequestParam(value = "booking_date") String bookingDate){
+        log.info("通过会议室设备和规模选出会议室, deviceIdList:{}, roomScale:{}", deviceIdList, roomScale);
+        if (Objects.isNull(deviceIdList) || Objects.isNull(roomScale)) {
+            throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
+        }
+        // 选出包含这些设备的该规格的会议室
+        List<MeetingRoomVO> resultList = new ArrayList<>();
+        List<MeetingRoomDO> roomList = meetingService.searchRoomByQuery(deviceIdList, roomScale);
+        Map<String, String> roomMap = new HashMap<>();
+        roomList.forEach(meetingRoomDO -> {
+//            // 时间转化成看的清楚一些的时间，例如18：00
+//            String StartTime = DateUtils.formatDate(meetingRoomDO.getFreeTimeStart(),SHOWTIME);
+//            String endTime = DateUtils.formatDate(meetingRoomDO.getFreeTimeEnd(),SHOWTIME);
+            String isBusy = meetingService.selectTimeByDateAndRoomID(parseDateFormatToSQLNeed(bookingDate), meetingRoomDO.getRoomId());
+            MeetingRoomVO meetingRoomVO = JSON.parseObject(JSON.toJSONString(meetingRoomDO), MeetingRoomVO.class);
+            meetingRoomVO.setFreeTimeStart(meetingRoomDO.getFreeTimeStart());
+            meetingRoomVO.setFreeTimeEnd(meetingRoomDO.getFreeTimeEnd());
+            if (isBusy == Const.ROOM_CROWDED) {
+                meetingRoomVO.setBusyOrNot(8);
+            }
+            if (isBusy == Const.ROOM_JUST_SOSO) {
+                meetingRoomVO.setBusyOrNot(6);
+            }
+            if (isBusy == Const.ROOM_AVAILABLE) {
+                meetingRoomVO.setBusyOrNot(1);
+            }
+            resultList.add(meetingRoomVO);
+        });
+        return ResponseUtils.returnSuccess(resultList);
     }
 
     private String parseDateFormatToSQLNeed(String date){

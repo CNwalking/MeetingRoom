@@ -160,43 +160,7 @@ public class ManagerServiceImpl implements ManagerService {
         return meetingRoomMapper.selectByExample(builder.build());
     }
 
-    @Override
-    public List<MeetingRoomDO> searchRoomByQuery(String deviceIdList, Integer roomScale) {
-        // TODO 合起来写报错...  figure out 有什么问题
-//        List<RoomDeviceSearchResultDTO> roomDeviceSearchResultDTOList = roomDeviceMapper.searchRoomIdByDevice(roomScale);
-//        分开写，先通过scale来搜roomId,再用roomId来搜list
-        MeetingRoomQuery meetingRoomQuery = new MeetingRoomQuery();
-        short scale = Short.valueOf(String.valueOf(roomScale));
-        meetingRoomQuery.setRoomScale(scale);
-        List<MeetingRoomDO> meetingRoomDOList = getMeetingRoomByQuery(meetingRoomQuery);
-//        log.info(meetingRoomDOList.toString());
-        // 通过roomId来搜它的设备list,搜出的结果存到 HashMap<roomId,deviceList>
-        Map<String, String> roomDeviceMap = new HashMap<>();
-        meetingRoomDOList.forEach(meetingRoomDO -> {
-            roomDeviceMapper.searchDeviceByRoomId(meetingRoomDO.getRoomId()).forEach(
-                    ResultDTO ->{
-                        roomDeviceMap.put(ResultDTO.getRoomId(), ResultDTO.getDeviceIdList());
-                    }
-            );
-        });
-//        log.info(roomDeviceMap.toString());
-        // Map的结果{6-25=1,2,3,4,5, 4-07=1,2,3,4, 6-21=1,2,3,4}，需要进行判定来选取合适的几个MeetingRoom
-        MeetingRoomQuery meetingRoomQuery2 = new MeetingRoomQuery();
-        List<MeetingRoomDO> resultList = new ArrayList<>();
-        Set<Map.Entry<String, String>> entrySet = roomDeviceMap.entrySet();
-        Iterator<Map.Entry<String, String>> iterator = entrySet.iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, String> next = iterator.next();
-            String roomId = next.getKey();
-            String deviceList = next.getValue();
-            if (isContainDevice(deviceList,deviceIdList)){
-                meetingRoomQuery2.setRoomId(roomId);
-                resultList.add(DbUtils.getOne(getMeetingRoomByQuery(meetingRoomQuery2)).orElse(null));
-            }
-        }
-//        log.info(resultList.toString());
-        return resultList;
-    }
+
 
     @Override
     public DeviceDTO getDeviceByDeviceQuery(DeviceQuery deviceQuery) {
@@ -228,19 +192,7 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
 
-    private Boolean isContainDevice(String roomDevice, String needDevice) {
-        List<String> needDeviceList = new ArrayList();
-        if (StringUtils.isNotBlank(needDevice)) {
-            needDeviceList = Arrays.asList(needDevice.split(","));
-        }
-        for (int i = 0; i < needDeviceList.size(); i++) {
-            // 如果等于-1，说明没有这个device
-            if(roomDevice.indexOf(needDeviceList.get(i)) == -1){
-                return false;
-            }
-        }
-        return true;
-    }
+
 
 
 }

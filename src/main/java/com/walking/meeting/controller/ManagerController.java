@@ -107,32 +107,6 @@ public class ManagerController {
     }
 
 
-    @ApiOperation(value = "通过会议室设备和规模选出会议室", notes = "通过会议室设备和规模选出会议室")
-    @PostMapping(value = "/select")
-    public Response<List<MeetingRoomVO>> meetingRoomSearchingByDQuery(
-            @ApiParam(name = "device_id_list", value = "设备id列表，格式例如:1,2,3")
-            @RequestParam(value = "device_id_list") String deviceIdList,
-            @ApiParam(name = "room_scale", value = "会议室可容纳人数")
-            @RequestParam(value = "room_scale") Integer roomScale){
-        log.info("通过会议室设备和规模选出会议室, deviceIdList:{}, roomScale:{}", deviceIdList, roomScale);
-        if (Objects.isNull(deviceIdList) || Objects.isNull(roomScale)) {
-            throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
-        }
-        // 选出包含这些设备的该规格的会议室
-        List<MeetingRoomVO> resultList = new ArrayList<>();
-        List<MeetingRoomDO> roomList = managerService.searchRoomByQuery(deviceIdList, roomScale);
-        roomList.forEach(meetingRoomDO -> {
-            // 时间转化成看的清楚一些的时间，例如18：00
-            String StartTime = DateUtils.formatDate(meetingRoomDO.getFreeTimeStart(),SHOWTIME);
-            String endTime = DateUtils.formatDate(meetingRoomDO.getFreeTimeEnd(),SHOWTIME);
-            MeetingRoomVO meetingRoomVO = JSON.parseObject(JSON.toJSONString(meetingRoomDO), MeetingRoomVO.class);
-            meetingRoomVO.setFreeTimeStart(StartTime);
-            meetingRoomVO.setFreeTimeEnd(endTime);
-            resultList.add(meetingRoomVO);
-        });
-        return ResponseUtils.returnSuccess(resultList);
-    }
-
 
     @ApiOperation(value = "添加device", notes = "添加device")
     @PostMapping(value = "/addDevice")

@@ -33,7 +33,7 @@ import static com.walking.meeting.utils.DateUtils.FORMAT_YYYY_MM_DD_HH_MM;
 @RestController("UserController")
 @RequestMapping("/user")
 public class UserController {
-    // TODO 用户登录，注册，退出，删除接口（软删deletetime置值），人脸识别登录接口，查看会议预定历史接口
+    // TODO 人脸识别登录接口
 
     @Autowired
     private UserService userService;

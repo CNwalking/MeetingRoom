@@ -24,10 +24,15 @@ public class MeetingRoomVO {
     /**
      * 开放时间开始
      */
-    private String freeTimeStart;
+    private Date freeTimeStart;
 
     /**
      * 开放时间结束
      */
-    private String freeTimeEnd;
+    private Date freeTimeEnd;
+
+    /**
+     * 会议室的当天定的会议的时间多少
+     */
+    private Integer busyOrNot;
 }

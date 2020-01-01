@@ -40,10 +40,6 @@ public interface ManagerService {
 //    MeetingRoomDO getMeetingRoomByQuery(MeetingRoomQuery meetingRoomQuery);
     List<MeetingRoomDO> getMeetingRoomByQuery(MeetingRoomQuery meetingRoomQuery);
 
-    /**
-     *   会议室device列表和规模来选出会议室
-     */
-    List<MeetingRoomDO> searchRoomByQuery(String deviceIdList,Integer roomScale);
 
     DeviceDTO getDeviceByDeviceQuery(DeviceQuery deviceQuery);
 
