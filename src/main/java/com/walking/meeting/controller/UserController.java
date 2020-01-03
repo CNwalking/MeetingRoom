@@ -1,5 +1,6 @@
 package com.walking.meeting.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.walking.meeting.Service.MeetingService;
 import com.walking.meeting.Service.UserService;
 import com.walking.meeting.common.*;
@@ -7,6 +8,7 @@ import com.walking.meeting.dataobject.dao.MeetingDO;
 import com.walking.meeting.dataobject.dao.UserDO;
 import com.walking.meeting.dataobject.dto.UserDTO;
 import com.walking.meeting.dataobject.query.UserQuery;
+import com.walking.meeting.dataobject.vo.UserInfoVO;
 import com.walking.meeting.utils.DateUtils;
 import com.walking.meeting.utils.MD5Encrypt;
 import com.walking.meeting.utils.ResponseUtils;
@@ -14,6 +16,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -64,8 +68,12 @@ public class UserController {
             log.info("数据库里的:{},加密完的数据:{}",userDO.getPswd(),MD5Encrypt.md5Encrypt(password));
             throw new ResponseException(StatusCodeEnu.USERNAME_OR_PSWD_ERROR);
         }
-        // TODO 加session相关
-        request.getSession().setAttribute(Const.CURRENT_USER,loginName);
+        //判断user_role
+        if (!userRole.equals(userDO.getRoleId())) {
+            throw new ResponseException(StatusCodeEnu.USER_ROLE_ERROR);
+        }
+        // 加到session里去
+        request.getSession().setAttribute(Const.CURRENT_USER,userDO);
         return ResponseUtils.returnDefaultSuccess();
     }
 
@@ -125,16 +133,87 @@ public class UserController {
         meetingDO.setUsername(loginName);
         meetingDO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
         meetingService.updateMeetingSelective(meetingDO);
+
         return ResponseUtils.returnDefaultSuccess();
     }
 
     @ApiOperation(value = "用户退出", notes = "用户退出")
     @PostMapping(value = "/logout")
-    public Response userLogout(HttpSession httpSession){
-        log.info("用户 "+httpSession.getAttribute(Const.CURRENT_USER)+" 退出");
-        httpSession.removeAttribute(Const.CURRENT_USER);
+    public Response userLogout(HttpServletRequest request){
+        UserDO userDo = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        log.info("用户 "+ userDo.getUsername()+" 退出");
+        request.getSession().removeAttribute(Const.CURRENT_USER);
         return ResponseUtils.returnDefaultSuccess();
     }
+
+    @ApiOperation(value = "获取用户信息", notes = "获取用户信息")
+    @PostMapping(value = "/info")
+    public Response getUserInfo(HttpServletRequest request){
+        UserDO userDo = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        if (ObjectUtils.isNotEmpty(userDo)) {
+            log.info("用户 "+ userDo.getUsername() +" 获取其信息");
+            return ResponseUtils.returnSuccess(userDo);
+        }
+        return ResponseUtils.returnDefaultError();
+    }
+
+    @ApiOperation(value = "登录状态下修改密码", notes = "登录状态下修改密码")
+    @PostMapping(value = "/reset/online")
+    public Response resetPasswordOnline(
+        @ApiParam(name = "new_password", value = "新密码") @RequestParam(value = "new_password") String newPassword,
+        @ApiParam(name = "new_password_confirm", value = "确认新密码")
+        @RequestParam(value = "new_password_confirm") String newPasswordConfirm, HttpServletRequest request){
+        if (!newPasswordConfirm.equals(newPassword)) {
+            throw new ResponseException(StatusCodeEnu.TWO_PSWD_NOT_SAME);
+        }
+        // 取出已经登录的DO
+        UserDO userDo = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        UserQuery userQuery = new UserQuery();
+        if (ObjectUtils.isNotEmpty(userDo)) {
+            log.info("用户 "+ userDo.getUsername() +" 登录状态下修改密码");
+            userQuery.setUserName(userDo.getUsername());
+        }
+        UserDO userDOInDB = userService.getUserByUserQuery(userQuery);
+        // 新老密码不能一样
+        if (StringUtils.equals(userDOInDB.getPswd(),MD5Encrypt.md5Encrypt(newPassword))){
+            log.info("数据库里的:{},加密完的数据:{}",userDo.getPswd(),MD5Encrypt.md5Encrypt(newPassword));
+            throw new ResponseException(StatusCodeEnu.TWO_PSWD_SAME);
+        }
+        userDOInDB.setPswd(MD5Encrypt.md5Encrypt(newPassword));
+        userService.updateUserSelective(userDOInDB);
+        return ResponseUtils.returnDefaultSuccess();
+    }
+
+    @ApiOperation(value = "未登录状态下修改密码", notes = "未登录状态下修改密码")
+    @PostMapping(value = "/reset/offline")
+    public Response resetPasswordOnline(
+            @ApiParam(name = "username", value = "用户名") @RequestParam(value = "username") String username,
+            @ApiParam(name = "new_password", value = "新密码") @RequestParam(value = "new_password") String newPassword,
+            @ApiParam(name = "question", value = "密保问题") @RequestParam(value = "question") String question,
+            @ApiParam(name = "answer", value = "密保问题答案") @RequestParam(value = "answer") String answer){
+        log.info("未登录状态下修改密码,username:{},password:{},question:{},answer:{}",username,newPassword,question,answer);
+        // 参数判空
+        if (Objects.isNull(username)||Objects.isNull(newPassword) || Objects.isNull(question) || Objects.isNull(answer)) {
+            throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
+        }
+        UserQuery userQuery = new UserQuery();
+        userQuery.setUserName(username);
+        UserDO userDO = userService.getUserByUserQuery(userQuery);
+        if (ObjectUtils.isEmpty(userDO)) {
+            throw new ResponseException(StatusCodeEnu.USERNAME_NOT_EXIST);
+        }
+        if (!userDO.getQuestion().equals(question)) {
+            throw new ResponseException(StatusCodeEnu.QUESTION_NOT_RIGHT);
+        }
+        if (!userDO.getAnswer().equals(answer)) {
+            throw new ResponseException(StatusCodeEnu.ANSWER_NOT_RIGHT);
+        }
+        userDO.setPswd(MD5Encrypt.md5Encrypt(newPassword));
+        userService.updateUserSelective(userDO);
+        return ResponseUtils.returnDefaultSuccess();
+    }
+
+
 
 //    @ApiOperation(value = "session已经过期，请登录", notes = "session已经过期，请登录")
 //    @PostMapping(value = "/session/timeout")

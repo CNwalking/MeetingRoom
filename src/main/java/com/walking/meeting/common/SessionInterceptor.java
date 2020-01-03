@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Maps;
+import com.walking.meeting.dataobject.dao.UserDO;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -35,13 +37,14 @@ public class SessionInterceptor implements HandlerInterceptor {
         // 只拿方法名
         String className = handlerMethod.getBean().getClass().getSimpleName();
 
-        // 登录注册放行
-        if ("/user/login".equals(httpServletRequest.getRequestURI())||"/user/register".equals(httpServletRequest.getRequestURI())) {
+        // 登录注册忘记密码放行
+        if ("/user/login".equals(httpServletRequest.getRequestURI()) || "/user/register".equals(httpServletRequest.getRequestURI())
+                ||"/reset/offline".equals(httpServletRequest.getRequestURI())) {
             return true;
         }
         log.info("拦截器拦截到请求，className:{},methodName:{}",className,methodName);
-        String username = (String)httpServletRequest.getSession().getAttribute(Const.CURRENT_USER);
-        if (StringUtils.isEmpty(username)) {
+        UserDO userDO = (UserDO)httpServletRequest.getSession().getAttribute(Const.CURRENT_USER);
+        if (ObjectUtils.isEmpty(userDO)) {
             httpServletResponse.reset();
             httpServletResponse.setCharacterEncoding("UTF-8");
             httpServletResponse.setContentType("application/json;charset=UTF-8");
