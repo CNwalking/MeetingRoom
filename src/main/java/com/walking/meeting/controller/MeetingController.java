@@ -58,13 +58,13 @@ public class MeetingController {
         log.info("查看会议预定列表, username:{}, roomId:{}, roomName:{}, requiredTime:{}, departmentName:{}, pageNum:{}, pageSize:{}",
                 username, roomId, roomName, requiredTime, departmentName, pageNum, pageSize);
         ListMeetingDTO listMeetingDTO = new ListMeetingDTO();
-        listMeetingDTO.setUsername(username);
-        listMeetingDTO.setRoomId(roomId);
-        listMeetingDTO.setRoomName(roomName);
+        listMeetingDTO.setUsername(Optional.ofNullable(username).orElse(""));
+        listMeetingDTO.setRoomId(Optional.ofNullable(roomId).orElse(""));
+        listMeetingDTO.setRoomName(Optional.ofNullable(roomName).orElse(""));
         if (StringUtils.isNotBlank(requiredTime) && requiredTime != "") {
             listMeetingDTO.setRequiredTime(new BigDecimal(requiredTime.trim()));
         }
-        listMeetingDTO.setDepartmentName(departmentName);
+        listMeetingDTO.setDepartmentName(Optional.ofNullable(departmentName).orElse(""));
         listMeetingDTO.setPageNum(pageNum);
         listMeetingDTO.setPageSize(pageSize);
         PageInfo<MeetingReturnDTO> meetingDOPageInfo = meetingService.listMeeting(listMeetingDTO);
@@ -197,41 +197,25 @@ public class MeetingController {
 
     @ApiOperation(value = "通过会议室设备、规模和时间选出会议室", notes = "通过会议室设备、规模和时间选出会议室")
     @PostMapping(value = "/select")
-    public Response<List<MeetingRoomVO>> meetingRoomSearchingByDQuery(
+    public Response<PageInfo<MeetingRoomVO>> meetingRoomSearchingByDQuery(
             @ApiParam(name = "device_id_list", value = "设备id列表，格式例如:1,2,3")
             @RequestParam(value = "device_id_list") String deviceIdList,
             @ApiParam(name = "room_scale", value = "会议室可容纳人数")
             @RequestParam(value = "room_scale") Integer roomScale,
             @ApiParam(name = "booking_date", value = "会议日期yyyy-MM-dd")
-            @RequestParam(value = "booking_date") String bookingDate){
+            @RequestParam(value = "booking_date") String bookingDate,
+            @ApiParam(name = "page_num", value = "页码") @RequestParam(value = "page_num",
+                    defaultValue = "1", required = false) Integer pageNum,
+            @ApiParam(name = "page_size", value = "每页数量：为0时查全部") @RequestParam(value = "page_size",
+                    defaultValue = "20", required = false) Integer pageSize){
         log.info("通过会议室设备和规模选出会议室, deviceIdList:{}, roomScale:{}", deviceIdList, roomScale);
         if (Objects.isNull(deviceIdList) || Objects.isNull(roomScale)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
         }
         // 选出包含这些设备的该规格的会议室
-        List<MeetingRoomVO> resultList = new ArrayList<>();
-        List<MeetingRoomDO> roomList = meetingService.searchRoomByQuery(deviceIdList, roomScale);
-        Map<String, String> roomMap = new HashMap<>();
-        roomList.forEach(meetingRoomDO -> {
-//            // 时间转化成看的清楚一些的时间，例如18：00
-//            String StartTime = DateUtils.formatDate(meetingRoomDO.getFreeTimeStart(),SHOWTIME);
-//            String endTime = DateUtils.formatDate(meetingRoomDO.getFreeTimeEnd(),SHOWTIME);
-            String isBusy = meetingService.selectTimeByDateAndRoomID(parseDateFormatToSQLNeed(bookingDate), meetingRoomDO.getRoomId());
-            MeetingRoomVO meetingRoomVO = JSON.parseObject(JSON.toJSONString(meetingRoomDO), MeetingRoomVO.class);
-            meetingRoomVO.setFreeTimeStart(meetingRoomDO.getFreeTimeStart());
-            meetingRoomVO.setFreeTimeEnd(meetingRoomDO.getFreeTimeEnd());
-            if (isBusy == Const.ROOM_CROWDED) {
-                meetingRoomVO.setBusyOrNot(8);
-            }
-            if (isBusy == Const.ROOM_JUST_SOSO) {
-                meetingRoomVO.setBusyOrNot(6);
-            }
-            if (isBusy == Const.ROOM_AVAILABLE) {
-                meetingRoomVO.setBusyOrNot(1);
-            }
-            resultList.add(meetingRoomVO);
-        });
-        return ResponseUtils.returnSuccess(resultList);
+        PageInfo<MeetingRoomVO> pageInfo = meetingService.searchRoomByQuery(parseDateFormatToSQLNeed(bookingDate),
+                deviceIdList, roomScale, pageNum, pageSize);
+        return ResponseUtils.returnSuccess(pageInfo);
     }
 
     private String parseDateFormatToSQLNeed(String date){

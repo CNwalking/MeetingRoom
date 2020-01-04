@@ -14,6 +14,7 @@ import com.walking.meeting.dataobject.dto.MeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingReturnDTO;
 import com.walking.meeting.dataobject.dto.RoomDeviceSearchResultDTO;
 import com.walking.meeting.dataobject.query.MeetingRoomQuery;
+import com.walking.meeting.dataobject.vo.MeetingRoomVO;
 import com.walking.meeting.mapper.MeetingMapper;
 import com.walking.meeting.mapper.RoomDeviceMapper;
 import com.walking.meeting.utils.DateUtils;
@@ -67,7 +68,7 @@ public class MeetingServiceImpl implements MeetingService {
         DbUtils.setEqualToProp(builder, MeetingDO.PROP_BOOKING_DATE, listMeetingDTO.getBookingDate());
         DbUtils.setEqualToProp(builder, MeetingDO.PROP_MEETING_LEVEL, listMeetingDTO.getMeetingLevel());
         DbUtils.setEqualToProp(builder, MeetingDO.PROP_DEPARTMENT_NAME, listMeetingDTO.getDepartmentName());
-        List<MeetingDO> meetingDOList = meetingMapper.selectByExample(builder.build().orderBy("booking_start_time").desc());
+        List<MeetingDO> meetingDOList = meetingMapper.selectByExample(builder.build());
         // 把meetingDO转化为meetingReturnDTO
         List<MeetingReturnDTO> meetingReturnDTOList = new ArrayList<>();
         meetingDOList.forEach(meetingDO -> {
@@ -240,8 +241,11 @@ public class MeetingServiceImpl implements MeetingService {
         });
         return MeetingRoomDeviceList;
     }
+
     @Override
-    public List<MeetingRoomDO> searchRoomByQuery(String deviceIdList, Integer roomScale) {
+    public PageInfo<MeetingRoomVO> searchRoomByQuery(String bookingDate,String deviceIdList, Integer roomScale, Integer pageNum, Integer pageSize) {
+        // pageSize==0时查全部
+        PageHelper.startPage(pageNum, pageSize, true, null, true);
         // TODO 合起来写报错...  figure out 有什么问题
 //        List<RoomDeviceSearchResultDTO> roomDeviceSearchResultDTOList = roomDeviceMapper.searchRoomIdByDevice(roomScale);
 //        分开写，先通过scale来搜roomId,再用roomId来搜list
@@ -254,7 +258,7 @@ public class MeetingServiceImpl implements MeetingService {
         Map<String, String> roomDeviceMap = new HashMap<>();
         meetingRoomDOList.forEach(meetingRoomDO -> {
             roomDeviceMapper.searchDeviceByRoomId(meetingRoomDO.getRoomId()).forEach(
-                    ResultDTO ->{
+                    ResultDTO -> {
                         roomDeviceMap.put(ResultDTO.getRoomId(), ResultDTO.getDeviceIdList());
                     }
             );
@@ -269,13 +273,33 @@ public class MeetingServiceImpl implements MeetingService {
             Map.Entry<String, String> next = iterator.next();
             String roomId = next.getKey();
             String deviceList = next.getValue();
-            if (isContainDevice(deviceList,deviceIdList)){
+            if (isContainDevice(deviceList, deviceIdList)) {
                 meetingRoomQuery2.setRoomId(roomId);
                 resultList.add(DbUtils.getOne(managerService.getMeetingRoomByQuery(meetingRoomQuery2)).orElse(null));
             }
         }
-//        log.info(resultList.toString());
-        return resultList;
+        List<MeetingRoomVO> VOList = new ArrayList<>();
+        resultList.forEach(meetingRoomDO -> {
+//            // 时间转化成看的清楚一些的时间，例如18：00
+//            String StartTime = DateUtils.formatDate(meetingRoomDO.getFreeTimeStart(),SHOWTIME);
+//            String endTime = DateUtils.formatDate(meetingRoomDO.getFreeTimeEnd(),SHOWTIME);
+            String isBusy = selectTimeByDateAndRoomID(bookingDate, meetingRoomDO.getRoomId());
+            MeetingRoomVO meetingRoomVO = JSON.parseObject(JSON.toJSONString(meetingRoomDO), MeetingRoomVO.class);
+            meetingRoomVO.setFreeTimeStart(meetingRoomDO.getFreeTimeStart());
+            meetingRoomVO.setFreeTimeEnd(meetingRoomDO.getFreeTimeEnd());
+            if (isBusy == Const.ROOM_CROWDED) {
+                meetingRoomVO.setBusyOrNot(8);
+            }
+            if (isBusy == Const.ROOM_JUST_SOSO) {
+                meetingRoomVO.setBusyOrNot(6);
+            }
+            if (isBusy == Const.ROOM_AVAILABLE) {
+                meetingRoomVO.setBusyOrNot(1);
+            }
+            VOList.add(meetingRoomVO);
+        });
+        PageInfo<MeetingRoomVO> pageInfo = new PageInfo<>(VOList);
+        return pageInfo;
     }
 
     private Boolean isContainDevice(String roomDevice, String needDevice) {
