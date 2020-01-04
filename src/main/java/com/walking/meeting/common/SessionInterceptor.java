@@ -39,11 +39,11 @@ public class SessionInterceptor implements HandlerInterceptor {
 
         // 登录注册忘记密码放行
         if ("/user/login".equals(httpServletRequest.getRequestURI()) || "/user/register".equals(httpServletRequest.getRequestURI())
-                ||"/reset/offline".equals(httpServletRequest.getRequestURI())) {
+                ||"/user/reset/offline".equals(httpServletRequest.getRequestURI())) {
             return true;
         }
         log.info("拦截器拦截到请求，className:{},methodName:{}",className,methodName);
-        UserDO userDO = (UserDO)httpServletRequest.getSession().getAttribute(Const.CURRENT_USER);
+        UserDO userDO = (UserDO) httpServletRequest.getSession().getAttribute(Const.CURRENT_USER);
         if (ObjectUtils.isEmpty(userDO)) {
             httpServletResponse.reset();
             httpServletResponse.setCharacterEncoding("UTF-8");

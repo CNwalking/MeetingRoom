@@ -115,9 +115,9 @@ public class UserController {
     public Response userRegister(
             @ApiParam(name = "login_name", value = "用户名") @RequestParam(value = "login_name") String loginName,
             HttpServletRequest request){
-        String username = (String) request.getSession().getAttribute(Const.CURRENT_USER);
+        UserDO user = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
         UserQuery userQuery = new UserQuery();
-        userQuery.setUserName(username);
+        userQuery.setUserName(user.getUsername());
         UserDO isUserRoleExist = userService.getUserByUserQuery(userQuery);
         // 不是管理员无法删除用户
         if (isUserRoleExist.getRoleId()!=0) {

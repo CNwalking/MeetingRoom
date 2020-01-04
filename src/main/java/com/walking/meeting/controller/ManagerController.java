@@ -2,6 +2,8 @@ package com.walking.meeting.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.walking.meeting.Service.ManagerService;
+import com.walking.meeting.Service.UserService;
+import com.walking.meeting.common.Const;
 import com.walking.meeting.common.Response;
 import com.walking.meeting.common.ResponseException;
 import com.walking.meeting.common.StatusCodeEnu;
@@ -13,6 +15,7 @@ import com.walking.meeting.dataobject.dto.RoomDeviceDTO;
 import com.walking.meeting.dataobject.query.DepartmentQuery;
 import com.walking.meeting.dataobject.query.DeviceQuery;
 import com.walking.meeting.dataobject.query.MeetingRoomQuery;
+import com.walking.meeting.dataobject.query.UserQuery;
 import com.walking.meeting.dataobject.vo.MeetingRoomVO;
 import com.walking.meeting.utils.DateUtils;
 import com.walking.meeting.utils.DbUtils;
@@ -27,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.*;
 
@@ -43,6 +47,9 @@ public class ManagerController {
     @Autowired
     private ManagerService managerService;
 
+    @Autowired
+    private UserService userService;
+
     @ApiOperation(value = "添加会议室", notes = "添加会议室")
     @PostMapping(value = "/addRoom")
     public Response addRoom(
@@ -55,8 +62,12 @@ public class ManagerController {
             @ApiParam(name = "free_time_end", value = "开放时间末")
             @RequestParam(value = "free_time_end") String freeTimeEnd,
             @ApiParam(name = "room_scale", value = "会议室可容纳人数")
-            @RequestParam(value = "room_scale") Integer roomScale
+            @RequestParam(value = "room_scale") Integer roomScale, HttpServletRequest request
             ){
+        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        if (userDO.getRoleId() != 0) {
+            throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
+        }
         log.info("添加会议室, roomId:{}, roomName:{}, deviceIdList:{}, freeTimeStart:{}, freeTimeEnd:{}, roomScale:{}",
                 roomId, roomName, deviceIdList, freeTimeStart, freeTimeEnd, roomScale);
         if (Objects.isNull(roomId) || Objects.isNull(roomName)|| Objects.isNull(deviceIdList)||
@@ -112,7 +123,12 @@ public class ManagerController {
     @PostMapping(value = "/addDevice")
     public Response addDevice(
             @ApiParam(name = "device_id", value = "设备id") @RequestParam(value = "device_id") Integer deviceId,
-            @ApiParam(name = "device_type", value = "设备类型") @RequestParam(value = "device_type") String deviceType){
+            @ApiParam(name = "device_type", value = "设备类型") @RequestParam(value = "device_type") String deviceType,
+            HttpServletRequest request){
+        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        if (userDO.getRoleId() != 0) {
+            throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
+        }
         log.info("添加device, deviceId:{}, deviceType:{}", deviceId, deviceType);
         if (Objects.isNull(deviceId) || Objects.isNull(deviceType)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
@@ -136,7 +152,11 @@ public class ManagerController {
     @PostMapping(value = "/delDevice")
     public Response delDevice(
             @ApiParam(name = "device_id", value = "设备id")
-            @RequestParam(value = "device_id") Integer deviceId){
+            @RequestParam(value = "device_id") Integer deviceId, HttpServletRequest request){
+        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        if (userDO.getRoleId() != 0) {
+            throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
+        }
         log.info("删除device, deviceId:{}", deviceId);
         if (Objects.isNull(deviceId)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
@@ -159,7 +179,12 @@ public class ManagerController {
     @ApiOperation(value = "删除会议室", notes = "删除会议室")
     @PostMapping(value = "/delRoom")
     public Response delRoom(
-            @ApiParam(name = "room_id", value = "会议室id") @RequestParam(value = "room_id") String roomId){
+            @ApiParam(name = "room_id", value = "会议室id")
+            @RequestParam(value = "room_id") String roomId, HttpServletRequest request){
+        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        if (userDO.getRoleId() != 0) {
+            throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
+        }
         log.info("删除会议室, roomId:{}", roomId);
         if (Objects.isNull(roomId)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
@@ -185,7 +210,12 @@ public class ManagerController {
             @ApiParam(name = "department_name", value = "部门名字")
             @RequestParam(value = "department_name")String departmentName,
             @ApiParam(name = "department_level", value = "部门等级")
-            @RequestParam(value = "department_level") Integer departmentLevel){
+            @RequestParam(value = "department_level") Integer departmentLevel
+            , HttpServletRequest request){
+        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        if (userDO.getRoleId() != 0) {
+            throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
+        }
         log.info("添加department, departmentName:{}, departmentLevel:{}", departmentName, departmentLevel);
         if (Objects.isNull(departmentName) || Objects.isNull(departmentLevel)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
@@ -210,7 +240,11 @@ public class ManagerController {
 
     @ApiOperation(value = "列出department列表", notes = "列出department列表")
     @GetMapping(value = "/listDepartment")
-    public Response<List<DepartmentDTO>> listDepartment(){
+    public Response<List<DepartmentDTO>> listDepartment(HttpServletRequest request){
+        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        if (userDO.getRoleId() != 0) {
+            throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
+        }
         log.info("列出department列表");
         List<DepartmentDTO> resultList = managerService.listDepartment();
         return ResponseUtils.returnSuccess(resultList);
@@ -218,7 +252,11 @@ public class ManagerController {
 
     @ApiOperation(value = "列出device列表", notes = "列出device列表")
     @GetMapping(value = "/listDevice")
-    public Response<List<DeviceDTO>> listDevice(){
+    public Response<List<DeviceDTO>> listDevice(HttpServletRequest request){
+        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        if (userDO.getRoleId() != 0) {
+            throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
+        }
         log.info("列出device列表");
         List<DeviceDTO> resultList = managerService.listDevice();
         return ResponseUtils.returnSuccess(resultList);
@@ -226,7 +264,11 @@ public class ManagerController {
 
     @ApiOperation(value = "列出会议室列表", notes = "列出会议室列表")
     @GetMapping(value = "/listMeetingRoom")
-    public Response<List<MeetingRoomDTO>> listMeetingRoom(){
+    public Response<List<MeetingRoomDTO>> listMeetingRoom(HttpServletRequest request){
+        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        if (userDO.getRoleId() != 0) {
+            throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
+        }
         log.info("列出会议室列表");
         List<MeetingRoomDTO> resultList = managerService.listMeetingRoom();
         return ResponseUtils.returnSuccess(resultList);
@@ -237,7 +279,11 @@ public class ManagerController {
     @PostMapping(value = "/delDepartment")
     public Response delDepartment(
             @ApiParam(name = "department_name", value = "部门名字")
-            @RequestParam(value = "department_name") String departmentName){
+            @RequestParam(value = "department_name") String departmentName, HttpServletRequest request){
+        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        if (userDO.getRoleId() != 0) {
+            throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
+        }
         log.info("添加department, departmentName:{}", departmentName);
         if (Objects.isNull(departmentName)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
@@ -252,6 +298,38 @@ public class ManagerController {
         departmentDTO.setDepartmentName(departmentName);
         departmentDTO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
         managerService.updateDepartmentSelective(departmentDTO);
+        return ResponseUtils.returnDefaultSuccess();
+    }
+
+    @ApiOperation(value = "给用户设置department", notes = "给用户设置department")
+    @PostMapping(value = "/setDepartment")
+    public Response setDepartmentForUser(
+            @ApiParam(name = "username", value = "要设置的那个用户的名字")
+            @RequestParam(value = "username") String username,
+            @ApiParam(name = "department_name", value = "部门名字")
+            @RequestParam(value = "department_name") String departmentName, HttpServletRequest request){
+        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        if (userDO.getRoleId() != 0) {
+            throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
+        }
+        log.info("给用户:{}设置department:{}", username, departmentName);
+        if (Objects.isNull(departmentName) || Objects.isNull(username)) {
+            throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
+        }
+        DepartmentQuery departmentQuery = new DepartmentQuery();
+        departmentQuery.setDepartmentName(departmentName);
+        List<DepartmentDTO> departmentDTOList = managerService.getDepartmentByDepartmentQuery(departmentQuery);
+        if (CollectionUtils.isEmpty(departmentDTOList)) {
+            throw new ResponseException(StatusCodeEnu.DEPARTMENT_NOT_EXIST);
+        }
+        UserQuery userQuery = new UserQuery();
+        userQuery.setUserName(username);
+        UserDO userDoInDB = userService.getUserByUserQuery(userQuery);
+        if (ObjectUtils.isEmpty(userDoInDB)) {
+            throw new ResponseException(StatusCodeEnu.USERNAME_NOT_EXIST);
+        }
+        userDoInDB.setDepartmentName(departmentName);
+        userService.updateUserSelective(userDoInDB);
         return ResponseUtils.returnDefaultSuccess();
     }
 

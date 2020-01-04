@@ -18,10 +18,12 @@ import com.walking.meeting.mapper.MeetingMapper;
 import com.walking.meeting.mapper.RoomDeviceMapper;
 import com.walking.meeting.utils.DateUtils;
 import com.walking.meeting.utils.DbUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.unit.DataUnit;
 import tk.mybatis.mapper.entity.Example;
 
@@ -29,6 +31,7 @@ import java.util.*;
 
 import static com.walking.meeting.utils.DateUtils.*;
 
+@Slf4j
 @Service
 public class MeetingServiceImpl implements MeetingService {
 
@@ -64,7 +67,7 @@ public class MeetingServiceImpl implements MeetingService {
         DbUtils.setEqualToProp(builder, MeetingDO.PROP_BOOKING_DATE, listMeetingDTO.getBookingDate());
         DbUtils.setEqualToProp(builder, MeetingDO.PROP_MEETING_LEVEL, listMeetingDTO.getMeetingLevel());
         DbUtils.setEqualToProp(builder, MeetingDO.PROP_DEPARTMENT_NAME, listMeetingDTO.getDepartmentName());
-        List<MeetingDO> meetingDOList = meetingMapper.selectByExample(builder.build());
+        List<MeetingDO> meetingDOList = meetingMapper.selectByExample(builder.build().orderBy("booking_start_time").desc());
         // 把meetingDO转化为meetingReturnDTO
         List<MeetingReturnDTO> meetingReturnDTOList = new ArrayList<>();
         meetingDOList.forEach(meetingDO -> {
@@ -148,6 +151,7 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Override
     public Boolean isTimeAvailable(String startTime, String endTime, String date, String roomId) {
+        log.info("时间合理吗会议开始时间:{},会议结束时间:{},会议日期:{},会议室:{}",startTime,endTime,date,roomId);
         // 先和会议室的freeTime比较，再和meeting列表里的会议比较
         MeetingRoomQuery meetingRoomQuery = new MeetingRoomQuery();
         meetingRoomQuery.setRoomId(roomId);
@@ -155,17 +159,18 @@ public class MeetingServiceImpl implements MeetingService {
                 .orElse(null);
         // roomId有错，没有这个room，不校验则下面会报空指针
         if (ObjectUtils.isEmpty(meetingRoomDO)){
-            return false;
+            throw new ResponseException(StatusCodeEnu.MEETING_ROOM_NOT_EXIST);
+//            return false;
         }
         Date freeStartTime = meetingRoomDO.getFreeTimeStart();
         Date freeEndTime = meetingRoomDO.getFreeTimeEnd();
         if (timeCompare(DateUtils.parse(startTime,FORMAT_YYYY_MM_DD_HH_MM),freeStartTime)<0) {
-//            throw new ResponseException(StatusCodeEnu.MEETING_TIME_TOO_EARLY);
-            return false;
+            throw new ResponseException(StatusCodeEnu.MEETING_TIME_TOO_EARLY);
+//            return false;
         }
         if (timeCompare(DateUtils.parse(endTime,FORMAT_YYYY_MM_DD_HH_MM),freeEndTime)>0){
-//            throw new ResponseException(StatusCodeEnu.MEETING_TIME_TOO_LATE);
-            return false;
+            throw new ResponseException(StatusCodeEnu.MEETING_TIME_TOO_LATE);
+//            return false;
         }
         // 以下穷举所有会议预定情况判断
         List<MeetingDTO> meetingDTOList = meetingMapper.selectTimeByDateAndRoomID(date,roomId);
@@ -196,22 +201,24 @@ public class MeetingServiceImpl implements MeetingService {
 //        });
         // 用for循环可以return false
         // TODO 这个meetingDTOList是空的？？BUG
-        for (int i = 0; i < meetingDTOList.size(); i++) {
-            if (timeCompare(meetingDTOList.get(i).getBookingStartTime(),sTime)<0 &&
-                    timeCompare(meetingDTOList.get(i).getBookingEndTime(),sTime)>0) {
-                return false;
-            }
-            if (timeCompare(meetingDTOList.get(i).getBookingStartTime(),eTime)<0 &&
-                    timeCompare(meetingDTOList.get(i).getBookingEndTime(),eTime)>0) {
-                return false;
-            }
-            if (timeCompare(meetingDTOList.get(i).getBookingStartTime(),sTime) == 0 ||
-                    timeCompare(meetingDTOList.get(i).getBookingEndTime(),eTime) == 0) {
-                return false;
-            }
-            if (timeCompare(sTime,meetingDTOList.get(i).getBookingStartTime()) < 0 &&
-                    timeCompare(eTime,meetingDTOList.get(i).getBookingEndTime()) > 0) {
-                return false;
+        if (!CollectionUtils.isEmpty(meetingDTOList)) {
+            for (int i = 0; i < meetingDTOList.size(); i++) {
+                if (timeCompare(meetingDTOList.get(i).getBookingStartTime(),sTime)<0 &&
+                        timeCompare(meetingDTOList.get(i).getBookingEndTime(),sTime)>0) {
+                    return false;
+                }
+                if (timeCompare(meetingDTOList.get(i).getBookingStartTime(),eTime)<0 &&
+                        timeCompare(meetingDTOList.get(i).getBookingEndTime(),eTime)>0) {
+                    return false;
+                }
+                if (timeCompare(meetingDTOList.get(i).getBookingStartTime(),sTime) == 0 ||
+                        timeCompare(meetingDTOList.get(i).getBookingEndTime(),eTime) == 0) {
+                    return false;
+                }
+                if (timeCompare(sTime,meetingDTOList.get(i).getBookingStartTime()) < 0 &&
+                        timeCompare(eTime,meetingDTOList.get(i).getBookingEndTime()) > 0) {
+                    return false;
+                }
             }
         }
         return true;

@@ -29,7 +29,7 @@ public class Swagger {
         return new ApiInfoBuilder()
                 .title("meetingApp")
                 .description("API of meetingAPP")
-//                .termsOfServiceUrl("localhost:9080/")
+//                .termsOfServiceUrl("localhost:8080/")
                 .version("1.0")
                 .build();
     }

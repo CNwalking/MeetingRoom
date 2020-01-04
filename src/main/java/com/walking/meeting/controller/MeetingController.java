@@ -101,13 +101,15 @@ public class MeetingController {
         // 先判断会议室所选日期是否有空，再是时间是否有空，这两个判定完以后addMeeting到数据库表
         String isTimeFree = meetingService.selectTimeByDateAndRoomID(parseDateFormatToSQLNeed(bookingDate),roomId);
         if (isTimeFree.equals(Const.ROOM_FULL_TIME)){
+            log.info("会议室:{},在日期:{}已经被订满了", roomId, bookingDate);
             throw new ResponseException(StatusCodeEnu.MEETING_ROOM_FULL);
         }
         if (isTimeFree.equals(Const.ROOM_CROWDED)) {
+            log.info("会议室:{},在日期:{}需要进入候补队列", roomId, bookingDate);
             // TODO 进入候补队列
         }
         if (isTimeFree.equals(Const.ROOM_AVAILABLE)) {
-            log.info("会议室:{},在日期:{}时可被直接预定",roomId,bookingDate);
+            log.info("会议室:{},在日期:{}时可被直接预定", roomId, bookingDate);
         }
         // 开始时间、结束时间判定,判断想预定的时间是否合法。
         Boolean isMeetingTimeAvailable = meetingService.isTimeAvailable(startTime, endTime,
@@ -146,7 +148,7 @@ public class MeetingController {
         // 如果 开始时间-结束时间 != 会议时间 或开始时间 >结束时间 ，那么报错
         Date start = DateUtils.parse(startTime, FORMAT_YYYY_MM_DD_HH_MM);
         Date end = DateUtils.parse(endTime, FORMAT_YYYY_MM_DD_HH_MM);
-        log.info("startTime:{},endTime:{}",start,end);
+        log.info("startTime:{},endTime:{}", start, end);
         if (!new BigDecimal(DateUtils.getMeetingRequiredTime(startTime, endTime)).equals(requiredTime)
             || start.getTime() > end.getTime()) {
             throw new ResponseException(StatusCodeEnu.MEETING_TIME_ERROR);

@@ -24,8 +24,10 @@ public enum StatusCodeEnu {
     USER_ROLE_ERROR(new StatusCode(43020, "请选择正确的身份哦")),
     TWO_PSWD_NOT_SAME(new StatusCode(43021, "两次新密码不一致哦")),
     TWO_PSWD_SAME(new StatusCode(43022, "新老密码不能一样哦")),
-    QUESTION_NOT_RIGHT(new StatusCode(43023, "密保问题不对")),
-    ANSWER_NOT_RIGHT(new StatusCode(43024, "密保问题答案不对")),
+    QUESTION_NOT_RIGHT(new StatusCode(43023, "密保问题不对哦")),
+    ANSWER_NOT_RIGHT(new StatusCode(43024, "密保问题答案不对哦")),
+    NOT_MANAGER(new StatusCode(43025, "不是管理员无法进行该操作")),
+
 
 
 
