@@ -141,6 +141,7 @@ public class ManagerController {
         if (ObjectUtils.isNotEmpty(device)) {
             throw new ResponseException(StatusCodeEnu.DEVICE_ALREADY_EXIST);
         }
+        // 添加device的时候device_id不能重复
         DeviceDTO deviceDTO = new DeviceDTO();
         deviceDTO.setDeviceId(deviceId);
         deviceDTO.setDeviceType(deviceType);
@@ -284,7 +285,7 @@ public class ManagerController {
         if (userDO.getRoleId() != 0) {
             throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
         }
-        log.info("添加department, departmentName:{}", departmentName);
+        log.info("删除department, departmentName:{}", departmentName);
         if (Objects.isNull(departmentName)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
         }

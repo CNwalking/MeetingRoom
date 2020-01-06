@@ -2,6 +2,8 @@ package com.walking.meeting.Service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.walking.meeting.Service.ManagerService;
+import com.walking.meeting.common.ResponseException;
+import com.walking.meeting.common.StatusCodeEnu;
 import com.walking.meeting.dataobject.dao.*;
 import com.walking.meeting.dataobject.dto.*;
 import com.walking.meeting.dataobject.query.DepartmentQuery;
@@ -78,6 +80,15 @@ public class ManagerServiceImpl implements ManagerService {
     @Override
     public void addDevice(DeviceDTO deviceDTO) {
         DeviceDO deviceDO =  JSON.parseObject(JSON.toJSONString(deviceDTO), DeviceDO.class);
+        List<DeviceDTO> list = listDevice();
+        list.forEach(ele->{
+            if (deviceDO.getDeviceId().equals(ele.getDeviceId())) {
+                throw new ResponseException(StatusCodeEnu.DEVICE_ID_CANNOT_REPEAT);
+            }
+            if (deviceDO.getDeviceType().equals(ele.getDeviceType())) {
+                throw new ResponseException(StatusCodeEnu.DEVICE_TYPE_CANNOT_REPEAT);
+            }
+        });
         deviceDO.setCreateTime(new Date());
         deviceMapper.insertSelective(deviceDO);
     }
@@ -107,7 +118,7 @@ public class ManagerServiceImpl implements ManagerService {
             return;
         }
         DepartmentDO departmentDO =  JSON.parseObject(JSON.toJSONString(departmentDTO), DepartmentDO.class);
-        Example.Builder builder = DbUtils.newExampleBuilder(DeviceDO.class);
+        Example.Builder builder = DbUtils.newExampleBuilder(DepartmentDO.class);
         DbUtils.setEqualToProp(builder, DepartmentDO.PROP_DEPARTMENT_NAME, departmentDTO.getDepartmentName());
         departmentDO.setUpdateTime(new Date());
         departmentMapper.updateByExampleSelective(departmentDO,builder.build());

@@ -27,6 +27,9 @@ public enum StatusCodeEnu {
     QUESTION_NOT_RIGHT(new StatusCode(43023, "密保问题不对哦")),
     ANSWER_NOT_RIGHT(new StatusCode(43024, "密保问题答案不对哦")),
     NOT_MANAGER(new StatusCode(43025, "不是管理员无法进行该操作")),
+    DEVICE_ID_CANNOT_REPEAT(new StatusCode(43026, "设备ID不能重复")),
+    DEVICE_TYPE_CANNOT_REPEAT(new StatusCode(43027, "设备类型不能重复哦")),
+
 
 
 
