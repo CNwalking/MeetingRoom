@@ -1,7 +1,9 @@
 package com.walking.meeting.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
+import com.walking.meeting.Service.ManagerService;
 import com.walking.meeting.Service.MeetingService;
 import com.walking.meeting.common.*;
 import com.walking.meeting.dataobject.dao.MeetingDO;
@@ -10,6 +12,7 @@ import com.walking.meeting.dataobject.dto.ListMeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingReturnDTO;
 import com.walking.meeting.dataobject.vo.MeetingRoomVO;
+import com.walking.meeting.dataobject.vo.UserInfoVO;
 import com.walking.meeting.utils.DateUtils;
 import com.walking.meeting.utils.ResponseUtils;
 import com.walking.meeting.utils.SnowFlakeIdGenerator;
@@ -37,6 +40,8 @@ public class MeetingController {
 
     @Autowired
     private MeetingService meetingService;
+    @Autowired
+    private ManagerService managerService;
 
     @ApiOperation(value = "查看所有会议预定列表", notes = "查看所有会议预定列表")
     @PostMapping(value = "/list")
@@ -217,6 +222,21 @@ public class MeetingController {
                 deviceIdList, roomScale, pageNum, pageSize);
         return ResponseUtils.returnSuccess(pageInfo);
     }
+
+    @ApiOperation(value = "通过部门来搜出用户列表", notes = "通过部门来搜出用户列表")
+    @PostMapping(value = "/department/listUser")
+    public Response<List<String>> departmentUserList(
+            @ApiParam(name = "department_name", value = "部门名字")
+            @RequestParam(value = "department_name") String departmentName) {
+        log.info("通过部门来搜出用户列表,department_name:{}", departmentName);
+        // 参数判空
+        if (StringUtils.isEmpty(departmentName)) {
+            throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
+        }
+        List<String> userList = managerService.getDepartmentUser(departmentName);
+        return ResponseUtils.returnSuccess(userList);
+    }
+
 
     private String parseDateFormatToSQLNeed(String date){
         // 2019-11-04 转成 20191104

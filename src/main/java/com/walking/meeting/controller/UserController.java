@@ -8,7 +8,6 @@ import com.walking.meeting.dataobject.dao.MeetingDO;
 import com.walking.meeting.dataobject.dao.UserDO;
 import com.walking.meeting.dataobject.dto.UserDTO;
 import com.walking.meeting.dataobject.query.UserQuery;
-import com.walking.meeting.dataobject.vo.UserInfoVO;
 import com.walking.meeting.utils.DateUtils;
 import com.walking.meeting.utils.MD5Encrypt;
 import com.walking.meeting.utils.ResponseUtils;
@@ -16,18 +15,14 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.Objects;
-import java.util.Optional;
 
 import static com.walking.meeting.utils.DateUtils.FORMAT_YYYY_MM_DD_HH_MM;
 
@@ -214,16 +209,7 @@ public class UserController {
     }
 
 
-
-//    @ApiOperation(value = "session已经过期，请登录", notes = "session已经过期，请登录")
-//    @PostMapping(value = "/session/timeout")
-//    public Response reLogin(){
-//        return ResponseUtils.returnError(400,"session已经过期，请登录");
-//    }
-
-
-    // TODO 给用户添加部门，再写个通过部门来搜出用户列表
-
+    // TODO 给用户添加部门
 
 //    public static void main(String[] args) {
 //        String password = "qwe123";

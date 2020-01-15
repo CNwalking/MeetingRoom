@@ -1,5 +1,6 @@
 package com.walking.meeting.Service;
 
+import com.github.pagehelper.PageInfo;
 import com.walking.meeting.dataobject.dao.DeviceDO;
 import com.walking.meeting.dataobject.dao.MeetingRoomDO;
 import com.walking.meeting.dataobject.dao.RoomDeviceDO;
@@ -44,6 +45,8 @@ public interface ManagerService {
     DeviceDTO getDeviceByDeviceQuery(DeviceQuery deviceQuery);
 
     List<DepartmentDTO> getDepartmentByDepartmentQuery(DepartmentQuery departmentQuery);
+
+    List<String> getDepartmentUser(String departmentName);
 
 
 }

@@ -1,6 +1,7 @@
 package com.walking.meeting.Service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.github.pagehelper.PageInfo;
 import com.walking.meeting.Service.ManagerService;
 import com.walking.meeting.common.ResponseException;
 import com.walking.meeting.common.StatusCodeEnu;
@@ -9,10 +10,7 @@ import com.walking.meeting.dataobject.dto.*;
 import com.walking.meeting.dataobject.query.DepartmentQuery;
 import com.walking.meeting.dataobject.query.DeviceQuery;
 import com.walking.meeting.dataobject.query.MeetingRoomQuery;
-import com.walking.meeting.mapper.DepartmentMapper;
-import com.walking.meeting.mapper.DeviceMapper;
-import com.walking.meeting.mapper.MeetingRoomMapper;
-import com.walking.meeting.mapper.RoomDeviceMapper;
+import com.walking.meeting.mapper.*;
 import com.walking.meeting.utils.DateUtils;
 import com.walking.meeting.utils.DbUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +35,8 @@ public class ManagerServiceImpl implements ManagerService {
     private RoomDeviceMapper roomDeviceMapper;
     @Autowired
     private MeetingRoomMapper meetingRoomMapper;
+    @Autowired
+    private UserMapper userMapper;
 
     @Override
     public List<DepartmentDTO> listDepartment() {
@@ -202,8 +202,19 @@ public class ManagerServiceImpl implements ManagerService {
         return departmentDTOList;
     }
 
-
-
+    @Override
+    public List<String> getDepartmentUser(String departmentName) {
+        Example.Builder builder = DbUtils.newExampleBuilder(UserDO.class);
+        DbUtils.setEqualToProp(builder, UserDO.PROP_DEPARTMENT_NAME, departmentName);
+        List<UserDO> userDOList = userMapper.selectByExample(builder.build());
+        List<String> userNameList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(userDOList)) {
+            userDOList.forEach(ele -> {
+                userNameList.add(Optional.ofNullable(ele.getUsername()).orElse(""));
+            });
+        }
+        return userNameList;
+    }
 
 
 }
