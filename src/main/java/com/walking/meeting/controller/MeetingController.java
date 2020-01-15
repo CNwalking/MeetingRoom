@@ -6,11 +6,14 @@ import com.github.pagehelper.PageInfo;
 import com.walking.meeting.Service.ManagerService;
 import com.walking.meeting.Service.MeetingService;
 import com.walking.meeting.common.*;
+import com.walking.meeting.dataobject.dao.DepartmentDO;
 import com.walking.meeting.dataobject.dao.MeetingDO;
 import com.walking.meeting.dataobject.dao.MeetingRoomDO;
+import com.walking.meeting.dataobject.dto.DepartmentDTO;
 import com.walking.meeting.dataobject.dto.ListMeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingReturnDTO;
+import com.walking.meeting.dataobject.query.DepartmentQuery;
 import com.walking.meeting.dataobject.vo.MeetingRoomVO;
 import com.walking.meeting.dataobject.vo.UserInfoVO;
 import com.walking.meeting.utils.DateUtils;
@@ -20,6 +23,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +40,7 @@ import static com.walking.meeting.utils.DateUtils.*;
 @RestController("MeetingController")
 @RequestMapping("/meeting")
 public class MeetingController {
-    // TODO 预定会议接口（算法），查看会议预定历史接口（通用list，按人），删除会议接口（取消会议）,搜索会议室接口（算法)
+    // TODO 预定会议接口(算法), 候补队列, 分类，高级会议取消低级会议
 
     @Autowired
     private MeetingService meetingService;
@@ -232,6 +236,12 @@ public class MeetingController {
         // 参数判空
         if (StringUtils.isEmpty(departmentName)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
+        }
+        DepartmentQuery query = new DepartmentQuery();
+        query.setDepartmentName(departmentName);
+        List<DepartmentDTO> departmentDTOList = managerService.getDepartmentByDepartmentQuery(query);
+        if (CollectionUtils.isEmpty(departmentDTOList)) {
+            throw new ResponseException(StatusCodeEnu.DEPARTMENT_NOT_EXIST);
         }
         List<String> userList = managerService.getDepartmentUser(departmentName);
         return ResponseUtils.returnSuccess(userList);
