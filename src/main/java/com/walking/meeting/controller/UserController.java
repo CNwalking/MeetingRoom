@@ -39,6 +39,15 @@ public class UserController {
     @Autowired
     private MeetingService meetingService;
 
+    @ApiOperation(value = "人脸识别用户登录", notes = "人脸识别用户登录")
+    @PostMapping(value = "/faceLogin")
+    public Response userFaceLogin() {
+        // TODO 人脸识别登录接口
+        // 加到session里去
+//        request.getSession().setAttribute(Const.CURRENT_USER,userDO);
+        return ResponseUtils.returnDefaultSuccess();
+    }
+
     @ApiOperation(value = "用户登录", notes = "用户登录")
     @PostMapping(value = "/login")
     public Response userLogin(
