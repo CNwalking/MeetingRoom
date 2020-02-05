@@ -70,8 +70,8 @@ public class ManagerController {
         }
         log.info("添加会议室, roomId:{}, roomName:{}, deviceIdList:{}, freeTimeStart:{}, freeTimeEnd:{}, roomScale:{}",
                 roomId, roomName, deviceIdList, freeTimeStart, freeTimeEnd, roomScale);
-        if (Objects.isNull(roomId) || Objects.isNull(roomName)|| Objects.isNull(deviceIdList)||
-                Objects.isNull(freeTimeStart)|| Objects.isNull(freeTimeEnd)|| Objects.isNull(roomScale)) {
+        if (StringUtils.isEmpty(roomId) || StringUtils.isEmpty(roomName)|| StringUtils.isEmpty(deviceIdList)||
+                StringUtils.isEmpty(freeTimeStart)|| StringUtils.isEmpty(freeTimeEnd)|| Objects.isNull(roomScale)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
         }
         // 先判断这个roomId和roomName已经存在
@@ -170,6 +170,12 @@ public class ManagerController {
         if (ObjectUtils.isEmpty(device)) {
             throw new ResponseException(StatusCodeEnu.NO_SUCH_DEVICE);
         }
+        // 不仅要删除device表的，还要删除room_device表的
+        RoomDeviceDTO roomDeviceDTO = new RoomDeviceDTO();
+        roomDeviceDTO.setDeviceId(deviceId);
+        roomDeviceDTO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
+        managerService.updateRoomDevice(roomDeviceDTO);
+
         DeviceDTO deviceDTO = new DeviceDTO();
         deviceDTO.setDeviceId(deviceId);
         deviceDTO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
@@ -187,7 +193,7 @@ public class ManagerController {
             throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
         }
         log.info("删除会议室, roomId:{}", roomId);
-        if (Objects.isNull(roomId)) {
+        if (StringUtils.isEmpty(roomId)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
         }
         MeetingRoomQuery meetingRoomQuery = new MeetingRoomQuery();
@@ -198,6 +204,12 @@ public class ManagerController {
         if (ObjectUtils.isEmpty(meetingRoomDO)) {
             throw new ResponseException(StatusCodeEnu.MEETING_ROOM_NOT_EXIST);
         }
+        // 不仅要删除device表的，还要删除room_device表的
+        RoomDeviceDTO roomDeviceDTO = new RoomDeviceDTO();
+        roomDeviceDTO.setRoomId(roomId);
+        roomDeviceDTO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
+        managerService.updateRoomDevice(roomDeviceDTO);
+
         MeetingRoomDTO meetingRoomDTO = new MeetingRoomDTO();
         meetingRoomDTO.setRoomId(roomId);
         meetingRoomDTO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
@@ -218,7 +230,7 @@ public class ManagerController {
             throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
         }
         log.info("添加department, departmentName:{}, departmentLevel:{}", departmentName, departmentLevel);
-        if (Objects.isNull(departmentName) || Objects.isNull(departmentLevel)) {
+        if (StringUtils.isEmpty(departmentName) || Objects.isNull(departmentLevel)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
         }
         DepartmentQuery departmentQuery = new DepartmentQuery();

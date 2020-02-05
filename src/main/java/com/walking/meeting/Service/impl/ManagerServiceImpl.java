@@ -144,6 +144,20 @@ public class ManagerServiceImpl implements ManagerService {
     }
 
     @Override
+    public void updateRoomDevice(RoomDeviceDTO roomDeviceDTO) {
+        if(ObjectUtils.isEmpty(roomDeviceDTO)){
+            return;
+        }
+        RoomDeviceDO roomDeviceDO =  JSON.parseObject(JSON.toJSONString(roomDeviceDTO), RoomDeviceDO.class);
+        Example.Builder builder = DbUtils.newExampleBuilder(RoomDeviceDO.class);
+        DbUtils.setEqualToProp(builder, RoomDeviceDO.PROP_ROOM_ID, roomDeviceDO.getRoomId());
+        DbUtils.setEqualToProp(builder, RoomDeviceDO.PROP_DEVICE_ID, roomDeviceDO.getDeviceId());
+        roomDeviceDO.setUpdateTime(new Date());
+        roomDeviceMapper.updateByExampleSelective(roomDeviceDO,builder.build());
+    }
+
+
+    @Override
     public void addMeetingRoom(MeetingRoomDTO meetingRoomDTO) {
         MeetingRoomDO meetingRoomDO =  JSON.parseObject(JSON.toJSONString(meetingRoomDTO), MeetingRoomDO.class);
         meetingRoomDO.setCreateTime(new Date());

@@ -8,6 +8,9 @@ import com.walking.meeting.dataobject.dao.UserDO;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Bean;
+import org.springframework.session.web.http.CookieSerializer;
+import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -20,6 +23,14 @@ import java.util.Map;
 
 @Slf4j
 public class SessionInterceptor implements HandlerInterceptor {
+    @Bean
+    public CookieSerializer httpSessionIdResolver(){
+        DefaultCookieSerializer cookieSerializer = new DefaultCookieSerializer();
+        cookieSerializer.setCookieName("token");
+        cookieSerializer.setUseHttpOnlyCookie(false);
+        cookieSerializer.setSameSite(null);
+        return cookieSerializer;
+    }
     @Override
     public void afterCompletion(HttpServletRequest arg0, HttpServletResponse arg1, Object arg2, Exception arg3)
             throws Exception {

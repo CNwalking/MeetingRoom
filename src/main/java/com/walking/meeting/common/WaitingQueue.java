@@ -2,6 +2,9 @@ package com.walking.meeting.common;
 
 public class WaitingQueue<T> {
 
+    // 里面塞 MeetingDO+时间戳+等级
+    public static WaitingQueue waitingQueue = new WaitingQueue();
+
     static class node<T> {
         T data;
         node next;

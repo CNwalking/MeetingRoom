@@ -33,6 +33,8 @@ public interface ManagerService {
 
     void addRoomDevice(RoomDeviceDTO roomDeviceDtO);
 
+    void updateRoomDevice(RoomDeviceDTO roomDeviceDtO);
+
     void addMeetingRoom(MeetingRoomDTO meetingRoomDTO);
 
     /**
