@@ -29,6 +29,7 @@ public enum StatusCodeEnu {
     NOT_MANAGER(new StatusCode(43025, "不是管理员无法进行该操作")),
     DEVICE_ID_CANNOT_REPEAT(new StatusCode(43026, "设备ID不能重复")),
     DEVICE_TYPE_CANNOT_REPEAT(new StatusCode(43027, "设备类型不能重复哦")),
+    TOKEN_ERROR(new StatusCode(43028, "token有点问题奥")),
 
 
 

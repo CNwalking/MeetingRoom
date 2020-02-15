@@ -66,6 +66,13 @@ public class ResponseUtils {
         return response;
     }
 
+    public static Response returnTokenError() {
+        Response response = new Response();
+        response.setCode(400);
+        response.setMessage("Token异常");
+        return response;
+    }
+
     public static <T> Response<T> returnError(int code, String message, T data) {
         Response<T> response = new Response<>();
         response.setCode(code);

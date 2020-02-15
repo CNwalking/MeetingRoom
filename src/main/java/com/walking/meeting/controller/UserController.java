@@ -1,6 +1,9 @@
 package com.walking.meeting.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.walking.meeting.Service.MeetingService;
 import com.walking.meeting.Service.UserService;
 import com.walking.meeting.common.*;
@@ -9,6 +12,7 @@ import com.walking.meeting.dataobject.dao.UserDO;
 import com.walking.meeting.dataobject.dto.UserDTO;
 import com.walking.meeting.dataobject.query.UserQuery;
 import com.walking.meeting.utils.DateUtils;
+import com.walking.meeting.utils.JwtUtils;
 import com.walking.meeting.utils.MD5Encrypt;
 import com.walking.meeting.utils.ResponseUtils;
 import io.swagger.annotations.Api;
@@ -49,6 +53,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "用户登录", notes = "用户登录")
+    @PassToken
     @PostMapping(value = "/login")
     public Response userLogin(
             @ApiParam(name = "login_name", value = "用户名") @RequestParam(value = "login_name") String loginName,
@@ -77,11 +82,25 @@ public class UserController {
             throw new ResponseException(StatusCodeEnu.USER_ROLE_ERROR);
         }
         // 加到session里去
-        request.getSession().setAttribute(Const.CURRENT_USER,userDO);
-        return ResponseUtils.returnDefaultSuccess();
+//        request.getSession().setAttribute(Const.CURRENT_USER,userDO);
+        // 生成token
+        JSONObject jsonObject=new JSONObject();
+        String token = JwtUtils.getToken(userDO);
+        jsonObject.put("token", token);
+        jsonObject.put("user", userDO);
+        return ResponseUtils.returnSuccess(jsonObject);
     }
 
+    @ApiOperation(value = "测试登录是否成功", notes = "测试登录是否成功")
+    @UserLogin
+    @GetMapping("/getMessage")
+    public String getMessage(){
+        return "你已通过验证";
+    }
+
+
     @ApiOperation(value = "用户注册", notes = "用户注册")
+    @PassToken
     @PostMapping(value = "/register")
     public Response userRegister(
             @ApiParam(name = "login_name", value = "用户名") @RequestParam(value = "login_name") String loginName,
@@ -115,13 +134,19 @@ public class UserController {
     }
 
     @ApiOperation(value = "用户删除", notes = "用户删除")
+    @UserLogin
     @PostMapping(value = "/del")
     public Response userRegister(
             @ApiParam(name = "login_name", value = "用户名") @RequestParam(value = "login_name") String loginName,
             HttpServletRequest request){
-        UserDO user = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        String username;
+        try {
+            username = JWT.decode(request.getHeader(Const.TOKEN_IN_HEADER)).getAudience().get(0);
+        } catch (JWTDecodeException j) {
+            throw new ResponseException(StatusCodeEnu.TOKEN_ERROR);
+        }
         UserQuery userQuery = new UserQuery();
-        userQuery.setUserName(user.getUsername());
+        userQuery.setUserName(username);
         UserDO isUserRoleExist = userService.getUserByUserQuery(userQuery);
         // 不是管理员无法删除用户
         if (isUserRoleExist.getRoleId()!=0) {
@@ -142,15 +167,24 @@ public class UserController {
     }
 
     @ApiOperation(value = "用户退出", notes = "用户退出")
+    @UserLogin
     @PostMapping(value = "/logout")
     public Response userLogout(HttpServletRequest request){
-        UserDO userDo = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
-        log.info("用户 "+ userDo.getUsername()+" 退出");
-        request.getSession().removeAttribute(Const.CURRENT_USER);
+        String username;
+        try {
+            username = JWT.decode(request.getHeader(Const.TOKEN_IN_HEADER)).getAudience().get(0);
+        } catch (JWTDecodeException j) {
+            throw new ResponseException(StatusCodeEnu.TOKEN_ERROR);
+        }
+//        UserDO userDo = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        log.info("用户 " + username + " 退出");
+//        request.getSession().removeAttribute(Const.CURRENT_USER);
+
         return ResponseUtils.returnDefaultSuccess();
     }
 
     @ApiOperation(value = "获取用户信息", notes = "获取用户信息")
+    @UserLogin
     @PostMapping(value = "/info")
     public Response getUserInfo(HttpServletRequest request){
         UserDO userDo = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
@@ -162,6 +196,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "登录状态下修改密码", notes = "登录状态下修改密码")
+    @UserLogin
     @PostMapping(value = "/reset/online")
     public Response resetPasswordOnline(
         @ApiParam(name = "new_password", value = "新密码") @RequestParam(value = "new_password") String newPassword,
@@ -189,6 +224,7 @@ public class UserController {
     }
 
     @ApiOperation(value = "未登录状态下修改密码", notes = "未登录状态下修改密码")
+    @PassToken
     @PostMapping(value = "/reset/offline")
     public Response resetPasswordOnline(
             @ApiParam(name = "username", value = "用户名") @RequestParam(value = "username") String username,
