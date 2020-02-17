@@ -10,6 +10,8 @@ import com.walking.meeting.Service.UserService;
 import com.walking.meeting.dataobject.dao.UserDO;
 import com.walking.meeting.dataobject.query.UserQuery;
 import com.walking.meeting.utils.JwtUtils;
+import com.walking.meeting.utils.MD5Encrypt;
+import com.walking.meeting.utils.RedisUtils;
 import com.walking.meeting.utils.ResponseUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -36,7 +38,7 @@ public class TokenInterceptor implements HandlerInterceptor {
         }
         HandlerMethod handlerMethod=(HandlerMethod)object;
         Method method=handlerMethod.getMethod();
-        //检查是否有passtoken注释，有则跳过认证
+        //检查是否有PassToken注释，有则跳过认证
         if (method.isAnnotationPresent(PassToken.class)) {
             PassToken passToken = method.getAnnotation(PassToken.class);
             if (passToken.required()) {
@@ -54,7 +56,8 @@ public class TokenInterceptor implements HandlerInterceptor {
                 // 获取 token 中的 username
                 String username;
                 try {
-                    username = JWT.decode(token).getAudience().get(0);
+//                    username = JWT.decode(token).getAudience().get(0);
+                    username = RedisUtils.get(token);
                 } catch (JWTDecodeException j) {
                     throw new RuntimeException("401");
                 }
@@ -63,13 +66,6 @@ public class TokenInterceptor implements HandlerInterceptor {
                 UserDO user = userService.getUserByUserQuery(userQuery);
                 if (user == null) {
                     throw new RuntimeException("用户不存在，请重新登录");
-                }
-                // 验证 token
-                JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(user.getPswd())).build();
-                try {
-                    jwtVerifier.verify(token);
-                } catch (JWTVerificationException e) {
-                    throw new RuntimeException("401");
                 }
                 return true;
             }

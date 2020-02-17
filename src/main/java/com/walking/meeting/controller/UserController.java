@@ -5,16 +5,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.walking.meeting.Service.MeetingService;
+import com.walking.meeting.Service.TokenService;
 import com.walking.meeting.Service.UserService;
 import com.walking.meeting.common.*;
 import com.walking.meeting.dataobject.dao.MeetingDO;
 import com.walking.meeting.dataobject.dao.UserDO;
 import com.walking.meeting.dataobject.dto.UserDTO;
 import com.walking.meeting.dataobject.query.UserQuery;
-import com.walking.meeting.utils.DateUtils;
-import com.walking.meeting.utils.JwtUtils;
-import com.walking.meeting.utils.MD5Encrypt;
-import com.walking.meeting.utils.ResponseUtils;
+import com.walking.meeting.utils.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -42,6 +40,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private MeetingService meetingService;
+    @Autowired
+    private TokenService tokenService;
 
     @ApiOperation(value = "人脸识别用户登录", notes = "人脸识别用户登录")
     @PostMapping(value = "/faceLogin")
@@ -77,7 +77,7 @@ public class UserController {
             log.info("数据库里的:{},加密完的数据:{}",userDO.getPswd(),MD5Encrypt.md5Encrypt(password));
             throw new ResponseException(StatusCodeEnu.USERNAME_OR_PSWD_ERROR);
         }
-        //判断user_role
+        // 判断user_role
         if (!userRole.equals(userDO.getRoleId())) {
             throw new ResponseException(StatusCodeEnu.USER_ROLE_ERROR);
         }
@@ -85,9 +85,10 @@ public class UserController {
 //        request.getSession().setAttribute(Const.CURRENT_USER,userDO);
         // 生成token
         JSONObject jsonObject=new JSONObject();
-        String token = JwtUtils.getToken(userDO);
+        String token = tokenService.generateToken(loginName);
         jsonObject.put("token", token);
         jsonObject.put("user", userDO);
+        tokenService.save(token,userDO.getUsername());
         return ResponseUtils.returnSuccess(jsonObject);
     }
 
@@ -141,8 +142,8 @@ public class UserController {
             HttpServletRequest request){
         String username;
         try {
-            username = JWT.decode(request.getHeader(Const.TOKEN_IN_HEADER)).getAudience().get(0);
-        } catch (JWTDecodeException j) {
+            username = tokenService.getUsername(request.getHeader("token"));
+        } catch (Exception e) {
             throw new ResponseException(StatusCodeEnu.TOKEN_ERROR);
         }
         UserQuery userQuery = new UserQuery();
@@ -172,14 +173,14 @@ public class UserController {
     public Response userLogout(HttpServletRequest request){
         String username;
         try {
-            username = JWT.decode(request.getHeader(Const.TOKEN_IN_HEADER)).getAudience().get(0);
-        } catch (JWTDecodeException j) {
+            username = tokenService.getUsername(request.getHeader("token"));
+        } catch (Exception e) {
             throw new ResponseException(StatusCodeEnu.TOKEN_ERROR);
         }
 //        UserDO userDo = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        tokenService.delToken(request.getHeader("token"));
         log.info("用户 " + username + " 退出");
 //        request.getSession().removeAttribute(Const.CURRENT_USER);
-
         return ResponseUtils.returnDefaultSuccess();
     }
 
@@ -187,10 +188,19 @@ public class UserController {
     @UserLogin
     @PostMapping(value = "/info")
     public Response getUserInfo(HttpServletRequest request){
-        UserDO userDo = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
-        if (ObjectUtils.isNotEmpty(userDo)) {
-            log.info("用户 "+ userDo.getUsername() +" 获取其信息");
-            return ResponseUtils.returnSuccess(userDo);
+        String username;
+        try {
+            username = tokenService.getUsername(request.getHeader("token"));
+        } catch (Exception e) {
+            throw new ResponseException(StatusCodeEnu.TOKEN_ERROR);
+        }
+        UserQuery userQuery = new UserQuery();
+        userQuery.setUserName(username);
+        UserDO user = userService.getUserByUserQuery(userQuery);
+//        UserDO userDo = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        if (ObjectUtils.isNotEmpty(user)) {
+            log.info("用户 "+ user.getUsername() +" 获取其信息");
+            return ResponseUtils.returnSuccess(user);
         }
         return ResponseUtils.returnDefaultError();
     }
@@ -206,20 +216,24 @@ public class UserController {
             throw new ResponseException(StatusCodeEnu.TWO_PSWD_NOT_SAME);
         }
         // 取出已经登录的DO
-        UserDO userDo = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
-        UserQuery userQuery = new UserQuery();
-        if (ObjectUtils.isNotEmpty(userDo)) {
-            log.info("用户 "+ userDo.getUsername() +" 登录状态下修改密码");
-            userQuery.setUserName(userDo.getUsername());
+//        UserDO userDo = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        String username;
+        try {
+            username = tokenService.getUsername(request.getHeader("token"));
+        } catch (Exception e) {
+            throw new ResponseException(StatusCodeEnu.TOKEN_ERROR);
         }
-        UserDO userDOInDB = userService.getUserByUserQuery(userQuery);
+        log.info("用户 "+ username +" 登录状态下修改密码");
+        UserQuery userQuery = new UserQuery();
+        userQuery.setUserName(username);
+        UserDO user = userService.getUserByUserQuery(userQuery);
         // 新老密码不能一样
-        if (StringUtils.equals(userDOInDB.getPswd(),MD5Encrypt.md5Encrypt(newPassword))){
-            log.info("数据库里的:{},加密完的数据:{}",userDo.getPswd(),MD5Encrypt.md5Encrypt(newPassword));
+        if (StringUtils.equals(user.getPswd(),MD5Encrypt.md5Encrypt(newPassword))){
+            log.info("数据库里的:{},加密完的数据:{}",user.getPswd(),MD5Encrypt.md5Encrypt(newPassword));
             throw new ResponseException(StatusCodeEnu.TWO_PSWD_SAME);
         }
-        userDOInDB.setPswd(MD5Encrypt.md5Encrypt(newPassword));
-        userService.updateUserSelective(userDOInDB);
+        user.setPswd(MD5Encrypt.md5Encrypt(newPassword));
+        userService.updateUserSelective(user);
         return ResponseUtils.returnDefaultSuccess();
     }
 
