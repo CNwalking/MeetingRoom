@@ -47,6 +47,7 @@ public class MeetingController {
     @Autowired
     private ManagerService managerService;
 
+    @UserLogin
     @ApiOperation(value = "查看所有会议预定列表", notes = "查看所有会议预定列表")
     @PostMapping(value = "/list")
     public Response<PageInfo<MeetingReturnDTO>> meetingList(
@@ -81,7 +82,7 @@ public class MeetingController {
         return ResponseUtils.returnSuccess(meetingDOPageInfo);
     }
 
-
+    @UserLogin
     @ApiOperation(value = "预定会议", notes = "预定会议")
     @PostMapping(value = "/booking")
     public Response meetingBooking(
@@ -171,6 +172,7 @@ public class MeetingController {
         return ResponseUtils.returnDefaultSuccess();
     }
 
+    @UserLogin
     @ApiOperation(value = "取消会议", notes = "取消会议")
     @PostMapping(value = "/cancel")
     public Response meetingCancel(
@@ -190,7 +192,7 @@ public class MeetingController {
 
     }
 
-
+    @UserLogin
     @ApiOperation(value = "查看会议室的设备", notes = "查看会议室的设备")
     @PostMapping(value = "/search_device_by_room_id")
     public Response<List<Integer>> searchDeviceByRoomId(
@@ -203,7 +205,7 @@ public class MeetingController {
         return ResponseUtils.returnSuccess(meetingService.searchDeviceByRoomId(roomId));
     }
 
-
+    @UserLogin
     @ApiOperation(value = "通过会议室设备、规模和时间选出会议室", notes = "通过会议室设备、规模和时间选出会议室")
     @PostMapping(value = "/select")
     public Response<PageInfo<MeetingRoomVO>> meetingRoomSearchingByDQuery(
@@ -227,6 +229,7 @@ public class MeetingController {
         return ResponseUtils.returnSuccess(pageInfo);
     }
 
+    @UserLogin
     @ApiOperation(value = "通过部门来搜出用户列表", notes = "通过部门来搜出用户列表")
     @PostMapping(value = "/department/listUser")
     public Response<List<String>> departmentUserList(

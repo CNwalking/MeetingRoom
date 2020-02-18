@@ -2,11 +2,9 @@ package com.walking.meeting.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.walking.meeting.Service.ManagerService;
+import com.walking.meeting.Service.TokenService;
 import com.walking.meeting.Service.UserService;
-import com.walking.meeting.common.Const;
-import com.walking.meeting.common.Response;
-import com.walking.meeting.common.ResponseException;
-import com.walking.meeting.common.StatusCodeEnu;
+import com.walking.meeting.common.*;
 import com.walking.meeting.dataobject.dao.*;
 import com.walking.meeting.dataobject.dto.DepartmentDTO;
 import com.walking.meeting.dataobject.dto.DeviceDTO;
@@ -50,6 +48,10 @@ public class ManagerController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private TokenService tokenService;
+
+    @UserLogin
     @ApiOperation(value = "添加会议室", notes = "添加会议室")
     @PostMapping(value = "/addRoom")
     public Response addRoom(
@@ -64,7 +66,15 @@ public class ManagerController {
             @ApiParam(name = "room_scale", value = "会议室可容纳人数")
             @RequestParam(value = "room_scale") Integer roomScale, HttpServletRequest request
             ){
-        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        String username;
+        try {
+            username = tokenService.getUsername(request.getHeader("token"));
+        } catch (Exception e) {
+            throw new ResponseException(StatusCodeEnu.TOKEN_ERROR);
+        }
+        UserQuery userQuery = new UserQuery();
+        userQuery.setUserName(username);
+        UserDO userDO = userService.getUserByUserQuery(userQuery);
         if (userDO.getRoleId() != 0) {
             throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
         }
@@ -118,14 +128,23 @@ public class ManagerController {
     }
 
 
-
+    @UserLogin
     @ApiOperation(value = "添加device", notes = "添加device")
     @PostMapping(value = "/addDevice")
     public Response addDevice(
             @ApiParam(name = "device_id", value = "设备id") @RequestParam(value = "device_id") Integer deviceId,
             @ApiParam(name = "device_type", value = "设备类型") @RequestParam(value = "device_type") String deviceType,
             HttpServletRequest request){
-        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+//        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        String username;
+        try {
+            username = tokenService.getUsername(request.getHeader("token"));
+        } catch (Exception e) {
+            throw new ResponseException(StatusCodeEnu.TOKEN_ERROR);
+        }
+        UserQuery userQuery = new UserQuery();
+        userQuery.setUserName(username);
+        UserDO userDO = userService.getUserByUserQuery(userQuery);
         if (userDO.getRoleId() != 0) {
             throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
         }
@@ -149,12 +168,22 @@ public class ManagerController {
         return ResponseUtils.returnDefaultSuccess();
     }
 
+    @UserLogin
     @ApiOperation(value = "删除device", notes = "删除device")
     @PostMapping(value = "/delDevice")
     public Response delDevice(
             @ApiParam(name = "device_id", value = "设备id")
             @RequestParam(value = "device_id") Integer deviceId, HttpServletRequest request){
-        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+//        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        String username;
+        try {
+            username = tokenService.getUsername(request.getHeader("token"));
+        } catch (Exception e) {
+            throw new ResponseException(StatusCodeEnu.TOKEN_ERROR);
+        }
+        UserQuery userQuery = new UserQuery();
+        userQuery.setUserName(username);
+        UserDO userDO = userService.getUserByUserQuery(userQuery);
         if (userDO.getRoleId() != 0) {
             throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
         }
@@ -183,12 +212,22 @@ public class ManagerController {
         return ResponseUtils.returnDefaultSuccess();
     }
 
+    @UserLogin
     @ApiOperation(value = "删除会议室", notes = "删除会议室")
     @PostMapping(value = "/delRoom")
     public Response delRoom(
             @ApiParam(name = "room_id", value = "会议室id")
             @RequestParam(value = "room_id") String roomId, HttpServletRequest request){
-        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+//        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        String username;
+        try {
+            username = tokenService.getUsername(request.getHeader("token"));
+        } catch (Exception e) {
+            throw new ResponseException(StatusCodeEnu.TOKEN_ERROR);
+        }
+        UserQuery userQuery = new UserQuery();
+        userQuery.setUserName(username);
+        UserDO userDO = userService.getUserByUserQuery(userQuery);
         if (userDO.getRoleId() != 0) {
             throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
         }
@@ -217,6 +256,7 @@ public class ManagerController {
         return ResponseUtils.returnDefaultSuccess();
     }
 
+    @UserLogin
     @ApiOperation(value = "添加department", notes = "添加department")
     @PostMapping(value = "/addDepartment")
     public Response addDepartment(
@@ -225,7 +265,16 @@ public class ManagerController {
             @ApiParam(name = "department_level", value = "部门等级")
             @RequestParam(value = "department_level") Integer departmentLevel
             , HttpServletRequest request){
-        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+//        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        String username;
+        try {
+            username = tokenService.getUsername(request.getHeader("token"));
+        } catch (Exception e) {
+            throw new ResponseException(StatusCodeEnu.TOKEN_ERROR);
+        }
+        UserQuery userQuery = new UserQuery();
+        userQuery.setUserName(username);
+        UserDO userDO = userService.getUserByUserQuery(userQuery);
         if (userDO.getRoleId() != 0) {
             throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
         }
@@ -254,7 +303,16 @@ public class ManagerController {
     @ApiOperation(value = "列出department列表", notes = "列出department列表")
     @GetMapping(value = "/listDepartment")
     public Response<List<DepartmentDTO>> listDepartment(HttpServletRequest request){
-        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+//        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        String username;
+        try {
+            username = tokenService.getUsername(request.getHeader("token"));
+        } catch (Exception e) {
+            throw new ResponseException(StatusCodeEnu.TOKEN_ERROR);
+        }
+        UserQuery userQuery = new UserQuery();
+        userQuery.setUserName(username);
+        UserDO userDO = userService.getUserByUserQuery(userQuery);
         if (userDO.getRoleId() != 0) {
             throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
         }
@@ -266,7 +324,16 @@ public class ManagerController {
     @ApiOperation(value = "列出device列表", notes = "列出device列表")
     @GetMapping(value = "/listDevice")
     public Response<List<DeviceDTO>> listDevice(HttpServletRequest request){
-        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+//        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        String username;
+        try {
+            username = tokenService.getUsername(request.getHeader("token"));
+        } catch (Exception e) {
+            throw new ResponseException(StatusCodeEnu.TOKEN_ERROR);
+        }
+        UserQuery userQuery = new UserQuery();
+        userQuery.setUserName(username);
+        UserDO userDO = userService.getUserByUserQuery(userQuery);
         if (userDO.getRoleId() != 0) {
             throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
         }
@@ -278,7 +345,16 @@ public class ManagerController {
     @ApiOperation(value = "列出会议室列表", notes = "列出会议室列表")
     @GetMapping(value = "/listMeetingRoom")
     public Response<List<MeetingRoomDTO>> listMeetingRoom(HttpServletRequest request){
-        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+//        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        String username;
+        try {
+            username = tokenService.getUsername(request.getHeader("token"));
+        } catch (Exception e) {
+            throw new ResponseException(StatusCodeEnu.TOKEN_ERROR);
+        }
+        UserQuery userQuery = new UserQuery();
+        userQuery.setUserName(username);
+        UserDO userDO = userService.getUserByUserQuery(userQuery);
         if (userDO.getRoleId() != 0) {
             throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
         }
@@ -293,7 +369,16 @@ public class ManagerController {
     public Response delDepartment(
             @ApiParam(name = "department_name", value = "部门名字")
             @RequestParam(value = "department_name") String departmentName, HttpServletRequest request){
-        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+//        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        String username;
+        try {
+            username = tokenService.getUsername(request.getHeader("token"));
+        } catch (Exception e) {
+            throw new ResponseException(StatusCodeEnu.TOKEN_ERROR);
+        }
+        UserQuery userQuery = new UserQuery();
+        userQuery.setUserName(username);
+        UserDO userDO = userService.getUserByUserQuery(userQuery);
         if (userDO.getRoleId() != 0) {
             throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
         }
@@ -321,11 +406,21 @@ public class ManagerController {
             @RequestParam(value = "username") String username,
             @ApiParam(name = "department_name", value = "部门名字")
             @RequestParam(value = "department_name") String departmentName, HttpServletRequest request){
-        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+//        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
+        String loginUser;
+        try {
+            loginUser = tokenService.getUsername(request.getHeader("token"));
+        } catch (Exception e) {
+            throw new ResponseException(StatusCodeEnu.TOKEN_ERROR);
+        }
+        UserQuery userQuery = new UserQuery();
+        userQuery.setUserName(loginUser);
+        UserDO userDO = userService.getUserByUserQuery(userQuery);
         if (userDO.getRoleId() != 0) {
             throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
         }
-        log.info("给用户:{}设置department:{}", username, departmentName);
+
+        log.info("给用户:{}设置department:{}", loginUser, departmentName);
         if (Objects.isNull(departmentName) || Objects.isNull(username)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
         }
@@ -335,9 +430,10 @@ public class ManagerController {
         if (CollectionUtils.isEmpty(departmentDTOList)) {
             throw new ResponseException(StatusCodeEnu.DEPARTMENT_NOT_EXIST);
         }
-        UserQuery userQuery = new UserQuery();
-        userQuery.setUserName(username);
-        UserDO userDoInDB = userService.getUserByUserQuery(userQuery);
+
+        UserQuery userQueryForUpdate = new UserQuery();
+        userQueryForUpdate.setUserName(username);
+        UserDO userDoInDB = userService.getUserByUserQuery(userQueryForUpdate);
         if (ObjectUtils.isEmpty(userDoInDB)) {
             throw new ResponseException(StatusCodeEnu.USERNAME_NOT_EXIST);
         }
@@ -346,16 +442,6 @@ public class ManagerController {
         return ResponseUtils.returnDefaultSuccess();
     }
 
-    @ApiOperation(value = "测试连接", notes = "测试连接")
-    @PostMapping(value = "/test")
-    public Response testConnection(
-            @ApiParam(name = "input", value = "入参")
-            @RequestParam(value = "input") String input,
-            HttpSession httpSession) {
-        httpSession.setAttribute("测试入参",input);
-        log.info("有人在测试连接, input:{}", input);
-        return ResponseUtils.returnSuccess(input);
-    }
 
 
 }
