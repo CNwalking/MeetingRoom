@@ -10,6 +10,7 @@ package com.walking.meeting.dataobject.dto;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.walking.meeting.common.IdEncryption;
 import lombok.Data;
 
@@ -39,11 +40,13 @@ public class MeetingRoomDTO {
     /**
      * 开放时间开始
      */
+    @JsonFormat(timezone = "GMT+8", pattern = "HH:mm:ss")
     private Date freeTimeStart;
 
     /**
      * 开放时间结束
      */
+    @JsonFormat(timezone = "GMT+8", pattern = "HH:mm:ss")
     private Date freeTimeEnd;
 
     /**

@@ -1,5 +1,6 @@
 package com.walking.meeting.dataobject.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
@@ -24,11 +25,13 @@ public class MeetingRoomVO {
     /**
      * 开放时间开始
      */
+    @JsonFormat(timezone = "GMT+8", pattern = "HH:mm:ss")
     private Date freeTimeStart;
 
     /**
      * 开放时间结束
      */
+    @JsonFormat(timezone = "GMT+8", pattern = "HH:mm:ss")
     private Date freeTimeEnd;
 
     /**

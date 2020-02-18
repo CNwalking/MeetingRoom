@@ -11,6 +11,7 @@ package com.walking.meeting.dataobject.dto;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.walking.meeting.common.IdEncryption;
 import lombok.Data;
 
@@ -50,16 +51,19 @@ public class MeetingDTO {
     /**
      * 会议预定日期
      */
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private Date bookingDate;
 
     /**
      * 定会议室起始时间
      */
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date bookingStartTime;
 
     /**
      * 定会议室结束时间
      */
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date bookingEndTime;
 
     /**

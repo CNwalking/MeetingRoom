@@ -1,5 +1,6 @@
 package com.walking.meeting.dataobject.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -42,6 +43,7 @@ public class MeetingReturnDTO {
      *
      * 数据库表字段名称 : meeting.booking_date
      */
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd")
     private Date bookingDate;
 
     /**
@@ -49,6 +51,7 @@ public class MeetingReturnDTO {
      *
      * 数据库表字段名称 : meeting.booking_start_time
      */
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date bookingStartTime;
 
     /**
@@ -56,6 +59,7 @@ public class MeetingReturnDTO {
      *
      * 数据库表字段名称 : meeting.booking_end_time
      */
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date bookingEndTime;
 
     /**
