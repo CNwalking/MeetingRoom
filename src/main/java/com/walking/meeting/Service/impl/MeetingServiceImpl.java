@@ -63,11 +63,13 @@ public class MeetingServiceImpl implements MeetingService {
         PageHelper.startPage(listMeetingDTO.getPageNum(), listMeetingDTO.getPageSize(),
                 true, null, true);
         Example.Builder builder = DbUtils.newExampleBuilder(MeetingDO.class);
+        DbUtils.setEqualToProp(builder, MeetingDO.PROP_ROOM_ID, listMeetingDTO.getRoomId());
         DbUtils.setEqualToProp(builder, MeetingDO.PROP_USERNAME, listMeetingDTO.getUsername());
         DbUtils.setEqualToProp(builder, MeetingDO.PROP_REQUIRED_TIME, listMeetingDTO.getRequiredTime());
         DbUtils.setEqualToProp(builder, MeetingDO.PROP_BOOKING_DATE, listMeetingDTO.getBookingDate());
         DbUtils.setEqualToProp(builder, MeetingDO.PROP_MEETING_LEVEL, listMeetingDTO.getMeetingLevel());
         DbUtils.setEqualToProp(builder, MeetingDO.PROP_DEPARTMENT_NAME, listMeetingDTO.getDepartmentName());
+        builder.orderByDesc(MeetingDO.PROP_BOOKING_DATE);
         List<MeetingDO> meetingDOList = meetingMapper.selectByExample(builder.build());
         // 把meetingDO转化为meetingReturnDTO
         List<MeetingReturnDTO> meetingReturnDTOList = new ArrayList<>();

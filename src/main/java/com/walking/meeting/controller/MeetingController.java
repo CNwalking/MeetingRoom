@@ -59,6 +59,8 @@ public class MeetingController {
             @RequestParam(value = "room_name",required = false) String roomName,
             @ApiParam(name = "required_time", value = "会议时长例如1.5")
             @RequestParam(value = "required_time",required = false) String requiredTime,
+            @ApiParam(name = "booking_date", value = "会议日期yyyy-MM-dd")
+            @RequestParam(value = "booking_date",required = false) String bookingDate,
             @ApiParam(name = "department_name", value = "定会议的部门")
             @RequestParam(value = "department_name",required = false) String departmentName,
             @ApiParam(name = "page_num", value = "页码") @RequestParam(value = "page_num",
@@ -71,6 +73,9 @@ public class MeetingController {
         listMeetingDTO.setUsername(Optional.ofNullable(username).orElse(""));
         listMeetingDTO.setRoomId(Optional.ofNullable(roomId).orElse(""));
         listMeetingDTO.setRoomName(Optional.ofNullable(roomName).orElse(""));
+        if (StringUtils.isNotEmpty(bookingDate)) {
+            listMeetingDTO.setBookingDate(Optional.ofNullable(parseDateFormatToSQLNeed(bookingDate)).orElse(""));
+        }
         if (StringUtils.isNotBlank(requiredTime) && requiredTime != "") {
             listMeetingDTO.setRequiredTime(new BigDecimal(requiredTime.trim()));
         }

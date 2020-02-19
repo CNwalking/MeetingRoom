@@ -26,7 +26,7 @@ public class ListMeetingDTO {
     /**
      * 按定会议的日期来搜
      */
-    private Date bookingDate;
+    private String bookingDate;
 
     /**
      * 按会议时长来搜
