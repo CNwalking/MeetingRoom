@@ -324,19 +324,6 @@ public class ManagerController {
     @ApiOperation(value = "列出device列表", notes = "列出device列表")
     @GetMapping(value = "/listDevice")
     public Response<List<DeviceDTO>> listDevice(HttpServletRequest request){
-//        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
-        String username;
-        try {
-            username = tokenService.getUsername(request.getHeader("token"));
-        } catch (Exception e) {
-            throw new ResponseException(StatusCodeEnu.TOKEN_ERROR);
-        }
-        UserQuery userQuery = new UserQuery();
-        userQuery.setUserName(username);
-        UserDO userDO = userService.getUserByUserQuery(userQuery);
-        if (userDO.getRoleId() != 0) {
-            throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
-        }
         log.info("列出device列表");
         List<DeviceDTO> resultList = managerService.listDevice();
         return ResponseUtils.returnSuccess(resultList);
