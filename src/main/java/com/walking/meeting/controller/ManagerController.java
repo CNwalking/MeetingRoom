@@ -303,19 +303,6 @@ public class ManagerController {
     @ApiOperation(value = "列出department列表", notes = "列出department列表")
     @GetMapping(value = "/listDepartment")
     public Response<List<DepartmentDTO>> listDepartment(HttpServletRequest request){
-//        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
-        String username;
-        try {
-            username = tokenService.getUsername(request.getHeader("token"));
-        } catch (Exception e) {
-            throw new ResponseException(StatusCodeEnu.TOKEN_ERROR);
-        }
-        UserQuery userQuery = new UserQuery();
-        userQuery.setUserName(username);
-        UserDO userDO = userService.getUserByUserQuery(userQuery);
-        if (userDO.getRoleId() != 0) {
-            throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
-        }
         log.info("列出department列表");
         List<DepartmentDTO> resultList = managerService.listDepartment();
         return ResponseUtils.returnSuccess(resultList);
@@ -332,19 +319,6 @@ public class ManagerController {
     @ApiOperation(value = "列出会议室列表", notes = "列出会议室列表")
     @GetMapping(value = "/listMeetingRoom")
     public Response<List<MeetingRoomDTO>> listMeetingRoom(HttpServletRequest request){
-//        UserDO userDO = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
-        String username;
-        try {
-            username = tokenService.getUsername(request.getHeader("token"));
-        } catch (Exception e) {
-            throw new ResponseException(StatusCodeEnu.TOKEN_ERROR);
-        }
-        UserQuery userQuery = new UserQuery();
-        userQuery.setUserName(username);
-        UserDO userDO = userService.getUserByUserQuery(userQuery);
-        if (userDO.getRoleId() != 0) {
-            throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
-        }
         log.info("列出会议室列表");
         List<MeetingRoomDTO> resultList = managerService.listMeetingRoom();
         return ResponseUtils.returnSuccess(resultList);
