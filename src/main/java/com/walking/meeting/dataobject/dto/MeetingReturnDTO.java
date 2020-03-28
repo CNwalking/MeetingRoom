@@ -76,5 +76,11 @@ public class MeetingReturnDTO {
      */
     private String departmentName;
 
+    /**
+     * 数据库表字段注释 : 全局meeting
+     *
+     * 数据库表字段名称 : meeting.meeting_id
+     */
+    private String meetingId;
 
 }
