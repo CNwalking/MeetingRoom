@@ -23,6 +23,8 @@ import tk.mybatis.mapper.entity.Example;
 
 import java.util.*;
 
+import static com.walking.meeting.utils.DateUtils.FORMAT_YYYY_MM_DD_HH_MM;
+
 @Service
 @Slf4j
 public class ManagerServiceImpl implements ManagerService {
@@ -69,11 +71,21 @@ public class ManagerServiceImpl implements ManagerService {
         Example.Builder builder = DbUtils.newExampleBuilder(MeetingRoomDO.class);
         List<MeetingRoomDO> meetingRoomDOList = meetingRoomMapper.selectByExample(builder.build());
         List<MeetingRoomDTO> resultList = new ArrayList<>();
+        Map<String, List<Integer>> map = new HashMap<>();
         if (CollectionUtils.isNotEmpty(meetingRoomDOList)) {
             meetingRoomDOList.forEach(ele -> {
                 resultList.add(JSON.parseObject(JSON.toJSONString(ele), MeetingRoomDTO.class));
+                Example.Builder builderRoomDevice = DbUtils.newExampleBuilder(RoomDeviceDO.class);
+                DbUtils.setEqualToProp(builderRoomDevice, RoomDeviceDO.PROP_ROOM_ID, ele.getRoomId());
+                List<RoomDeviceDO> existDeviceList = roomDeviceMapper.selectByExample(builderRoomDevice.build());
+                List<Integer> deviceIdList = new ArrayList<>();
+                existDeviceList.forEach(deviceDO->{ deviceIdList.add(deviceDO.getDeviceId()); });
+                map.put(ele.getRoomId(), deviceIdList);
             });
         }
+        resultList.forEach(ele->{
+            ele.setDeviceIdList(map.get(ele.getRoomId()));
+        });
         return resultList;
     }
 
@@ -228,6 +240,45 @@ public class ManagerServiceImpl implements ManagerService {
             });
         }
         return userNameList;
+    }
+
+    @Override
+    public void updateRoomDeviceMethod(String roomId, List<String> deviceIdList) {
+
+        Example.Builder builder = DbUtils.newExampleBuilder(RoomDeviceDO.class);
+        DbUtils.setEqualToProp(builder, RoomDeviceDO.PROP_ROOM_ID, roomId);
+        // 先选出这个roomId下的deviceIdList
+        List<RoomDeviceDO> existDeviceList = roomDeviceMapper.selectByExample(builder.build());
+        List<Integer> needToAddList = new ArrayList<>();
+        deviceIdList.forEach(deviceId->{
+            // 添加入参中没有的room_device纪录到表中
+            if (!existDeviceList.contains(Integer.valueOf(deviceId))){
+                needToAddList.add(Integer.valueOf(deviceId));
+            }
+        });
+        // 剩下的是要delete的纪录
+        existDeviceList.removeAll(deviceIdList);
+        if (CollectionUtils.isNotEmpty(existDeviceList)) {
+            existDeviceList.forEach(ele->{
+                RoomDeviceDO roomDeviceDO =  new RoomDeviceDO();
+                Example.Builder builderDelete = DbUtils.newExampleBuilder(RoomDeviceDO.class);
+                DbUtils.setEqualToProp(builderDelete, RoomDeviceDO.PROP_ROOM_ID, roomDeviceDO.getRoomId());
+                DbUtils.setEqualToProp(builderDelete, RoomDeviceDO.PROP_DEVICE_ID, roomDeviceDO.getDeviceId());
+                roomDeviceDO.setUpdateTime(new Date());
+                roomDeviceDO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
+                roomDeviceMapper.updateByExampleSelective(roomDeviceDO,builderDelete.build());
+            });
+        }
+
+        if (CollectionUtils.isNotEmpty(needToAddList)) {
+            needToAddList.forEach(ele->{
+                RoomDeviceDO roomDeviceDO = new RoomDeviceDO();
+                roomDeviceDO.setRoomId(roomId);
+                roomDeviceDO.setDeviceId(ele);
+                roomDeviceDO.setCreateTime(new Date());
+                roomDeviceMapper.insertSelective(roomDeviceDO);
+            });
+        }
     }
 
 

@@ -9,6 +9,7 @@
 package com.walking.meeting.dataobject.dto;
 
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.walking.meeting.common.IdEncryption;
@@ -63,4 +64,6 @@ public class MeetingRoomDTO {
      * 有值则已经被删除
      */
     private String deleteTime;
+
+    private List<Integer> deviceIdList;
 }

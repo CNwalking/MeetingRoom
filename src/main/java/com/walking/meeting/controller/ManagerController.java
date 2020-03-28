@@ -127,6 +127,73 @@ public class ManagerController {
         return ResponseUtils.returnDefaultSuccess();
     }
 
+    @UserLogin
+    @ApiOperation(value = "修改会议室", notes = "修改会议室")
+    @PostMapping(value = "/modifyRoom")
+    public Response modifyRoom(
+            @ApiParam(name = "room_id", value = "会议室id") @RequestParam(value = "room_id") String roomId,
+            @ApiParam(name = "room_name", value = "会议室中文名") @RequestParam(value = "room_name") String roomName,
+            @ApiParam(name = "device_id_list", value = "设备id列表，格式例如:1,2,3")
+            @RequestParam(value = "device_id_list") String deviceIdList,
+            @ApiParam(name = "free_time_start", value = "开放时间始")
+            @RequestParam(value = "free_time_start") String freeTimeStart,
+            @ApiParam(name = "free_time_end", value = "开放时间末")
+            @RequestParam(value = "free_time_end") String freeTimeEnd,
+            @ApiParam(name = "room_scale", value = "会议室可容纳人数")
+            @RequestParam(value = "room_scale") Integer roomScale, HttpServletRequest request
+    ){
+        String username;
+        try {
+            username = tokenService.getUsername(request.getHeader("token"));
+        } catch (Exception e) {
+            throw new ResponseException(StatusCodeEnu.TOKEN_ERROR);
+        }
+        UserQuery userQuery = new UserQuery();
+        userQuery.setUserName(username);
+        UserDO userDO = userService.getUserByUserQuery(userQuery);
+        if (userDO.getRoleId() != 0) {
+            throw new ResponseException(StatusCodeEnu.NOT_MANAGER);
+        }
+        log.info("修改会议室, roomId:{}, roomName:{}, deviceIdList:{}, freeTimeStart:{}, freeTimeEnd:{}, roomScale:{}",
+                roomId, roomName, deviceIdList, freeTimeStart, freeTimeEnd, roomScale);
+        if (StringUtils.isEmpty(roomId) || StringUtils.isEmpty(roomName)|| StringUtils.isEmpty(deviceIdList)||
+                StringUtils.isEmpty(freeTimeStart)|| StringUtils.isEmpty(freeTimeEnd)|| Objects.isNull(roomScale)) {
+            throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
+        }
+        // 先判断这个roomId和roomName已经存在
+        MeetingRoomQuery meetingRoomQuery = new MeetingRoomQuery();
+        meetingRoomQuery.setRoomId(roomId);
+        meetingRoomQuery.setRoomName(roomName);
+        MeetingRoomDO meetingRoomDO = DbUtils.getOne(managerService.getMeetingRoomByQuery(meetingRoomQuery))
+                .orElse(null);
+        // 不存在则报错
+        if (Objects.isNull(meetingRoomDO)){
+            throw new ResponseException(StatusCodeEnu.MEETING_ROOM_NOT_EXIST);
+        }
+        List<Integer> existDeviceList = new ArrayList<>();
+        managerService.listDevice().forEach(ele->{ existDeviceList.add(ele.getDeviceId()); });
+        List<String> deviceList = new ArrayList();
+        if (StringUtils.isNotBlank(deviceIdList)) {
+            deviceList = Arrays.asList(deviceIdList.split(","));
+        }
+        // 没有这种设备就抛异常
+        deviceList.forEach(ele ->{
+            if (!existDeviceList.contains(Integer.parseInt(ele))) {
+                throw new ResponseException(StatusCodeEnu.NO_SUCH_DEVICE);
+            }
+        });
+        // 更新到meetingRoom表里
+        MeetingRoomDTO meetingRoomDTO = new MeetingRoomDTO();
+        meetingRoomDTO.setRoomId(roomId);
+        meetingRoomDTO.setRoomScale(roomScale.shortValue());
+        meetingRoomDTO.setRoomName(roomName);
+        meetingRoomDTO.setFreeTimeStart(DateUtils.parse(freeTimeStart, TIME));
+        meetingRoomDTO.setFreeTimeEnd(DateUtils.parse(freeTimeEnd, TIME));
+        managerService.updateRoomSelective(meetingRoomDTO);
+        // 更新room_device表的数据
+        managerService.updateRoomDeviceMethod(roomId,deviceList);
+        return ResponseUtils.returnDefaultSuccess();
+    }
 
     @UserLogin
     @ApiOperation(value = "添加device", notes = "添加device")

@@ -50,5 +50,5 @@ public interface ManagerService {
 
     List<String> getDepartmentUser(String departmentName);
 
-
+    void updateRoomDeviceMethod(String roomId,List<String> deviceIdList);
 }
