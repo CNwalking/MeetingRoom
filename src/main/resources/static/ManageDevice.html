@@ -143,7 +143,7 @@
   //进入页面后初始化获取信息并填充
   $.ajax({
     type: "GET",
-    url: "http://localhost:8080/manager/listDevice",
+    url: "http://39.106.15.220:8080/manager/listDevice",
     headers: {
       "token": localStorage.manageToken,
       "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
@@ -185,7 +185,7 @@
     if (isTrueOrFalse) {
       $.ajax({
         type: "POST",
-        url: "http://localhost:8080/manager/delDevice",
+        url: "http://39.106.15.220:8080/manager/delDevice",
         data: {
           device_id: $(target)
             .parent()
@@ -237,7 +237,7 @@
     }
     $.ajax({
       type: "POST",
-      url: "http://localhost:8080/manager/addDevice",
+      url: "http://39.106.15.220:8080/manager/addDevice",
       data: {
         device_id: device_id,
         device_type: device_type

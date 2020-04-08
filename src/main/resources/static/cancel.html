@@ -116,7 +116,7 @@
   //获取用户信息并展示
   $.ajax({
     type: "POST",
-    url: "http://localhost:8080/user/info",
+    url: "http://39.106.15.220:8080/user/info",
     headers: {
       token: localStorage.token,
       "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
@@ -130,7 +130,7 @@
       window.un = data.data.username
       $.ajax({
         type: "POST",
-        url: "http://localhost:8080/meeting/list",
+        url: "http://39.106.15.220:8080/meeting/list",
         headers: {
           token: localStorage.token,
           "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
@@ -191,7 +191,7 @@
     var id = tar.parent().children(":first").html()
     $.ajax({
       type: "POST",
-      url: "http://localhost:8080/meeting/cancel",
+      url: "http://39.106.15.220:8080/meeting/cancel",
       data: {
         meeting_id: id
       },

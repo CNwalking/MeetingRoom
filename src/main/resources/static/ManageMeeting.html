@@ -116,7 +116,7 @@
     //获取信息并填充
     $.ajax({
       type: "POST",
-      url: "http://localhost:8080/meeting/list",
+      url: "http://39.106.15.220:8080/meeting/list",
       headers: {
         "token": localStorage.manageToken,
         "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
@@ -157,7 +157,7 @@
     if (isTrueOrFalse) {
       $.ajax({
         type: "POST",
-        url: "http://localhost:8080/meeting/cancel",
+        url: "http://39.106.15.220:8080/meeting/cancel",
         data: {
           meeting_id: $(target)
             .parent()

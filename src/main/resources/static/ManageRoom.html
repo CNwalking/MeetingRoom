@@ -240,7 +240,7 @@
         if (isTrueOrFalse) {
           $.ajax({
             type: "POST",
-            url: "http://localhost:8080/manager/delRoom",
+            url: "http://39.106.15.220:8080/manager/delRoom",
             data: {
               room_id: $(target)
                 .parent().parent()
@@ -304,7 +304,7 @@
     //进入页面后初始化获取信息并填充
     $.ajax({
       type: "GET",
-      url: "http://localhost:8080/manager/listMeetingRoom",
+      url: "http://39.106.15.220:8080/manager/listMeetingRoom",
       headers: {
         "token": localStorage.manageToken,
         "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
@@ -387,7 +387,7 @@
       var lo = window.manageOrAdd === 'add' ? 'addRoom' : 'modifyRoom'
       $.ajax({
         type: "POST",
-        url: "http://localhost:8080/manager/" + lo,
+        url: "http://39.106.15.220:8080/manager/" + lo,
         data: {
           room_id: room_id,
           room_name: room_name,
@@ -435,7 +435,7 @@
           }
           $.ajax({
             type: "GET",
-            url: "http://localhost:8080/manager/listMeetingRoom",
+            url: "http://39.106.15.220:8080/manager/listMeetingRoom",
             headers: {
               "token": localStorage.manageToken,
               "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
@@ -475,7 +475,7 @@
     //获取device_id_list信息
     $.ajax({
       type: "GET",
-      url: "http://localhost:8080/manager/listDevice",
+      url: "http://39.106.15.220:8080/manager/listDevice",
       headers: {
         token: localStorage.manageToken,
         "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON

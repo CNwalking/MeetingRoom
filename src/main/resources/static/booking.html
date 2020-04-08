@@ -231,7 +231,7 @@
   //获取用户信息并展示
   $.ajax({
     type: "POST",
-    url: "http://localhost:8080/user/info",
+    url: "http://39.106.15.220:8080/user/info",
     headers: {
       token: localStorage.token,
       "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
@@ -246,7 +246,7 @@
   //获取room信息并转换格式
   $.ajax({
     type: "GET",
-    url: "http://localhost:8080/manager/listMeetingRoom",
+    url: "http://39.106.15.220:8080/manager/listMeetingRoom",
     headers: {
       token: localStorage.token,
       "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
@@ -264,7 +264,7 @@
   //获取部门信息
   $.ajax({
     type: "GET",
-    url: "http://localhost:8080/manager/listDepartment",
+    url: "http://39.106.15.220:8080/manager/listDepartment",
     headers: {
       token: localStorage.token,
       "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
@@ -282,7 +282,7 @@
   //获取device_id_list信息
   $.ajax({
     type: "GET",
-    url: "http://localhost:8080/manager/listDevice",
+    url: "http://39.106.15.220:8080/manager/listDevice",
     headers: {
       token: localStorage.token,
       "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
@@ -364,7 +364,7 @@
     }
     $.ajax({
       type: "POST",
-      url: "http://localhost:8080/meeting/select",
+      url: "http://39.106.15.220:8080/meeting/select",
       headers: {
         token: localStorage.token,
         "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
@@ -420,7 +420,7 @@
     window.nowRoomId = id;
     $.ajax({
       type: "POST",
-      url: "http://localhost:8080/meeting/list",
+      url: "http://39.106.15.220:8080/meeting/list",
       headers: {
         token: localStorage.token,
         "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
@@ -598,7 +598,7 @@
         console.log(data);
         $.ajax({
           type: "POST",
-          url: "http://localhost:8080/meeting/booking",
+          url: "http://39.106.15.220:8080/meeting/booking",
           headers: {
             token: localStorage.token,
             "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON

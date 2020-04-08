@@ -117,7 +117,7 @@
   //进入页面后初始化获取信息并填充
   $.ajax({
     type: "GET",
-    url: "http://localhost:8080/manager/listDepartment",
+    url: "http://39.106.15.220:8080/manager/listDepartment",
     headers: {
       "token": localStorage.manageToken,
       "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
@@ -168,7 +168,7 @@
     }
     $.ajax({
       type: "POST",
-      url: "http://localhost:8080/manager/addDepartment",
+      url: "http://39.106.15.220:8080/manager/addDepartment",
       data: {
         department_name: department_name,
         department_level: department_level
@@ -214,7 +214,7 @@
     if (isTrueOrFalse) {
       $.ajax({
         type: "POST",
-        url: "http://localhost:8080/manager/delDepartment",
+        url: "http://39.106.15.220:8080/manager/delDepartment",
         data: {
           department_name: $(target)
             .parent()
