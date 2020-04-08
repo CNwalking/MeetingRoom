@@ -1,0 +1,109 @@
+.left_show{
+    float: left;
+    height: 650px;
+    width: 600px;
+    /* background-color: blueviolet; */
+    margin: 15px 15px 15px 15px;
+}
+.right_show{
+    float: left;
+    height: 650px;
+    width: 870px;
+    background-color: #fff;
+    margin: 15px 15px 15px 0px;
+}
+.left_upshow{
+    height:350px ;
+    
+    /* background-image: url(img/meettingroom.jpg) */
+}
+.left_downshow{
+    height:250px ;
+    margin-top: 50px;
+    background-color: #fff;
+}
+
+.right_middle{
+    width: 800px;
+    height: 80px;
+    line-height:80px;
+    background-color: #fff;
+    margin-left: auto;
+    margin-right: auto;
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-color: rgb(124, 120, 120);
+}
+.right_middle ul li{
+	float: left;
+    font-size: 15px;
+    margin-right: 20px;
+    
+}
+.form2{
+    width: 800px;
+    height: 400px;
+    /* background-color:blue; */
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 10px;
+
+}
+table.altrowstable1 {
+    width: 800px;
+    font-family: verdana,arial,sans-serif;
+    font-size:11px;
+    color:#333333;
+    border-width: 1px;
+    border-color: #a9c6c9;
+    border-collapse: collapse;
+    text-align:center;
+}
+table.altrowstable1 th {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #a9c6c9;
+    
+}
+table.altrowstable1 td {
+    border-width: 1px;
+    padding: 8px;
+    border-style: solid;
+    border-color: #a9c6c9;
+    
+}
+table.altrowstable1 tr{
+    height: 40px;
+}
+
+.left_downtitle{
+    height: 50px;
+    line-height:50px;
+    /* background-color: cornflowerblue; */
+    background-image: linear-gradient(#64e2e6, #fff);
+}
+.left_downmiddle{
+    height: 190px;
+}
+.left_downfoot{
+    height: 10px;
+    background-image: linear-gradient( #fff,#64e2e6);
+}
+.left_downtitle> h1{
+    font-size: 15px;
+    margin-left: 20px;
+}
+table{
+ width:550px;
+ /* box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);阴影 */
+ border-collapse:collapse;/* 取消表格边框 */
+ letter-spacing:1px;/* 文字缩进 */
+ margin-left: auto;
+ margin-right: auto;
+}
+table,th,tr,td{ 
+ border-bottom:1px solid #dedede;/* 表格横线 */
+ /* padding:29px; */
+ text-align: center;
+}

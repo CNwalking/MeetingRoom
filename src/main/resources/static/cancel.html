@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>会议室管理系统</title>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/common.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/order.css" />
+  <link rel="stylesheet" href="fy/src/jquery.page.css">
+  <style>
+    html {
+      min-height: 100%;
+      background-image: url(img/background01.png);
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shortcut">
+    <div class="fl">
+      <ul>
+        <h3 class="title-system">Intelligent meeting</h3>
+      </ul>
+    </div>
+
+    <input type="button" class="top_btn" value="Logout" style="margin-left: 20px;" id="logout_btn" />
+    <div class="fr">
+      <ul>
+        <li>
+          <a href=""><img class="menuimg" src="img/avatar.png" alt="user" /><span id="login_info_name"></span></a>
+        </li>
+        <!-- <li><a href="ManageMeeting.html">ManageMeeting</a></li>
+            <li><a href="ManageDepartment.html">ManageDepartment</a></li>
+            <li><a href="ManageDevice.html">ManageDevice</a></li>
+            <li><a  style="color:rgb(45, 66, 187)" href="ManageRoom.html">ManageRoom</a></li> -->
+      </ul>
+    </div>
+  </div>
+  <div class="order_box">
+    <div class="left_nav">
+      <div class="left_navtop">
+        <div>Operations</div>
+      </div>
+      <span><button id="left-nav-btn1" class="left-nav-btn" type="button"
+          onclick="window.location.replace('./booking.html')">
+          Booking
+        </button></span>
+      <span><button id="left-nav-btn1" class="left-nav-btn" type="button">
+          Cancle
+        </button></span>
+      <!-- <span
+          ><button
+            id="left-nav-btn1"
+            class="left-nav-btn"
+            type="button"
+            onclick=""
+          >
+            Searching Device
+          </button></span
+        >
+        <span
+          ><button
+            id="left-nav-btn1"
+            class="left-nav-btn"
+            type="button"
+            onclick=""
+          >
+            Searching Meeting
+          </button></span
+        > -->
+    </div>
+
+    <div class="right_show">
+      <div class="cancel_tip">View scheduled meetings</div>
+      <div class="cancel_top">
+        <li>
+          <img class="menuimg" src="img/avatar.png" alt="user" />&nbsp;&nbsp;<span id="dddd"></span>
+        </li>
+      </div>
+      <div class="cancel_show">
+        <table class="cancel_table">
+          <tr>
+            <td>Meeting ID</td>
+            <td>Meeting Name</td>
+            <td>Meeting Time</td>
+            <td>Room ID</td>
+            <td>Operation</td>
+          </tr>
+          <!-- <tr>
+            <td>10001</td>
+            <td>Daily Meeting</td>
+            <td>2019-10.23-11:00~15:00</td>
+            <td>Room 1</td>
+            <td></td>
+          </tr> -->
+        </table>
+      </div>
+      <div id="page-wrap">
+        <div id="page"></div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
+<script src="./jquery.js"></script>
+<script type="text/javascript" src="fy/src/jquery.page.js"></script>
+<script>
+  //获取用户信息并展示
+  $.ajax({
+    type: "POST",
+    url: "http://localhost:8080/user/info",
+    headers: {
+      token: localStorage.token,
+      "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+    },
+    data: {},
+    success: function (data) {
+      //接受返回的数据，前端判断采取的动作
+      console.log(data);
+      $("#login_info_name").html(data.data.username);
+      $("#dddd").html(data.data.username);
+      window.un = data.data.username
+      $.ajax({
+        type: "POST",
+        url: "http://localhost:8080/meeting/list",
+        headers: {
+          token: localStorage.token,
+          "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+        },
+        data: {
+          page_num: 1,
+          page_size: 0,
+          username: window.un
+        },
+        success: function (data) {
+          //接受返回的数据，前端判断采取的动作
+          console.log(data);
+          window.allData = data.data.list
+          var len = window.allData.length
+          append(1)
+          $("#page").Page({
+            totalPages: Math.ceil(len / 12),//分页总数
+            liNums: 7,//分页的数字按钮数(建议取奇数)
+            activeClass: 'activP', //active 类样式定义
+            callBack: function (page) {
+              append(page)
+            }
+          });
+        }
+      });
+    }
+  });
+  $("#logout_btn").click(function () {
+    //点击退出，清除token信息，返回登录页
+    localStorage.removeItem("tokenTime");
+    localStorage.removeItem("token");
+    alert("successfully logout");
+    window.location.replace("./index.html");
+  });
+  function append(i) {
+    window.page = i
+    $('.aaaa').remove()
+    var str = ''
+    window.allData.forEach((ele, index) => {
+      if (index >= (i - 1) * 12 && index < i * 12) {
+        str += '<tr class="aaaa"><td>' + ele.meetingId + '</td><td>' + ele.meetingName + '</td><td>' + ele.bookingStartTime + '~' + ele.bookingEndTime.split(' ')[1] + '</td><td>' + ele.roomId + '</td><td class="can-btn">Cancel</td></tr>'
+      }
+    });
+    $('.cancel_table tbody').append(str)
+  }
+
+  $('.cancel_show').click(function (e) {
+    var tar = $(e.target)
+    if (!tar.hasClass('can-btn')) {
+      return
+    }
+    var isTrueOrFalse = window.confirm(
+      "Are you sure about cancel this Meeting?"
+    );
+    if (!isTrueOrFalse) {
+      return
+    }
+    var id = tar.parent().children(":first").html()
+    $.ajax({
+      type: "POST",
+      url: "http://localhost:8080/meeting/cancel",
+      data: {
+        meeting_id: id
+      },
+      headers: {
+        "token": localStorage.token,
+        "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+      },
+      // xhrFields: { withCredentials: true },
+      success: function (data) {
+        alert('successfully')
+        window.location.reload()
+      },
+      error: function () {
+        alert("Wrong Network");
+        return;
+      }
+    });
+  })
+
+
+</script>

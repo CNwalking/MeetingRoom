@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>会议室管理系统</title>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/ManageDevice.css">
+  <script src="./manageCommon.js"></script>
+  <style>
+    .right_show::-webkit-scrollbar {
+      display: none;
+    }
+
+    html {
+      min-height: 100%;
+      background-image: url(img/background01.png);
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+
+    #add-btn {
+      cursor: pointer;
+    }
+
+    input {
+      width: 300px;
+      height: 30px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="add-mask"
+    style="position: fixed;z-index: 999;width: 100%;height: 100%;top:0;left: 0;display: none;background-color: rgba(0, 0, 0, 0.4);">
+  </div>
+  <div id="add-wrap"
+    style="display: none;position: fixed;background-color: #fff;height: 200px;z-index: 1000;top: 50%;left: 50%;transform: translate(-50%,-50%);border-radius: 10px;border: 1px solid #000;">
+    <form action="">
+      <span class="in-label">Device_id：</span><input type="number" class="a" value="" id="device_id" />
+      <div></div>
+      <span class="in-label">Device_type：</span><input type="text" class="a" value="" id="device_type" />
+      <div id="yes"
+        style="width: 100px;text-align: center;height: 50px;line-height: 50px;font-size: 24px;position: absolute;bottom: 10px;background-color: #fff;left: 100px;border:1px solid #000;border-radius:5px;">
+        confirm
+      </div>
+      <div id="no"
+        style="width: 100px;text-align: center;height: 50px;line-height: 50px;font-size: 24px;position: absolute;bottom: 10px;background-color: #fff;right: 100px;border:1px solid #000;border-radius:5px;">
+        cancel
+      </div>
+    </form>
+  </div>
+  <div id="app">
+    <div class="shortcut">
+      <div class="fl">
+        <ul>
+          <h3 class="title-system">Intelligent meeting</h3>
+        </ul>
+      </div>
+
+      <!-- <button class="top_btn" @click="logout">Logout</button> -->
+      <div class="fr">
+        <ul>
+          <!-- <li>
+              <a href=""
+                ><img class="menuimg" src="img/avatar.png" alt="user" />
+                Admin1</a
+              >
+            </li> -->
+          <li onclick="gomm()">
+            <span href="ManageMeeting.html">ManageMeeting</span>
+          </li>
+          <li onclick="gomd()">
+            <span href="ManageDepartment.html">ManageDepartment</span>
+          </li>
+          <li>
+            <span href="ManageDevice.html" style="color:rgb(45, 66, 187)">ManageDevice</span>
+          </li>
+          <li onclick="gomr()">
+            <span href="ManageRoom.html">ManageRoom</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="left_show" style="margin-left: 5px;margin-right: 5px;">
+      <div class="left_upshow">
+        <img src="img/meetingroom.jpg" alt="meettingroom" />
+      </div>
+
+      <!-- <div class="left_downshow">
+        <div class="left_downtitle">
+          <h1>Today's Meeting</h1>
+        </div>
+        <div class="left_downmiddle">
+          <table>
+            <tr>
+              <td>Room1</td>
+              <td>Developing</td>
+              <td>Mr Zhang</td>
+              <td>10:00~11:30</td>
+            </tr>
+            <tr>
+              <td>Room2</td>
+              <td>Developing</td>
+              <td>Mr Yao</td>
+              <td>14:00~15:30</td>
+            </tr>
+          </table>
+        </div>
+        <div class="left_downfoot"></div>
+      </div> -->
+    </div>
+    <div class="right_show" style="height: 650px;overflow: scroll;width: 820px;">
+      <div class="show_top">
+        <div class="show_title">Manage Device</div>
+      </div>
+      <div class="form2">
+        <table class="altrowstable1" id="alternatecolor">
+          <tr>
+            <th>ID</th>
+            <th>Type</th>
+            <th>operation</th>
+          </tr>
+          <tr id="before-target">
+            <th></th>
+            <th></th>
+            <th id="add-btn"><span>Add</span></th>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
+<script src="./jquery.js"></script>
+<script>
+  //进入页面后初始化获取信息并填充
+  $.ajax({
+    type: "GET",
+    url: "http://localhost:8080/manager/listDevice",
+    headers: {
+      "token": localStorage.manageToken,
+      "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+    },
+    // xhrFields: { withCredentials: true },
+    success: function (data) {
+      console.log(data);
+      if (data.data && data.data.length > 0) {
+        var str = "";
+        data.data.forEach(element => {
+          str +=
+            "<tr id='line_" +
+            element.deviceId +
+            "'><th>" +
+            element.deviceId +
+            "</th><th>" +
+            element.deviceType +
+            "</th><th class='confirm-flag'>Delete</th></tr>";
+        });
+        $(str).insertBefore("#before-target");
+      }
+    },
+    error: function () {
+      alert("Wrong Network");
+      return;
+    }
+  });
+  //绑定删除操作
+  $("#alternatecolor").click(function (e) {
+    var target = $(e.target);
+    //如果触发事件的不是删除按钮，则退出响应程序
+    if (!target.hasClass("confirm-flag")) {
+      return;
+    }
+    //否则弹出确认删除框
+    var isTrueOrFalse = window.confirm(
+      "Are you sure about delete this Device?"
+    );
+    if (isTrueOrFalse) {
+      $.ajax({
+        type: "POST",
+        url: "http://localhost:8080/manager/delDevice",
+        data: {
+          device_id: $(target)
+            .parent()
+            .attr("id")
+            .split("line_")[1]
+        },
+        headers: {
+          "token": localStorage.manageToken,
+          "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+        },
+        // xhrFields: { withCredentials: true },
+        success: function (data) {
+          console.log(data);
+          $(target)
+            .parent()
+            .remove();
+        },
+        error: function () {
+          alert("Wrong Network");
+          return;
+        }
+      });
+    } else {
+      return;
+    }
+  });
+  //绑定增加操作
+  $("#add-btn").click(function () {
+    $("#add-mask,#add-wrap").show();
+  });
+  //隐藏增加弹框
+  $("#no").click(function () {
+    $(
+      "#device_id,#device_type"
+    ).val("");
+    $("#add-mask,#add-wrap").hide();
+  });
+  //增加
+  $("#yes").click(function () {
+    var device_id = $("#device_id").val();
+    var device_type = $("#device_type").val();
+    if (!device_id) {
+      alert("please input device_id");
+      return;
+    }
+    if (!device_type) {
+      alert("please input device_type");
+      return;
+    }
+    $.ajax({
+      type: "POST",
+      url: "http://localhost:8080/manager/addDevice",
+      data: {
+        device_id: device_id,
+        device_type: device_type
+      },
+      headers: {
+        "token": localStorage.manageToken,
+        "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+      },
+      // xhrFields: { withCredentials: true },
+      success: function (data) {
+        //数据上传成功后增加该room的信息在页面上
+        var str = "";
+        str +=
+          "<tr id='line_" +
+          device_id +
+          "'><th>" +
+          device_id +
+          "</th><th>" +
+          device_type +
+          "</th><th class='confirm-flag'>Delete</th></tr>";
+        $(str).insertBefore("#before-target");
+        $(
+          "#device_id,#device_type"
+        ).val("");
+        //隐藏填写的表单
+        $("#add-mask,#add-wrap").hide();
+      },
+      error: function () {
+        alert("Wrong Network");
+        return;
+      }
+    });
+  });
+</script>
+
+<script type="text/javascript">
+  //页面跳转程序
+  function gomr() {
+    location.replace("./ManageRoom.html");
+  }
+  function gomd() {
+    location.replace("./ManageDepartment.html");
+  }
+  function gomm() {
+    location.replace("./ManageMeeting.html");
+  }
+</script>

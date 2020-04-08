@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>会议室管理系统</title>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/common.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/Login registration.css" />
+  <style>
+    html {
+      min-height: 100%;
+      background-image: url(img/background01.png);
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+  </style>
+  <style>
+    .register_top{
+      text-align: center;
+      margin-top: 40px;
+    }
+    .register_form{
+      margin: 50px auto;
+    }
+    .register_form form{
+      margin: 0 auto;
+      display: block;
+      width: 220px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .register_form form div{
+      height: 20px;
+    }
+    .register_form form input,.register_form form select{
+      height: 30px;
+      line-height: 30px;
+      margin-top: 10px;
+      border-radius: 4px;
+      border:none;
+    }
+    .register_foot{
+      width: 300px;
+      margin: 40px auto 0;
+    }
+    .register_foot button{
+      border: none;
+      border-radius: 4px;
+      width: 100px;
+      height: 50px;
+      line-height: 50px;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    #cancel_btn{
+      float: right;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shortcut">
+    <div class="fl">
+      <ul>
+        <h3 class="title-system">Intelligent meeting</h3>
+      </ul>
+    </div>
+  </div>
+
+  <div class="register">
+    <div class="register_top">
+      <h1>Create your account !</h1>
+    </div>
+    <div class="register_form">
+      <form action="">
+        User Name：<input type="text" class="a" value="" id="login_name" />
+        <div></div>
+        Password：<input type="password" class="a" value="" id="password" />
+        <div></div>
+        E-mail：<input type="email" class="a" value="" id="email" />
+        <div></div>
+        Question:
+        <select class="a" id="question">
+          <option>What's your favorite movie?</option>
+          <option>What is the name of your primary school?</option>
+        </select>
+        <div></div>
+        Answer：<input type="email" class="a" value="" id="answer" />
+        <div></div>
+      </form>
+    </div>
+    <div class="register_foot">
+      <button class=" button2" id="btn">Confirm</button>
+      <button class=" button3" id="cancel_btn">Cancel</button>
+    </div>
+  </div>
+</body>
+<script src="./jquery.js"></script>
+<script>
+  //取消注册则回到前一个首页
+  $("#cancel_btn").click(function () {
+    window.history.back();
+  });
+  $("#btn").click(function () {
+    //获取用户输入的注册信息
+    var username = $("#login_name").val();
+    var password = $("#password").val();
+    var question = $("#question").val();
+    var email = $("#email").val();
+    var answer = $("#answer").val();
+    //前端信息检验
+    if (!username) {
+      alert("please input your User Name");
+      return;
+    }
+    if (!password) {
+      alert("please input your password");
+      return;
+    }
+    if (!email) {
+      alert("please input your E-mail");
+      return;
+    }
+    if (!answer) {
+      alert("please input your Answer");
+      return;
+    }
+    $.ajax({
+      // type: "GET",
+      // url: "http://localhost:8080/manager/listDevice",
+      type: "POST",
+      url: "http://localhost:8080/user/register",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+      },
+      xhrFields: { withCredentials: true },
+      data: {
+        login_name: username,
+        password: password,
+        question: question,
+        email: email,
+        answer: answer
+      },
+      // dataType: "JSON",
+      success: function (data) {
+        //接受返回的数据，前端判断采取的动作
+        console.log(data);
+        if (data) {
+          if (data.message == "操作成功") {
+            alert("successfully register");
+            window.location.href = "./index.html";
+          } else {
+            alert("Wrong register");
+          }
+        }
+      },
+      error: function () {
+        alert("Wrong register");
+        return;
+      }
+    });
+  });
+</script>
+
+</html>

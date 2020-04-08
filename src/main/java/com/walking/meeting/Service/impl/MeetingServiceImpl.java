@@ -29,6 +29,7 @@ import org.springframework.util.unit.DataUnit;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static com.walking.meeting.utils.DateUtils.*;
 
@@ -269,17 +270,12 @@ public class MeetingServiceImpl implements MeetingService {
         // Map的结果{6-25=1,2,3,4,5, 4-07=1,2,3,4, 6-21=1,2,3,4}，需要进行判定来选取合适的几个MeetingRoom
         MeetingRoomQuery meetingRoomQuery2 = new MeetingRoomQuery();
         List<MeetingRoomDO> resultList = new ArrayList<>();
-        Set<Map.Entry<String, String>> entrySet = roomDeviceMap.entrySet();
-        Iterator<Map.Entry<String, String>> iterator = entrySet.iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<String, String> next = iterator.next();
-            String roomId = next.getKey();
-            String deviceList = next.getValue();
-            if (isContainDevice(deviceList, deviceIdList)) {
-                meetingRoomQuery2.setRoomId(roomId);
+        roomDeviceMap.forEach((key,value)->{
+            if (isContainDevice(value, deviceIdList)) {
+                meetingRoomQuery2.setRoomId(key);
                 resultList.add(DbUtils.getOne(managerService.getMeetingRoomByQuery(meetingRoomQuery2)).orElse(null));
             }
-        }
+        });
         List<MeetingRoomVO> VOList = new ArrayList<>();
         resultList.forEach(meetingRoomDO -> {
 //            // 时间转化成看的清楚一些的时间，例如18：00
@@ -300,6 +296,7 @@ public class MeetingServiceImpl implements MeetingService {
             }
             VOList.add(meetingRoomVO);
         });
+        VOList.sort(Comparator.comparing(MeetingRoomVO::getBusyOrNot));
         PageInfo<MeetingRoomVO> pageInfo = new PageInfo<>(VOList);
         return pageInfo;
     }

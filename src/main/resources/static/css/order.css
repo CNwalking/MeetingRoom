@@ -1,0 +1,138 @@
+.order_box{
+    height: 600px;
+    width: 1200px;
+    margin: 30px 0px 0px 60px;
+    
+}
+
+.left_nav{
+    height: 300px;
+    width: 200px;
+    background-color: rgb(221, 216, 224);
+    margin-top: 30px;
+    float: left;
+    
+}
+.right_show{
+    width: 1000px;
+    height: 600px;
+    background-color: #fff;
+    float: left;
+    
+}
+.left_navtop{
+    width: 200px;
+    height: 50px;
+    line-height: 50px;
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-color: rgb(39, 39, 38);
+}
+.left_navtop>div{
+    font-size: 20px;
+    text-align: center;
+       
+}
+.left-nav-btn{
+    width: 200px;
+    height: 50px;
+    text-align: center;
+    border: none;
+    background-color:rgb(221, 216, 224);
+}
+.left-nav-btn:hover {
+    background-color: #9ea1a5;
+    color: #ffffff;
+}
+.right_tip{
+    height: 40px;
+    line-height: 40px;
+    width: 960px;
+    margin: 0 auto;
+}
+.right_top{
+    height: 60px;
+    line-height: 60px;
+    width: 960px;
+    background-color: darkgrey;
+    margin: 0 auto;
+}
+    .right_top>li{
+        float: left;
+        margin: 0px 5px 0px 15px;
+    }
+
+.txt{
+    width: 100px;
+    height: 20px;
+    text-align: center;
+} 
+.right_middle {
+    width: 960px;
+    height: 50px;
+    line-height: 50px;
+    margin-top: 20px;
+    background-color: darkgrey;
+    margin:20px auto ;
+}
+.right_middle>div{
+    height: 30px;
+    width: 100px;
+    margin: 0px 150px 0px 150px;
+    float: left;
+}  
+.room_show{
+    height: 400px;
+    width: 800px;
+    margin: 0 auto;
+    
+    
+}
+.room_btn{
+    height: 150px;
+    width: 150px;
+    background-color: green;
+    margin: 0px 50px 50px 50px;
+}
+.cancel_tip{
+    height: 80px;
+    line-height: 80px;
+    width: 960px;
+    margin: 0 auto;
+}
+.cancel_top{
+    height: 40px;
+    line-height: 40px;
+    width: 1000px;
+    background-color: darkgrey;
+    margin: 0 auto;
+}
+.cancel_top>li{
+    float: left;
+    margin: 0px 5px 0px 50px;
+}
+.cancel_show{
+    height: 420px;
+    width: 1000px;
+    margin: 0 auto;
+    
+}
+.cancel_table{
+    width:1000px;
+    /* box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);阴影 */
+    border-collapse:collapse;/* 取消表格边框 */
+    letter-spacing:1px;/* 文字缩进 */
+    margin:20px auto 0;
+    font-size: 14px;
+   
+   }
+   table,th,tr,td{ 
+    border-bottom:1px solid #dedede;/* 表格横线 */
+    /* padding:29px; */
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+   }
+.can-btn{
+    cursor: pointer;
+}

@@ -1,0 +1,50 @@
+<!--<!DOCTYPE html>-->
+<!--<html>-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <title>html登录模板</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="login">-->
+<!--    <h1>Login</h1>-->
+<!--    <form action="" method="post">-->
+<!--        <input type="text" name="user" placeholder="用户名" required="required">-->
+<!--        <input type="password" name="password" placeholder="密  码" required="required">-->
+<!--        <button type="submit">登录</button>-->
+<!--    </form>-->
+<!--</div>-->
+<!--</body>-->
+<!--</html>-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>GET、POST</title>
+<body>
+<input type="text" name="username" id="username" />
+<input type="button" value="Submit" id="btn" />
+</body>
+<script src="./jquery.js"></script>
+<script>
+    function print(st) {
+        console.log(st)
+        // console.log(inp.value)
+    }
+    var btn = document.getElementById("btn")
+    var inp = document.getElementById("username")
+    btn.onclick = function(){
+        $.ajax({
+            // type: "GET",
+            // url: "http://39.106.15.220:8080/manager/listDevice",
+            type: "POST",
+            url: "http://39.106.15.220:8080/manager/test",
+            data:  `input=${inp.value}`,
+            // dataType: "JSON",
+            success: print
+        });
+    }
+</script>
+</html>

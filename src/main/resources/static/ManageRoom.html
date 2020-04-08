@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>会议室管理系统</title>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/ManageRoom.css" />
+  <script src="./manageCommon.js"></script>
+  <style>
+    #form1::-webkit-scrollbar {
+      display: none;
+    }
+
+    #form1 {
+      overflow-y: scroll;
+      height: 700px;
+    }
+
+    html {
+      min-height: 100%;
+      background-image: url(img/background01.png);
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+
+    input {
+      width: 300px;
+      height: 30px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="st-section">
+    <div class="office">
+      <div class="weui-panel">
+        <div class="office-time">
+          <div class="office-time-con office-time-slot" id="timeSoltCon">
+            <div class="office-time-item slot_">06:00</div>
+            <div class="office-time-item slot_">06:30</div>
+            <div class="office-time-item slot_">07:00</div>
+            <div class="office-time-item slot_">07:30</div>
+            <div class="office-time-item slot_">08:00</div>
+            <div class="office-time-item slot_">08:30</div>
+            <div class="office-time-item slot_">09:00</div>
+            <div class="office-time-item slot_">09:30</div>
+            <div class="office-time-item slot_">10:00</div>
+            <div class="office-time-item slot_">10:30</div>
+            <div class="office-time-item slot_">11:00</div>
+            <div class="office-time-item slot_">11:30</div>
+            <div class="office-time-item slot_">12:00</div>
+            <div class="office-time-item slot_">12:30</div>
+            <div class="office-time-item slot_">13:00</div>
+            <div class="office-time-item slot_">13:30</div>
+            <div class="office-time-item slot_">14:00</div>
+            <div class="office-time-item slot_">14:30</div>
+            <div class="office-time-item slot_">15:00</div>
+            <div class="office-time-item slot_">15:30</div>
+            <div class="office-time-item slot_">16:00</div>
+            <div class="office-time-item slot_">16:30</div>
+            <div class="office-time-item slot_">17:00</div>
+            <div class="office-time-item slot_">17:30</div>
+            <div class="office-time-item slot_">18:00</div>
+            <div class="office-time-item slot_">18:30</div>
+            <div class="office-time-item slot_">19:00</div>
+            <div class="office-time-item slot_">19:30</div>
+            <div class="office-time-item slot_">20:00</div>
+            <div class="office-time-item slot_">20:30</div>
+            <div class="office-time-item slot_">21:00</div>
+            <div class="office-time-item slot_">21:30</div>
+            <div class="office-time-item slot_">22:00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="end-section">
+    <div class="office">
+      <div class="weui-panel">
+        <div class="office-time">
+          <div class="office-time-con office-time-slot" id="timeSoltCon">
+            <div class="office-time-item slot_">06:00</div>
+            <div class="office-time-item slot_">06:30</div>
+            <div class="office-time-item slot_">07:00</div>
+            <div class="office-time-item slot_">07:30</div>
+            <div class="office-time-item slot_">08:00</div>
+            <div class="office-time-item slot_">08:30</div>
+            <div class="office-time-item slot_">09:00</div>
+            <div class="office-time-item slot_">09:30</div>
+            <div class="office-time-item slot_">10:00</div>
+            <div class="office-time-item slot_">10:30</div>
+            <div class="office-time-item slot_">11:00</div>
+            <div class="office-time-item slot_">11:30</div>
+            <div class="office-time-item slot_">12:00</div>
+            <div class="office-time-item slot_">12:30</div>
+            <div class="office-time-item slot_">13:00</div>
+            <div class="office-time-item slot_">13:30</div>
+            <div class="office-time-item slot_">14:00</div>
+            <div class="office-time-item slot_">14:30</div>
+            <div class="office-time-item slot_">15:00</div>
+            <div class="office-time-item slot_">15:30</div>
+            <div class="office-time-item slot_">16:00</div>
+            <div class="office-time-item slot_">16:30</div>
+            <div class="office-time-item slot_">17:00</div>
+            <div class="office-time-item slot_">17:30</div>
+            <div class="office-time-item slot_">18:00</div>
+            <div class="office-time-item slot_">18:30</div>
+            <div class="office-time-item slot_">19:00</div>
+            <div class="office-time-item slot_">19:30</div>
+            <div class="office-time-item slot_">20:00</div>
+            <div class="office-time-item slot_">20:30</div>
+            <div class="office-time-item slot_">21:00</div>
+            <div class="office-time-item slot_">21:30</div>
+            <div class="office-time-item slot_">22:00</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="device_id_block">
+    <div id="block">
+      <p>please choose device in room</p>
+      <div id="all_divice"></div>
+      <div id="sure_device">
+        confirm
+      </div>
+      <div id="close_divice">
+        ×
+      </div>
+    </div>
+  </div>
+  <div id="app">
+    <div class="shortcut">
+      <div class="fl">
+        <ul>
+          <h3 class="title-system">Intelligent meeting</h3>
+        </ul>
+      </div>
+
+      <!-- <button class="top_btn" @click="logout">Logout</button> -->
+      <div class="fr">
+        <ul>
+          <!-- <li>
+              <a href=""
+                ><img class="menuimg" src="img/avatar.png" alt="user" />
+                Admin1</a
+              >
+            </li> -->
+          <li onclick="gomm()">
+            <span href="ManageMeeting.html">ManageMeeting</span>
+          </li>
+          <li onclick="gomd()">
+            <span href="ManageDepartment.html">ManageDepartment</span>
+          </li>
+          <li onclick="gomd2()">
+            <span href="ManageDevice.html">ManageDevice</span>
+          </li>
+          <li>
+            <span style="color:rgb(45, 66, 187)" href="ManageRoom.html">ManageRoom</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="datashow">
+      <div class="show_top">
+        <div class="show_title">Manage Room</div>
+      </div>
+      <div id="form1">
+        <table class="altrowstable" id="alternatecolor">
+          <tr>
+            <th>Room ID</th>
+            <th>Room Name</th>
+            <th>Scale</th>
+            <th>Start Time</th>
+            <th>End Time</th>
+            <th>operation</th>
+          </tr>
+          <tr id="before-target">
+            <td></td>
+            <td></td>
+            <td></td>
+            <th></th>
+            <th></th>
+            <th id="add-btn"><span>Add</span></th>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div id="add-mask"
+    style="position: fixed;z-index: 999;width: 100%;height: 100%;top:0;left: 0;display: none;background-color: rgba(0, 0, 0, 0.4);">
+  </div>
+  <div id="add-wrap"
+    style="display: none;position: fixed;background-color: #fff;height: 400px;z-index: 1000;top: 50%;left: 50%;transform: translate(-50%,-50%);border-radius: 10px;border: 1px solid #000;">
+    <form action="">
+      <span class="in-label">room_id：</span><input type="number" class="a" value="" id="room_id" />
+      <div></div>
+      <span class="in-label">room_name：</span><input type="text" class="a" value="" id="room_name" />
+      <div></div>
+      <span class="in-label">device_id_list：</span><input type="text" class="a" value="" id="device_id_list"
+        placeholder="click to choose" readonly style="cursor: pointer;" />
+      <div></div>
+      <span class="in-label">free_time_start：</span><input type="text" class="a" value="" id="free_time_start"
+        placeholder="click to choose" readonly style="cursor: pointer;" />
+      <div></div>
+      <span class="in-label">free_time_end：</span><input type="text" class="a" value="" id="free_time_end"
+        placeholder="click to choose" readonly style="cursor: pointer;" />
+      <div></div>
+      <span class="in-label">room_scale：</span><input type="text" class="a" value="" id="room_scale" />
+      <div id="yes"
+        style="width: 100px;text-align: center;height: 50px;line-height: 50px;font-size: 24px;position: absolute;bottom: 10px;background-color: #fff;left: 100px;border:1px solid #000;border-radius:5px;">
+        confirm
+      </div>
+      <div id="no"
+        style="width: 100px;text-align: center;height: 50px;line-height: 50px;font-size: 24px;position: absolute;bottom: 10px;background-color: #fff;right: 100px;border:1px solid #000;border-radius:5px;">
+        cancel
+      </div>
+    </form>
+  </div>
+  <script src="./jquery.js"></script>
+  <script>
+    //绑定删除操作，在form1上进行监听
+    $("#form1").click(function (e) {
+      var target = $(e.target);
+      //如果触发事件的不是删除按钮，则退出响应程序
+      if (!target.hasClass("confirm-flag")) {
+        return;
+      }
+      if (target.hasClass('ddd')) {
+        //否则弹出确认删除框
+        var isTrueOrFalse = window.confirm(
+          "Are you sure about delete this room meeting?"
+        );
+        if (isTrueOrFalse) {
+          $.ajax({
+            type: "POST",
+            url: "http://localhost:8080/manager/delRoom",
+            data: {
+              room_id: $(target)
+                .parent().parent()
+                .attr("id")
+                .split("room-line-")[1]
+            },
+            headers: {
+              "token": localStorage.manageToken,
+              "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+            },
+            // xhrFields: { withCredentials: true },
+            success: function (data) {
+              console.log(data);
+              $(target)
+                .parent().parent()
+                .remove();
+            },
+            error: function () {
+              alert("Wrong Network");
+              return;
+            }
+          });
+        } else {
+          return;
+        }
+      }
+      if (target.hasClass('mmm')) {
+        window.manageOrAdd = 'manage'
+        var id = $(target)
+          .parent().parent()
+          .attr("id")
+          .split("room-line-")[1]
+        var dd = {}
+        window.rooms.forEach(e => {
+          if (e.roomId === id) {
+            dd = e
+          }
+        })
+        $("#room_id").val(dd.roomId);
+        $("#room_name").val(dd.roomName);
+        var real = ''
+        var destr = ''
+        dd.deviceIdList.forEach(e => {
+          if (real === '') {
+            real += e
+            destr += window.deviceObj[e]
+          } else {
+            real += ',' + e
+            destr += ',' + window.deviceObj[e]
+          }
+        })
+        $('#device_id_list').attr('data-real', real);
+        $('#device_id_list').val(destr)
+        $("#free_time_start").val(dd.freeTimeStart);
+        $("#free_time_end").val(dd.freeTimeEnd);
+        $("#room_scale").val(dd.roomScale);
+        $("#add-mask,#add-wrap").show();
+        window.needToDeleteLine = id
+      }
+    });
+    //进入页面后初始化获取信息并填充
+    $.ajax({
+      type: "GET",
+      url: "http://localhost:8080/manager/listMeetingRoom",
+      headers: {
+        "token": localStorage.manageToken,
+        "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+      },
+      // xhrFields: { withCredentials: true },
+      success: function (data) {
+        console.log(data);
+        if (data.data && data.data.length > 0) {
+          window.rooms = data.data
+          var str = "";
+          data.data.forEach(element => {
+            str +=
+              '<tr id="room-line-' +
+              element.roomId +
+              '"><td>' +
+              element.roomId +
+              "</td><td>" +
+              element.roomName +
+              "</td><td>" +
+              element.roomScale +
+              "</td><th>" +
+              element.freeTimeStart +
+              "</th><th>" +
+              element.freeTimeEnd +
+              "</th><th><span class='confirm-flag mmm'>Manage </span>/<span class='confirm-flag ddd'> Delete</span></th></tr>";
+          });
+          $(str).insertBefore("#before-target");
+        }
+      },
+      error: function () {
+        alert("Wrong Network");
+        return;
+      }
+    });
+    //绑定增加room操作
+    $("#add-btn").click(function () {
+      window.manageOrAdd = 'add'
+      $("#add-mask,#add-wrap").show();
+    });
+    //隐藏增加room弹框
+    $("#no").click(function () {
+      $(
+        "#room_id,#room_name,#device_id_list,#free_time_start,#free_time_end,#room_scale"
+      ).val("");
+      $('#device_id_list').attr('data-real', '')
+      $("#add-mask,#add-wrap").hide();
+    });
+    //增加room
+    $("#yes").click(function () {
+      var room_id = $("#room_id").val();
+      var room_name = $("#room_name").val();
+      var device_id_list = $('#device_id_list').attr('data-real');
+      var free_time_start = $("#free_time_start").val();
+      var free_time_end = $("#free_time_end").val();
+      var room_scale = $("#room_scale").val();
+      if (!room_id) {
+        alert("please input room_id");
+        return;
+      }
+      if (!room_name) {
+        alert("please input room_name");
+        return;
+      }
+      if (!device_id_list) {
+        alert("please input device_id_list");
+        return;
+      }
+      if (!free_time_start) {
+        alert("please input free_time_start");
+        return;
+      }
+      if (!free_time_end) {
+        alert("please input free_time_end");
+        return;
+      }
+      if (!room_scale) {
+        alert("please input room_scale");
+        return;
+      }
+      var lo = window.manageOrAdd === 'add' ? 'addRoom' : 'modifyRoom'
+      $.ajax({
+        type: "POST",
+        url: "http://localhost:8080/manager/" + lo,
+        data: {
+          room_id: room_id,
+          room_name: room_name,
+          free_time_end: free_time_end,
+          free_time_start: free_time_start,
+          room_scale: room_scale,
+          device_id_list: device_id_list
+        },
+        headers: {
+          "token": localStorage.manageToken,
+          "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+        },
+        // xhrFields: { withCredentials: true },
+        success: function (data) {
+          if (window.manageOrAdd !== 'add') {
+            $('#room-line-' + window.needToDeleteLine).remove()
+          }
+          //数据上传成功后增加该room的信息在页面上
+          var str = "";
+          str +=
+            '<tr id="room-line-' +
+            room_id +
+            '"><td>' +
+            room_id +
+            "</td><td>" +
+            room_name +
+            "</td><td>" +
+            room_scale +
+            "</td><th>" +
+            free_time_start +
+            "</th><th>" +
+            free_time_end +
+            "</th><th><span class='confirm-flag mmm'>Manage </span>/<span class='confirm-flag ddd'> Delete</span></th></tr>";
+          $(str).insertBefore("#before-target");
+          $(
+            "#room_id,#room_name,#device_id_list,#free_time_start,#free_time_end,#room_scale"
+          ).val("");
+          $('#device_id_list').attr('data-real', '')
+          //隐藏填写的表单
+          $("#add-mask,#add-wrap").hide();
+          if (window.manageOrAdd !== 'add') {
+            alert('successfully change information of room')
+          } else {
+            alert('successfully add information of room')
+          }
+          $.ajax({
+            type: "GET",
+            url: "http://localhost:8080/manager/listMeetingRoom",
+            headers: {
+              "token": localStorage.manageToken,
+              "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+            },
+            // xhrFields: { withCredentials: true },
+            success: function (data) {
+              console.log(data);
+              if (data.data && data.data.length > 0) {
+                window.rooms = data.data
+              }
+            },
+            error: function () {
+              alert("Wrong Network");
+              return;
+            }
+          });
+        },
+        error: function () {
+          alert("Wrong Network");
+          return;
+        }
+      });
+    });
+    //页面跳转程序
+    function gomm() {
+      location.replace("./ManageMeeting.html");
+    }
+    function gomd() {
+      location.replace("./ManageDepartment.html");
+    }
+    function gomd2() {
+      location.replace("./ManageDevice.html");
+    }
+  </script>
+  <script>
+    //关于选择device的逻辑
+    //获取device_id_list信息
+    $.ajax({
+      type: "GET",
+      url: "http://localhost:8080/manager/listDevice",
+      headers: {
+        token: localStorage.manageToken,
+        "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+      },
+      data: {},
+      success: function (data) {
+        //接受返回的数据，前端判断采取的动作
+        console.log(data);
+        var str = "";
+        var wd = {}
+        data.data.forEach(function (e) {
+          wd[e.deviceId] = e.deviceType
+          str += "<div class='divice_sm_block' id='line_" + e.deviceId + "'>" + e.deviceType + "</div>";
+        });
+        window.deviceObj = wd
+        $("#all_divice").append(str);
+      }
+    });
+    //点击隐藏设备选择弹框
+    $("#close_divice").click(function () {
+      $("#device_id_block").hide();
+      $(".divice_sm_block").removeClass("bblue");
+    });
+    //点击组装设备选择情况，并隐藏弹框
+    $("#sure_device").click(function () {
+      var str = "";
+      var real = ''
+      $(".divice_sm_block").each((index, e) => {
+        if (!$(e).hasClass("bblue")) {
+          return;
+        }
+        if (str) {
+          str += "," + $(e).text();
+          real += ',' + $(e).attr("id").split('_')[1]
+        } else {
+          str += $(e).text();
+          real += $(e).attr("id").split('_')[1]
+        }
+      });
+      $("#device_id_list").val(str);
+      $("#device_id_list").attr('data-real', real)
+      $("#device_id_block").hide();
+      $(".divice_sm_block").removeClass("bblue");
+    });
+    //点击选中设备
+    $("#all_divice").click(function (e) {
+      if ($(e.target).hasClass("divice_sm_block")) {
+        if ($(e.target).hasClass("bblue")) {
+          $(e.target).removeClass("bblue");
+        } else {
+          $(e.target).addClass("bblue");
+        }
+      }
+    });
+    //点击显示device_id_list选择框
+    $("#device_id_list").click(function () {
+      $("#device_id_block").show();
+    });
+  </script>
+  <script>
+    //时间选择
+    $("#free_time_start").click(function () {
+      $("#st-section").show();
+    });
+    $("#free_time_end").click(function () {
+      $("#end-section").show();
+    });
+    $("#st-section").click(function (e) {
+      var tar = $(e.target)
+      if (tar.hasClass('office-time-item')) {
+        var ti = tar.html() + ':00'
+        $("#free_time_start").val(ti)
+        $("#st-section").hide();
+      }
+    })
+    $("#end-section").click(function (e) {
+      var tar = $(e.target)
+      if (tar.hasClass('office-time-item')) {
+        var ti = tar.html() + ':00'
+        $("#free_time_end").val(ti)
+        $("#end-section").hide();
+      }
+    })
+  </script>
+
+
+</body>
+
+</html>

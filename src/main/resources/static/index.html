@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>会议室管理系统</title>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/common.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/index.css" />
+  <style>
+    html {
+      min-height: 100%;
+      background-image: url(img/background01.png);
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shortcut">
+    <div class="fl">
+      <ul>
+        <h3 class="title-system">Intelligent meeting</h3>
+      </ul>
+    </div>
+    <input type="button" class="top_btn" value="Logout" id="btn_logout" style="display: none;" />
+    <div class="fr" style="display: none;">
+      <ul>
+        <li>
+          <a href=""><img class="menuimg" src="img/avatar.png" alt="user" /><span>
+              Admin1</span></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class=" login">
+    <div class="login_top">
+      <h1>Login to your account !</h1>
+    </div>
+    <div class="login_form">
+      <form action="">
+        User Name：<input type="text" class="a" value="" id="login_name" />
+        <div></div>
+        Password：<input type="password" class="a" value="" id="password" />
+        <div></div>
+        <label class="login_choose">User:<input name="login_choose" type="radio" value="1" /></label>
+        <label class="login_choose">
+          Administrators:<input name="login_choose" type="radio" value="0" /></label>
+      </form>
+    </div>
+    <div class="login_foot">
+      <button class=" button4" id="login_submit">Log</button>
+      <button class=" button5" id="register_btn">Register</button>
+    </div>
+  </div>
+</body>
+
+</html>
+<script src="./jquery.js"></script>
+<script>
+  $("#login_submit").click(function () {
+    //获取用户输入的登录信息
+    var username = $("#login_name").val();
+    var password = $("#password").val();
+    var radio = $('input[name="login_choose"]:checked').val();
+    //前端校验输入的信息
+    if (!username) {
+      alert("please input your User Name");
+      return;
+    }
+    if (!password) {
+      alert("please input your password");
+      return;
+    }
+    if (!radio) {
+      alert("please choose your role");
+      return;
+    }
+
+    //发送ajax请求 使用post方式发送json字符串给后台login
+    $.ajax({
+      type: "post",
+      url: "http://localhost:8080/user/login",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+      },
+      xhrFields: { withCredentials: true },
+      data: { login_name: username, password: password, user_role: radio },
+      success: function (data) {
+        console.log(data);
+        // return;
+        if (data.message === "操作成功" || data.message === "成功") {
+          if (radio === "1") {
+            localStorage.token = data.data.token;
+            localStorage.tokenTime = +new Date();
+            location.href = "./booking.html";
+          } else {
+            localStorage.manageToken = data.data.token;
+            localStorage.manageTokenTime = +new Date();
+            location.href = "./ManageRoom.html";
+          }
+        } else {
+          alert("Wrong user name or password");
+          return;
+        }
+      },
+      //错误处理，后端拦截器导致发生错误后无返回，需要在这里进行处理
+      error: function () {
+        alert("Wrong user name or password");
+        return;
+      }
+    });
+  });
+  //绑定按钮事件跳转注册页面
+  $("#register_btn").click(function () {
+    location.href = "./register.html";
+  });
+</script>

@@ -1,0 +1,123 @@
+.register{
+    width: 700px;
+    height: 600px;
+    background-color: #fff;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 50px;
+    border-radius:5px;
+}
+
+.register_top{
+    width: 600px;
+    height: 50px;
+    line-height: 50px;
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-color: rgb(124, 120, 120);
+    margin-left: auto;
+    margin-right: auto;
+}
+.register_top>h1{
+    font-size: 20px;
+}
+
+.register_form{
+    height: 350px;
+    margin-top: 50px;
+    text-align: right;
+    width: 550px;
+    
+         
+}
+.a{
+    width: 300px;
+    height: 30px;
+    margin-top: 20px; 
+}
+.register_foot{
+    width: 200px;
+    
+    margin-top: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    
+}
+.button2{
+    height: 30px;
+    width: 80px;
+    background-color: rgb(42, 142, 224);
+    border-radius:5px;
+    float: left;
+}
+.button3{
+    height: 30px;
+    width: 80px;
+    background-color: #fff;
+    border:rgb(42, 142, 224) 1px solid;
+    border-radius:5px;
+    float: right;
+}
+
+.login{
+    width: 700px;
+    height: 350px;
+    background-color: #fff;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 200px;
+    border-radius:5px;
+}
+
+.login_top{
+    width: 600px;
+    height: 50px;
+    line-height: 50px;
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-color: rgb(124, 120, 120);
+    margin-left: auto;
+    margin-right: auto;
+    text-align:center;
+}
+.login_top>h1{
+    font-size: 20px;
+}
+
+.login_form{
+    height: 150px;
+    margin-top: 10px;
+    text-align: right;
+    width: 550px;
+    
+         
+}
+.login_choose{
+    
+    margin-right: 30px;
+    font-size: 20px;
+    
+         
+}
+.button4{
+    height: 30px;
+    width: 80px;
+    background-color: rgb(42, 142, 224);
+    border-radius:5px;
+    margin-top: 5px;
+    
+    
+}
+.button5{
+    height: 30px;
+    width: 80px;
+    background-color: #fff;
+    border:rgb(42, 142, 224) 1px solid;
+    border-radius:5px;
+    margin-top: 5px;
+}
+.login_foot{
+    width: 300px;
+    margin-left: 300px;
+    
+}

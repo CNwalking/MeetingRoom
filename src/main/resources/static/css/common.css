@@ -1,0 +1,45 @@
+/*版心*/
+.w {
+    width: 1200px;
+    margin: 0 auto;
+}
+
+.fl{
+    float: left;
+}
+
+.fr {
+    float: right;
+}
+
+/*第一版*/
+.shortcut {
+     height: 50px;
+     background-color: #f1f2f1;  
+     line-height: 50px;
+}
+
+.title-system{
+    margin-left: 30px;
+    font-size: 20px;
+}
+.shortcut ul li{
+	float: right;
+    font-size: 15px;
+    
+}
+
+.shortcut ul li span{
+	
+	padding: 15px 15px;
+}
+.top_btn{
+    float: right;
+    width: 80px;
+    height: 30px;
+    background-color: rgb(138, 101, 9);
+    border-radius: 24px;
+    margin-top: 10px;
+}
+
+

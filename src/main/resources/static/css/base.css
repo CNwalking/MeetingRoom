@@ -1,0 +1,57 @@
+/*清除元素默认的内外边框*/
+*{
+   margin: 0;
+   padding: 0;
+
+}
+
+/*让所有斜体不倾斜*/
+em,
+i {
+    font-style: normal;
+}
+
+/*去掉列表前面的小点*/
+li {
+    list-style: none;
+}
+
+/*图片没有边框，去掉图片底层的空白缝隙*/
+img{
+    border: 0;
+    vertical-align: middle;
+}
+
+/*让按钮变成小手*/
+button{
+    cursor: pointer;
+}
+
+/*取消链接下划线*/
+a{
+    color: #666;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #e33333;
+}
+
+.hide,
+.none {
+    display: none;
+}
+
+/*清除浮动*/
+.clearfix:after {
+    visibility: hidden;
+    clear: both;
+    display: block;
+    content: ".";
+    height:0
+
+}
+ 
+.clearfix {
+    *zoom:1
+}

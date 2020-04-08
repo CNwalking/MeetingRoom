@@ -2,6 +2,9 @@ package com.walking.meeting.common;
 
 import com.alibaba.fastjson.JSONObject;
 
+/**
+ * @author walking
+ */
 public class Response<T> {
     private int code = 0;
     private String message = "";

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>会议室管理系统</title>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/ManageMeeting.css" />
+  <link rel="stylesheet" type="text/css" href="./dp/assets/site.css">
+  <link rel="stylesheet" id=cal_style type="text/css" href="./dp/dist/flatpickr.min.css">
+  <script src="./manageCommon.js"></script>
+  <script src="./jquery.js"></script>
+  <script src="./dp/dist/flatpickr.js"></script>
+
+  <style>
+    .form1::-webkit-scrollbar {
+      display: none;
+    }
+
+    html {
+      min-height: 100%;
+      background-image: url(img/background01.png);
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shortcut">
+    <div class="fl">
+      <ul>
+        <h3 class="title-system" style="border: none;">Intelligent meeting</h3>
+      </ul>
+    </div>
+
+    <!-- <input type="button" class="top_btn" value="Logout" /> -->
+    <div class="fr">
+      <ul>
+        <li>
+          <span href="ManageMeeting.html" style="color:rgb(45, 66, 187)">ManageMeeting</span>
+        </li>
+        <li onclick="gomd()">
+          <span href="ManageDepartment.html">ManageDepartment</span>
+        </li>
+        <li onclick="gomd2()">
+          <span href="ManageDevice.html">ManageDevice</span>
+        </li>
+        <li onclick="gomr()">
+          <span href="ManageRoom.html">ManageRoom</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="datashow">
+    <div class="show_top">
+      <div class="show_title">Manage Meeting</div>
+    </div>
+    <div class="search-box" style="position: relative;">
+      <div style="margin: 0 auto;position: absolute;left: 50%;transform: translateX(-50%);top: 10px;height: 40px;">
+        <div id="s-date-search">Search</div>
+        <input id="data-for-search" placeholder="select date for meeting search">
+
+      </div>
+    </div>
+    <div class="form1" style="overflow-y: scroll;height: 600px;">
+      <table class="altrowstable" id="alternatecolor">
+        <tr>
+          <th>MeetingName</th>
+          <th>Department</th>
+          <th>Name of Booker</th>
+          <th>StartToEndTime</th>
+          <th>Level</th>
+          <th>Room</th>
+          <th>operation</th>
+        </tr>
+        <!-- <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th><a href="">delete</a></th>
+        </tr> -->
+      </table>
+    </div>
+  </div>
+</body>
+
+</html>
+
+<script type="text/javascript">
+  //页面跳转程序
+  function gomr() {
+    location.replace("./ManageRoom.html");
+  }
+  function gomd() {
+    location.replace("./ManageDepartment.html");
+  }
+  function gomd2() {
+    location.replace("./ManageDevice.html");
+  }
+</script>
+<script>
+  $('#s-date-search').click(function () {
+    var dt = $('#data-for-search').val()
+    if (!dt) {
+      alert('please select date')
+      return
+    }
+    //获取信息并填充
+    $.ajax({
+      type: "POST",
+      url: "http://localhost:8080/meeting/list",
+      headers: {
+        "token": localStorage.manageToken,
+        "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+      },
+      data: {
+        page_num: 1,
+        page_size: 0,
+        booking_date: dt
+      },
+      // xhrFields: { withCredentials: true },
+      success: function (data) {
+        $('.need-de').remove()
+        if (data.data && data.data.list.length > 0) {
+          var str = "";
+          data.data.list.forEach(element => {
+            str += '<tr class="need-de" id="line_' + element.meetingId + '"><td>' + element.meetingName + '</td><td>' + element.departmentName + '</td><td>' + element.username + '</td><td>' + element.bookingStartTime.split(' ')[1] + '~' + element.bookingEndTime.split(' ')[1] + '</td><td>' + element.meetingLevel + '</td><td>' + element.roomId + '</td><th class="confirm-flag">Delete</th></tr>'
+          });
+          $("#alternatecolor tbody").append(str)
+        }
+      },
+      error: function () {
+        alert("Wrong Network");
+        return;
+      }
+    });
+
+  })
+  $("#alternatecolor").click(function (e) {
+    var target = $(e.target);
+    //如果触发事件的不是删除按钮，则退出响应程序
+    if (!target.hasClass("confirm-flag")) {
+      return;
+    }
+    //否则弹出确认删除框
+    var isTrueOrFalse = window.confirm(
+      "Are you sure about cancel this Meeting?"
+    );
+    if (isTrueOrFalse) {
+      $.ajax({
+        type: "POST",
+        url: "http://localhost:8080/meeting/cancel",
+        data: {
+          meeting_id: $(target)
+            .parent()
+            .attr("id")
+            .split("line_")[1]
+        },
+        headers: {
+          "token": localStorage.manageToken,
+          "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+        },
+        // xhrFields: { withCredentials: true },
+        success: function (data) {
+          console.log(data);
+          $(target)
+            .parent()
+            .remove();
+        },
+        error: function () {
+          alert("Wrong Network");
+          return;
+        }
+      });
+    } else {
+      return;
+    }
+  });
+</script>
+<script>
+  document.getElementById("data-for-search").flatpickr();
+</script>

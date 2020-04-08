@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>会议室管理系统</title>
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="css/base.css" />
+  <link rel="stylesheet" href="css/common.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/order.css" />
+  <link rel="stylesheet" href="jquery-ui-1.12.1.custom/jquery-ui.css" />
+  <link rel="stylesheet" type="text/css" href="./dp/assets/site1.css">
+  <link rel="stylesheet" id=cal_style type="text/css" href="./dp/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="./css/booking.css" />
+  <script src="./common.js"></script>
+  <script src="./dp/dist/flatpickr.js"></script>
+  <style>
+    html {
+      min-height: 100%;
+      background-image: url(img/background01.png);
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="office_fix">
+    <div class="office">
+      <div class="weui-panel">
+        <div class="office-time">
+          <h4>please choose book time</h4>
+          <p>
+            every block means a period of time，for example 09:00 means 09:00
+            to 09:29:59
+          </p>
+          <div class="office-time-legend">
+            <div class="office-time-legend-item">
+              <div class="legend-img used"></div>
+              <div class="legend-text">can be chose</div>
+            </div>
+            <div class="office-time-legend-item">
+              <div class="legend-img disabled"></div>
+              <div class="legend-text">booked</div>
+            </div>
+            <div class="office-time-legend-item">
+              <div class="legend-img checked"></div>
+              <div class="legend-text">chose</div>
+            </div>
+          </div>
+          <div class="office-time-con office-time-slot" id="timeSoltCon"></div>
+        </div>
+      </div>
+      <div class="weui-btn-area">
+        <input type="text" id="meeting_name" placeholder="please input meeting name" />
+        <select name="department_name" id="department_name"></select>
+        <select name="meeting_level" id="meeting_level">
+          <option value="1">例会</option>
+          <option value="0">面试</option>
+          <option value="2">高级</option>
+          <option value="3">紧急</option>
+        </select>
+        <a class="weui-btn weui-btn_main" href="javascript:;" id="submitOrder" style="margin-bottom: 10px;">book</a>
+        <a class="weui-btn weui-btn_main" href="javascript:;" id="hideOrder"
+          style="margin-top: 0;margin-bottom: 0;background-color:#fff;color:#000;">cancel</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="device_id_block">
+    <div id="block">
+      <p>please choose device you want</p>
+      <div id="all_divice"></div>
+      <div id="sure_device" style="margin-bottom: 10px;">
+        confirm
+      </div>
+      <div id="close_divice">
+        ×
+      </div>
+    </div>
+  </div>
+  <div class="shortcut">
+    <div class="fl">
+      <ul>
+        <h3 class="title-system">Intelligent meeting</h3>
+      </ul>
+    </div>
+
+    <input type="button" class="top_btn" value="Logout" style="margin-left: 20px;" id="logout_btn" />
+    <div class="fr">
+      <ul>
+        <li>
+          <a href=""><img class="menuimg" src="img/avatar.png" alt="user" /><span id="login_info_name"></span></a>
+        </li>
+        <!-- <li><a href="ManageMeeting.html">ManageMeeting</a></li>
+            <li><a href="ManageDepartment.html">ManageDepartment</a></li>
+            <li><a href="ManageDevice.html">ManageDevice</a></li>
+            <li><a  style="color:rgb(45, 66, 187)" href="ManageRoom.html">ManageRoom</a></li> -->
+      </ul>
+    </div>
+  </div>
+  <div class="order_box">
+    <div class="left_nav">
+      <div class="left_navtop">
+        <div>Operations</div>
+      </div>
+      <span><button id="left-nav-btn1" class="left-nav-btn" type="button">
+          Booking
+        </button></span>
+      <span><button id="left-nav-btn1" class="left-nav-btn" type="button"
+          onclick="window.location.replace('./cancel.html')">
+          Cancel
+        </button></span>
+      <!-- <span><button id="left-nav-btn1" class="left-nav-btn" type="button" onclick="">
+          Searching Device
+        </button></span>
+      <span><button id="left-nav-btn1" class="left-nav-btn" type="button" onclick="">
+          Searching Meeting
+        </button></span> -->
+    </div>
+
+    <div class="right_show">
+      <div class="right_tip">Enter basic information</div>
+      <div class="right_top">
+        <li id="device_id_list_li">
+          device_id_list：
+          <input type="text" id="device_id_list" disabled />
+        </li>
+        <li>
+          room_scale：
+          <!-- <input type="number" id="room_scale" value="4" /> -->
+          <select class="txt" id="room_scale">
+            <!-- <option></option> -->
+            <option>4</option>
+            <option>8</option>
+            <option>10</option>
+            <option>12</option>
+            <option>20</option>
+            <option>50</option>
+          </select>
+        </li>
+        <li>
+          booking_date:
+          <input id="booking_date" value="" readonly />
+          <!-- <select class="txt">
+              <option>1</option>
+              <option>2</option>
+            </select> -->
+        </li>
+        <li><input type="button" value="Search" id="select_search" /></li>
+        <!-- <li>Required Time: <input type="text" class="txt" /></li> -->
+      </div>
+      <!-- <div class="right_middle">
+          <div><input type="date" /></div>
+          <div><input type="button" value="Search" /></div>
+        </div> -->
+      <div id="caidan" hidden="hidden">
+        <table style="border:0px solid red;width:250px">
+          <tr>
+            <td>序号</td>
+            <td>姓名</td>
+            <td>年龄</td>
+            <td>性别</td>
+          </tr>
+          <tr>
+            <td>1</td>
+            <td>李易峰</td>
+            <td>24</td>
+            <td>男</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>杨洋</td>
+            <td>25</td>
+            <td>男</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>赵雅芝</td>
+            <td>50</td>
+            <td>女</td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td>何洁</td>
+            <td>30</td>
+            <td>女</td>
+          </tr>
+        </table>
+      </div>
+      <div class="room_show" style="overflow: hidden;height: 500px;">
+        <!-- <span
+            ><button class="room_btn" type="button">
+              meetting room1
+            </button></span
+          >
+          <span
+            ><button class="room_btn" type="button">
+              meetting room1
+            </button></span
+          >
+          <span
+            ><button class="room_btn" type="button">
+              meetting room1
+            </button></span
+          >
+          <span
+            ><button class="room_btn" type="button">
+              meetting room1
+            </button></span
+          >
+          <span
+            ><button class="room_btn" type="button">
+              meetting room1
+            </button></span
+          > -->
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
+<script src="./jquery.js"></script>
+<!-- <script src="jquery-ui-1.12.1.custom/jquery-ui.js"></script> -->
+<script src="jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+<script>
+  //获取用户信息并展示
+  $.ajax({
+    type: "POST",
+    url: "http://localhost:8080/user/info",
+    headers: {
+      token: localStorage.token,
+      "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+    },
+    data: {},
+    success: function (data) {
+      //接受返回的数据，前端判断采取的动作
+      console.log(data);
+      $("#login_info_name").html(data.data.username);
+    }
+  });
+  //获取room信息并转换格式
+  $.ajax({
+    type: "GET",
+    url: "http://localhost:8080/manager/listMeetingRoom",
+    headers: {
+      token: localStorage.token,
+      "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+    },
+    data: {},
+    success: function (data) {
+      console.log(data);
+      window.roomInfoByRoomId = {};
+      data.data.forEach(el => {
+        roomInfoByRoomId[el.roomId] = el;
+      });
+      console.log(roomInfoByRoomId);
+    }
+  });
+  //获取部门信息
+  $.ajax({
+    type: "GET",
+    url: "http://localhost:8080/manager/listDepartment",
+    headers: {
+      token: localStorage.token,
+      "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+    },
+    data: {},
+    success: function (data) {
+      console.log(data);
+      var str = "";
+      data.data.forEach(e => {
+        str += "<option>" + e.departmentName + "</option>";
+      });
+      $("#department_name").append(str);
+    }
+  });
+  //获取device_id_list信息
+  $.ajax({
+    type: "GET",
+    url: "http://localhost:8080/manager/listDevice",
+    headers: {
+      token: localStorage.token,
+      "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+    },
+    data: {},
+    success: function (data) {
+      //接受返回的数据，前端判断采取的动作
+      console.log(data);
+      var str = "";
+      data.data.forEach(function (e) {
+        str += "<div class='divice_sm_block' id='line_" + e.deviceId + "'>" + e.deviceType + "</div>";
+      });
+      $("#all_divice").append(str);
+    }
+  });
+  //点击隐藏设备选择弹框
+  $("#close_divice").click(function () {
+    $("#device_id_block").hide();
+    $(".divice_sm_block").removeClass("bblue");
+  });
+  //点击组装设备选择情况，并隐藏弹框
+  $("#sure_device").click(function () {
+    var str = "";
+    var real = ''
+    $(".divice_sm_block").each((index, e) => {
+      if (!$(e).hasClass("bblue")) {
+        return;
+      }
+      if (str) {
+        str += "," + $(e).text();
+        real += ',' + $(e).attr("id").split('_')[1]
+      } else {
+        str += $(e).text();
+        real += $(e).attr("id").split('_')[1]
+      }
+    });
+    $("#device_id_list").val(str);
+    $("#device_id_list").attr('data-real', real)
+    $("#device_id_block").hide();
+    $(".divice_sm_block").removeClass("bblue");
+  });
+  //点击选中设备
+  $("#all_divice").click(function (e) {
+    if ($(e.target).hasClass("divice_sm_block")) {
+      if ($(e.target).hasClass("bblue")) {
+        $(e.target).removeClass("bblue");
+      } else {
+        $(e.target).addClass("bblue");
+      }
+    }
+  });
+  //点击显示device_id_list选择框
+  $("#device_id_list_li").click(function () {
+    $("#device_id_block").show();
+  });
+  $("#logout_btn").click(function () {
+    //点击退出，清除token信息，返回登录页
+    localStorage.removeItem("tokenTime");
+    localStorage.removeItem("token");
+    alert("successfully logout");
+    window.location.replace("./index.html");
+  });
+  $("#select_search").click(function () {
+    //检查数据是否输入完整
+    var device_id_list = $("#device_id_list").attr('data-real');
+    var room_scale = $("#room_scale").val();
+    var booking_date = $("#booking_date").val();
+    if (!device_id_list) {
+      alert("please choose device id list");
+      return;
+    }
+    if (!room_scale) {
+      alert("please select room scale");
+      return;
+    }
+    if (!booking_date) {
+      alert("please choose booking date");
+      return;
+    }
+    $.ajax({
+      type: "POST",
+      url: "http://localhost:8080/meeting/select",
+      headers: {
+        token: localStorage.token,
+        "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+      },
+      data: {
+        device_id_list: device_id_list,
+        room_scale: room_scale,
+        booking_date: booking_date,
+        page_num: 1,
+        page_size: 10000
+      },
+      success: function (data) {
+        $(".room_show").html('')
+        //接受返回的数据，前端判断采取的动作
+        console.log(data);
+        var str = "";
+        data.data.list.forEach(element => {
+          var obj = {
+            "1": "rgb(136,176,75)",
+            "6": "#FFA500",
+            "8": "#B22222"
+          };
+          var color = obj[element.busyOrNot];
+          str +=
+            '<span><button rid="' +
+            element.roomId +
+            '" class="room_btn" type="button" style="background-color:' +
+            color +
+            '">' +
+            element.roomName +
+            "</button></span>";
+        });
+        $(".room_show").append(str);
+      }
+    });
+  });
+  // $(".room_show").click(function() {
+  //   $("#caidan").dialog({
+  //     buttons: {
+  //       确定: function() {},
+  //       取消: function() {
+  //         $(this).dialog("close");
+  //       }
+  //     }
+  //   });
+  // });
+  $(".room_show").click(function (e) {
+    var element = $(e.target);
+    if (!element.hasClass("room_btn")) {
+      return;
+    }
+    var id = element.attr("rid");
+    window.nowRoomId = id;
+    $.ajax({
+      type: "POST",
+      url: "http://localhost:8080/meeting/list",
+      headers: {
+        token: localStorage.token,
+        "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+      },
+      data: {
+        room_id: id,
+        booking_date: $("#booking_date").val()
+      },
+      success: function (data) {
+        //接受返回的数据，前端判断采取的动作
+        console.log(data);
+        var tArr = [];
+        data.data.list.forEach(e => {
+          e.bookingStartTime = e.bookingStartTime.split(" ")[1];
+          e.bookingEndTime = e.bookingEndTime.split(" ")[1];
+          var st = [
+            e.bookingStartTime.split(":")[0],
+            e.bookingStartTime.split(":")[1]
+          ];
+          var end = [
+            e.bookingEndTime.split(":")[0],
+            e.bookingEndTime.split(":")[1]
+          ];
+          while ("" + st[0] + st[1] < "" + end[0] + end[1]) {
+            tArr.push(st[0] + ":" + st[1]);
+            st[1] = +st[1] + 30;
+            if (st[1] === 60) {
+              st[1] = "00";
+              st[0] = +st[0] + 1;
+              if (st[0] < 10) {
+                st[0] = "0" + st[0];
+              }
+            } else {
+              st[1] = "30";
+            }
+          }
+        });
+        var allTime = roomInfoByRoomId[id];
+        var st = [
+          allTime.freeTimeStart.split(":")[0],
+          allTime.freeTimeStart.split(":")[1]
+        ];
+        var end = [
+          allTime.freeTimeEnd.split(":")[0],
+          allTime.freeTimeEnd.split(":")[1]
+        ];
+        var str = "";
+        while ("" + st[0] + st[1] < "" + end[0] + end[1]) {
+          str +=
+            '<div class="office-time-item slot_' +
+            (tArr.indexOf(st[0] + ":" + st[1]) > -1 ? " disable" : "") +
+            '">' +
+            (st[0] + ":" + st[1]) +
+            "</div>";
+          st[1] = +st[1] + 30;
+          if (st[1] === 60) {
+            st[1] = "00";
+            st[0] = +st[0] + 1;
+            if (st[0] < 10) {
+              st[0] = "0" + st[0];
+            }
+          } else {
+            st[1] = "30";
+          }
+        }
+        $("#timeSoltCon").append(str);
+        $("#office_fix").show();
+      }
+    });
+  });
+</script>
+<script>
+  var box1, box2;
+  $(".date_").click(function () {
+    $(".date_").removeClass("checked");
+    $(this).addClass("checked");
+  });
+  $("#office_fix").on("click", function (e) {
+    var $this = $(e.target);
+    if ($this.hasClass("slot_")) {
+      var $boxes = $this.parent().children();
+
+      if ($this.hasClass("disable")) return;
+
+      if (!box1) {
+        // 点击第一个盒子的时候清空所有box的checked状态
+        // 移除之前存储的box2变量
+        // 只给当前盒子增加checked
+        box1 = $this;
+        $boxes.removeClass("checked");
+        $this.addClass("checked");
+        box2 = null;
+      } else if (!box2) {
+        // 点击第二个盒子的时候
+        // 计算从哪个盒子开始到哪个盒子结束需要增加checked状态
+        box2 = $this;
+        var box1Index = box1.index();
+        var box2Index = box2.index();
+
+        // 这里从“第一个盒子”、“第二个盒子”的概念切换到“开始盒子”和“结束盒子”
+        var startBoxIndex = Math.min(box1Index, box2Index);
+        var endBoxIndex = Math.max(box1Index, box2Index);
+
+        // 重复点击第一个盒子时，不计算为第二个盒子
+        if (startBoxIndex === endBoxIndex) {
+          box2 = null;
+        }
+
+        // 开始盒子和结束盒子之间所有的盒子
+        var $startEndBoxRange = $boxes.filter(function () {
+          var index = $(this).index();
+          return index >= startBoxIndex && index <= endBoxIndex;
+        });
+        var $disableBoxes = $startEndBoxRange.filter(function () {
+          return $(this).hasClass("disable");
+        });
+
+        // 用户选择的区间是否包含禁用的盒子
+        if ($disableBoxes.length) {
+          // 包含禁用盒子则提示，并重置第二盒子
+          alert("disable time");
+          box2 = null;
+        } else {
+          // 不包含禁用盒子
+          $boxes.removeClass("checked");
+          $startEndBoxRange.addClass("checked");
+
+          // 到这里用户选择完了开始和结束区间
+        }
+      } else {
+        // 当已经选择了第二个盒子后重新点击，意味着刚才选过的一系列盒子作废
+        // 用户期望重新选择盒子区间
+        // 和选择第一个盒子后的逻辑相同
+        box1 = $this;
+        $boxes.removeClass("checked");
+        $this.addClass("checked");
+        box2 = null;
+      }
+    }
+  });
+  $("#submitOrder").on("click", function () {
+    if (box1 && box2) {
+      var startTime = box1.html();
+      var endTime = box2.html();
+      if (startTime && endTime) {
+        var data = {};
+        if (!$("#meeting_name").val()) {
+          alert("please input meeting name");
+          return;
+        }
+        var st = [
+          endTime.split(":")[0],
+          endTime.split(":")[1]
+        ];
+        st[1] = +st[1] + 30;
+        if (st[1] === 60) {
+          st[1] = "00";
+          st[0] = +st[0] + 1;
+          if (st[0] < 10) {
+            st[0] = "0" + st[0];
+          }
+        } else {
+          st[1] = "30";
+        }
+        endTime = st[0] + ':' + st[1]
+        data.meeting_name = $("#meeting_name").val();
+        data.room_id = nowRoomId;
+        data.username = $("#login_info_name").html();
+        data.booking_date = $("#booking_date").val();
+        data.start_time = $("#booking_date").val() + " " + startTime;
+        data.end_time = $("#booking_date").val() + " " + endTime;
+        data.department_name = $("#department_name").val();
+        data.meeting_level = $("#meeting_level").val();
+        data.required_time = ($(".checked").length - 1) * 0.5;
+        console.log(data);
+        $.ajax({
+          type: "POST",
+          url: "http://localhost:8080/meeting/booking",
+          headers: {
+            token: localStorage.token,
+            "Content-Type": "application/x-www-form-urlencoded" //设置请求头请求格式为JSON
+          },
+          data: data,
+          success: function (data) {
+            //接受返回的数据，前端判断采取的动作
+            console.log(data);
+            $("#office_fix").hide();
+            $("#meeting_name").val("");
+            $("#timeSoltCon").html("");
+            alert('successfully booked')
+          }
+        });
+      } else {
+        alert("please choose time");
+      }
+    } else {
+      alert("please choose two time point");
+    }
+  });
+  $("#hideOrder").click(function () {
+    $("#office_fix").hide();
+    $("#meeting_name").val("");
+    $("#timeSoltCon").html("");
+    box1 = undefined
+    box2 = undefined
+  });
+</script>
+<script>
+  document.getElementById("booking_date").flatpickr();
+</script>
