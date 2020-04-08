@@ -59,10 +59,10 @@
         <input type="text" id="meeting_name" placeholder="please input meeting name" />
         <select name="department_name" id="department_name"></select>
         <select name="meeting_level" id="meeting_level">
-          <option value="1">例会</option>
-          <option value="0">面试</option>
-          <option value="2">高级</option>
-          <option value="3">紧急</option>
+          <option value="1">Interview</option>
+          <option value="0">Regular Meeting</option>
+          <option value="2">High Level</option>
+          <option value="3">EMERGENCY</option>
         </select>
         <a class="weui-btn weui-btn_main" href="javascript:;" id="submitOrder" style="margin-bottom: 10px;">book</a>
         <a class="weui-btn weui-btn_main" href="javascript:;" id="hideOrder"
@@ -127,24 +127,23 @@
       <div class="right_tip">Enter basic information</div>
       <div class="right_top">
         <li id="device_id_list_li">
-          device_id_list：
+          Device List：
           <input type="text" id="device_id_list" disabled />
         </li>
         <li>
-          room_scale：
+          Room Scale：
           <!-- <input type="number" id="room_scale" value="4" /> -->
           <select class="txt" id="room_scale">
             <!-- <option></option> -->
             <option>4</option>
             <option>8</option>
-            <option>10</option>
             <option>12</option>
             <option>20</option>
             <option>50</option>
           </select>
         </li>
         <li>
-          booking_date:
+          Booking Date:
           <input id="booking_date" value="" readonly />
           <!-- <select class="txt">
               <option>1</option>

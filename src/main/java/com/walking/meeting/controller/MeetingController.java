@@ -143,17 +143,17 @@ public class MeetingController {
         // 构造会议名字
         String meetingLevelName = "";
         if (meetingLevel == 0){
-            meetingLevelName = "面试";
+            meetingLevelName = "Interview";
         } else if (meetingLevel == 1) {
-            meetingLevelName = "例会";
+            meetingLevelName = "Regular Meeting";
         } else if (meetingLevel == 2) {
-            meetingLevelName = "高级会议";
+            meetingLevelName = "High Level";
         } else if (meetingLevel == 3) {
-            meetingLevelName = "紧急会议";
+            meetingLevelName = "EMERGENCY";
         }
         StringBuilder meetingNameBuilder = new StringBuilder();
-        String defaultMeetingName = meetingNameBuilder.append(departmentName).
-                append(meetingLevelName).append(meetingName).toString();
+        String defaultMeetingName = meetingNameBuilder.append(departmentName).append(" ")
+                .append(meetingLevelName).append(" ").append(meetingName).toString();
         meetingDTO.setMeetingName(defaultMeetingName);
         meetingDTO.setUsername(username);
         meetingDTO.setMeetingLevel(meetingLevel);
