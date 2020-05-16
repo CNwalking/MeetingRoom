@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void addUser(UserDTO userDTO) {
         UserDO userDO =  JSON.parseObject(JSON.toJSONString(userDTO), UserDO.class);
-        userDO.setRoleId(1); // 默认普通用户，0为管理员
+        userDO.setRoleId(1);
         userDO.setCreateTime(new Date());
         userMapper.insertSelective(userDO);
     }

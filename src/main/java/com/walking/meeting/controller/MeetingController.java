@@ -1,21 +1,16 @@
 package com.walking.meeting.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import com.walking.meeting.Service.ManagerService;
 import com.walking.meeting.Service.MeetingService;
 import com.walking.meeting.common.*;
-import com.walking.meeting.dataobject.dao.DepartmentDO;
 import com.walking.meeting.dataobject.dao.MeetingDO;
-import com.walking.meeting.dataobject.dao.MeetingRoomDO;
 import com.walking.meeting.dataobject.dto.DepartmentDTO;
 import com.walking.meeting.dataobject.dto.ListMeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingDTO;
 import com.walking.meeting.dataobject.dto.MeetingReturnDTO;
 import com.walking.meeting.dataobject.query.DepartmentQuery;
 import com.walking.meeting.dataobject.vo.MeetingRoomVO;
-import com.walking.meeting.dataobject.vo.UserInfoVO;
 import com.walking.meeting.utils.DateUtils;
 import com.walking.meeting.utils.ResponseUtils;
 import com.walking.meeting.utils.SnowFlakeIdGenerator;
@@ -36,11 +31,10 @@ import static com.walking.meeting.utils.DateUtils.*;
 
 @CrossOrigin
 @Slf4j
-@Api(tags = "MeetingController", description = "会议模块")
+@Api(tags = "MeetingController", description = "Meeting module")
 @RestController("MeetingController")
 @RequestMapping("/meeting")
 public class MeetingController {
-    // TODO 预定会议接口(算法), 候补队列, 分类，高级会议取消低级会议
 
     @Autowired
     private MeetingService meetingService;
@@ -48,26 +42,26 @@ public class MeetingController {
     private ManagerService managerService;
 
     @UserLogin
-    @ApiOperation(value = "查看所有会议预定列表", notes = "查看所有会议预定列表")
+    @ApiOperation(value = "View a list of all meeting reservations", notes = "View a list of all meeting reservations")
     @PostMapping(value = "/list")
     public Response<PageInfo<MeetingReturnDTO>> meetingList(
-            @ApiParam(name = "username", value = "会议室预定者")
+            @ApiParam(name = "username", value = "booker")
             @RequestParam(value = "username",required = false) String username,
-            @ApiParam(name = "room_id", value = "会议室id")
+            @ApiParam(name = "room_id", value = "roomId")
             @RequestParam(value = "room_id",required = false) String roomId,
-            @ApiParam(name = "room_name", value = "会议室名字")
+            @ApiParam(name = "room_name", value = "room name")
             @RequestParam(value = "room_name",required = false) String roomName,
-            @ApiParam(name = "required_time", value = "会议时长例如1.5")
+            @ApiParam(name = "required_time", value = "required time for example 1.5")
             @RequestParam(value = "required_time",required = false) String requiredTime,
-            @ApiParam(name = "booking_date", value = "会议日期yyyy-MM-dd")
+            @ApiParam(name = "booking_date", value = "yyyy-MM-dd")
             @RequestParam(value = "booking_date",required = false) String bookingDate,
-            @ApiParam(name = "department_name", value = "定会议的部门")
+            @ApiParam(name = "department_name", value = "booking department")
             @RequestParam(value = "department_name",required = false) String departmentName,
-            @ApiParam(name = "page_num", value = "页码") @RequestParam(value = "page_num",
+            @ApiParam(name = "page_num", value = "page number") @RequestParam(value = "page_num",
                     defaultValue = "1", required = false) Integer pageNum,
-            @ApiParam(name = "page_size", value = "每页数量：为0时查全部") @RequestParam(value = "page_size",
+            @ApiParam(name = "page_size", value = "page size,0 means all") @RequestParam(value = "page_size",
                     defaultValue = "20", required = false) Integer pageSize){
-        log.info("查看会议预定列表, username:{}, roomId:{}, roomName:{}, requiredTime:{}, departmentName:{}, pageNum:{}, pageSize:{}",
+        log.info("View meeting reservation list, username:{}, roomId:{}, roomName:{}, requiredTime:{}, departmentName:{}, pageNum:{}, pageSize:{}",
                 username, roomId, roomName, requiredTime, departmentName, pageNum, pageSize);
         ListMeetingDTO listMeetingDTO = new ListMeetingDTO();
         listMeetingDTO.setUsername(Optional.ofNullable(username).orElse(""));
@@ -88,59 +82,51 @@ public class MeetingController {
     }
 
     @UserLogin
-    @ApiOperation(value = "预定会议", notes = "预定会议")
+    @ApiOperation(value = "book meeting", notes = "book meeting")
     @PostMapping(value = "/booking")
     public Response meetingBooking(
-            @ApiParam(name = "meeting_name", value = "会议名称") @RequestParam(value = "meeting_name") String meetingName,
-            @ApiParam(name = "room_id", value = "会议室id") @RequestParam(value = "room_id") String roomId,
-            @ApiParam(name = "username", value = "会议室预定者") @RequestParam(value = "username") String username,
-            @ApiParam(name = "booking_date", value = "会议日期yyyy-MM-dd") @RequestParam(value = "booking_date") String bookingDate,
-            @ApiParam(name = "start_time", value = "会议开始时间yyyy-MM-dd HH:mm") @RequestParam(value = "start_time") String startTime,
-            @ApiParam(name = "end_time", value = "会议结束时间yyyy-MM-dd HH:mm") @RequestParam(value = "end_time") String endTime,
-            @ApiParam(name = "required_time", value = "会议时长")
+            @ApiParam(name = "meeting_name", value = "meeting name") @RequestParam(value = "meeting_name") String meetingName,
+            @ApiParam(name = "room_id", value = "meeting room id") @RequestParam(value = "room_id") String roomId,
+            @ApiParam(name = "username", value = "room booker") @RequestParam(value = "username") String username,
+            @ApiParam(name = "booking_date", value = "booking date yyyy-MM-dd") @RequestParam(value = "booking_date") String bookingDate,
+            @ApiParam(name = "start_time", value = "start time yyyy-MM-dd HH:mm") @RequestParam(value = "start_time") String startTime,
+            @ApiParam(name = "end_time", value = "end time yyyy-MM-dd HH:mm") @RequestParam(value = "end_time") String endTime,
+            @ApiParam(name = "required_time", value = "meeting duration")
             @RequestParam(value = "required_time") BigDecimal requiredTime,
-            @ApiParam(name = "department_name", value = "会议室预定者的部门")
+            @ApiParam(name = "department_name", value = "meeting room booking department")
             @RequestParam(value = "department_name") String departmentName,
-            @ApiParam(name = "meeting_level", value = "0面试1例会2高级3紧急")
+            @ApiParam(name = "meeting_level", value = "0Interview 1Regular Meeting 2High Level 3EMERGENCY")
             @RequestParam(value = "meeting_level") Integer meetingLevel){
-        log.info("预定信息参数：会议室id:{},会议室预定者:{},会议日期:{},会议开始时间:{},会议结束时间:{},会议时长:{}," +
-                "会议室预定者的部门:{},会议等级:{}",roomId,username,bookingDate,startTime,
-                endTime,requiredTime,departmentName,meetingLevel);
-        // 参数判空
         if (StringUtils.isBlank(meetingName) || StringUtils.isBlank(roomId) || StringUtils.isBlank(username) ||
             StringUtils.isBlank(bookingDate) || StringUtils.isBlank(startTime) || StringUtils.isBlank(endTime) ||
             StringUtils.isBlank(departmentName) || meetingLevel == null || requiredTime == null
         ) {
             throw new ResponseException(StatusCodeEnu.MEETING_PARAMETER_ERROR);
         }
-        // 先判断会议室所选日期是否有空，再是时间是否有空，这两个判定完以后addMeeting到数据库表
+        // First determine whether the selected date of the conference room is available, and then whether the time is available.
+        // After these two judgments are completed, add Meeting to the meeting table
         String isTimeFree = meetingService.selectTimeByDateAndRoomID(parseDateFormatToSQLNeed(bookingDate),roomId);
         if (isTimeFree.equals(Const.ROOM_FULL_TIME)){
-            log.info("会议室:{},在日期:{}已经被订满了", roomId, bookingDate);
+            log.info("Meeting room: {}, on date: {} is fully booked", roomId, bookingDate);
             throw new ResponseException(StatusCodeEnu.MEETING_ROOM_FULL);
         }
         if (isTimeFree.equals(Const.ROOM_CROWDED)) {
-            log.info("会议室:{},在日期:{}需要进入候补队列", roomId, bookingDate);
-            // TODO 进入候补队列
+            log.info("Meeting room: {}, on date: {} need to enter the waiting queue", roomId, bookingDate);
         }
         if (isTimeFree.equals(Const.ROOM_AVAILABLE)) {
-            log.info("会议室:{},在日期:{}时可被直接预定", roomId, bookingDate);
+            log.info("Meeting room: {}, can be booked directly at the date: {}", roomId, bookingDate);
         }
-        // 开始时间、结束时间判定,判断想预定的时间是否合法。
+        // whether the time you want to book is legal.
         Boolean isMeetingTimeAvailable = meetingService.isTimeAvailable(startTime, endTime,
                 parseDateFormatToSQLNeed(bookingDate), roomId);
-        // false则这个想定的会议时间不合理
+        // false, the planned meeting time is unreasonable
         if (!isMeetingTimeAvailable){
             throw new ResponseException(StatusCodeEnu.MEETING_TIME_ILLEGAL);
         }
-        //  先进行设备相关的判定，判定完以后让用户选择room，然后读取roomId当这个方法的入参。
-        //  取会议室ID这个方法另写，通过设备选出roomId，不在此方法中体现，见下面方法meetingRoomSearchingByDevice
-
-        // 下面先什么都不管，add一个会议，到时候会判条件判了以后再add
         MeetingDTO meetingDTO = new MeetingDTO();
         String meetingId = String.valueOf(SnowFlakeIdGenerator.getIdGenerator());
         meetingDTO.setMeetingId(meetingId);
-        // 构造会议名字
+        // Construct a conference name
         String meetingLevelName = "";
         if (meetingLevel == 0){
             meetingLevelName = "Interview";
@@ -159,8 +145,7 @@ public class MeetingController {
         meetingDTO.setMeetingLevel(meetingLevel);
         meetingDTO.setRoomId(roomId);
         meetingDTO.setDepartmentName(departmentName);
-        // 此处判定了时长是否正确
-        // 如果 开始时间-结束时间 != 会议时间 或开始时间 >结束时间 ，那么报错
+        // If start time - end time != duration time or start time> end time, then throw exception
         Date start = DateUtils.parse(startTime, FORMAT_YYYY_MM_DD_HH_MM);
         Date end = DateUtils.parse(endTime, FORMAT_YYYY_MM_DD_HH_MM);
         log.info("startTime:{},endTime:{}", start, end);
@@ -178,17 +163,17 @@ public class MeetingController {
     }
 
     @UserLogin
-    @ApiOperation(value = "取消会议", notes = "取消会议")
+    @ApiOperation(value = "cancel meeting", notes = "cancel meeting")
     @PostMapping(value = "/cancel")
     public Response meetingCancel(
             @ApiParam(name = "meeting_id", value = "会议id") @RequestParam(value = "meeting_id") String meetingId){
-        log.info("取消会议, meetingId:{}", meetingId);
+        log.info("cancel meeting, meetingId:{}", meetingId);
         if (Objects.isNull(meetingId)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
         }
         MeetingDO meetingDO =  meetingService.searchMeetingByMeetingId(meetingId);
         if (ObjectUtils.isEmpty(meetingDO)) {
-            // 说明没有这个会议,可能已经取消,可能meetingId输入错误
+            // Note that there is no such meeting, it may have been cancelled, maybe the input of meetingId is wrong
             throw new ResponseException(StatusCodeEnu.MEETING_ID_NOT_EXIST);
         }
         meetingDO.setDeleteTime(formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
@@ -198,12 +183,12 @@ public class MeetingController {
     }
 
     @UserLogin
-    @ApiOperation(value = "查看会议室的设备", notes = "查看会议室的设备")
+    @ApiOperation(value = "View meeting room equipment", notes = "View meeting room equipment")
     @PostMapping(value = "/search_device_by_room_id")
     public Response<List<Integer>> searchDeviceByRoomId(
             @ApiParam(name = "room_id", value = "房间id")
             @RequestParam(value = "room_id") String roomId){
-        log.info("查看会议室的设备, roomId:{}", roomId);
+        log.info("View meeting room equipment, roomId:{}", roomId);
         if (Objects.isNull(roomId)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
         }
@@ -211,37 +196,37 @@ public class MeetingController {
     }
 
     @UserLogin
-    @ApiOperation(value = "通过会议室设备、规模和时间选出会议室", notes = "通过会议室设备、规模和时间选出会议室")
+    @ApiOperation(value = "Select meeting rooms by meeting room equipment and scale",
+            notes = "Select meeting rooms by meeting room equipment and scale")
     @PostMapping(value = "/select")
     public Response<PageInfo<MeetingRoomVO>> meetingRoomSearchingByDQuery(
-            @ApiParam(name = "device_id_list", value = "设备id列表，格式例如:1,2,3")
+            @ApiParam(name = "device_id_list", value = "device id list for example:1,2,3")
             @RequestParam(value = "device_id_list") String deviceIdList,
-            @ApiParam(name = "room_scale", value = "会议室可容纳人数")
+            @ApiParam(name = "room_scale", value = "meeting room capacity")
             @RequestParam(value = "room_scale") Integer roomScale,
-            @ApiParam(name = "booking_date", value = "会议日期yyyy-MM-dd")
+            @ApiParam(name = "booking_date", value = "meeting date yyyy-MM-dd")
             @RequestParam(value = "booking_date") String bookingDate,
-            @ApiParam(name = "page_num", value = "页码") @RequestParam(value = "page_num",
+            @ApiParam(name = "page_num", value = "page number") @RequestParam(value = "page_num",
                     defaultValue = "1", required = false) Integer pageNum,
-            @ApiParam(name = "page_size", value = "每页数量：为0时查全部") @RequestParam(value = "page_size",
+            @ApiParam(name = "page_size", value = "Number per page: check all when it is 0") @RequestParam(value = "page_size",
                     defaultValue = "20", required = false) Integer pageSize){
-        log.info("通过会议室设备和规模选出会议室, deviceIdList:{}, roomScale:{}", deviceIdList, roomScale);
+        log.info("Select meeting rooms by meeting room equipment and scale, deviceIdList:{}, roomScale:{}", deviceIdList, roomScale);
         if (Objects.isNull(deviceIdList) || Objects.isNull(roomScale)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
         }
-        // 选出包含这些设备的该规格的会议室
+        // Select the meeting room of the specification containing these devices
         PageInfo<MeetingRoomVO> pageInfo = meetingService.searchRoomByQuery(parseDateFormatToSQLNeed(bookingDate),
                 deviceIdList, roomScale, pageNum, pageSize);
         return ResponseUtils.returnSuccess(pageInfo);
     }
 
     @UserLogin
-    @ApiOperation(value = "通过部门来搜出用户列表", notes = "通过部门来搜出用户列表")
+    @ApiOperation(value = "Search user list by department", notes = "Search user list by department")
     @PostMapping(value = "/department/listUser")
     public Response<List<String>> departmentUserList(
-            @ApiParam(name = "department_name", value = "部门名字")
+            @ApiParam(name = "department_name", value = "department name")
             @RequestParam(value = "department_name") String departmentName) {
-        log.info("通过部门来搜出用户列表,department_name:{}", departmentName);
-        // 参数判空
+        log.info("Search user list by department,department_name:{}", departmentName);
         if (StringUtils.isEmpty(departmentName)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
         }
@@ -257,7 +242,7 @@ public class MeetingController {
 
 
     private String parseDateFormatToSQLNeed(String date){
-        // 2019-11-04 转成 20191104
+        // 2019-11-04 transfer 20191104
         String result = date.replaceAll("-","");
         return result;
     }

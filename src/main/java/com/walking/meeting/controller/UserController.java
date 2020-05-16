@@ -30,11 +30,10 @@ import static com.walking.meeting.utils.DateUtils.FORMAT_YYYY_MM_DD_HH_MM;
 
 @CrossOrigin
 @Slf4j
-@Api(tags = "UserController", description = "用户模块")
+@Api(tags = "UserController", description = "user module")
 @RestController("UserController")
 @RequestMapping("/user")
 public class UserController {
-    // TODO 人脸识别登录接口
 
     @Autowired
     private UserService userService;
@@ -43,47 +42,38 @@ public class UserController {
     @Autowired
     private TokenService tokenService;
 
-    @ApiOperation(value = "人脸识别用户登录", notes = "人脸识别用户登录")
-    @PostMapping(value = "/faceLogin")
-    public Response userFaceLogin() {
-        // TODO 人脸识别登录接口
-        // 加到session里去
-//        request.getSession().setAttribute(Const.CURRENT_USER,userDO);
-        return ResponseUtils.returnDefaultSuccess();
-    }
-
-    @ApiOperation(value = "用户登录", notes = "用户登录")
+    @ApiOperation(value = "user login", notes = "user login")
     @PassToken
     @PostMapping(value = "/login")
     public Response userLogin(
-            @ApiParam(name = "login_name", value = "用户名") @RequestParam(value = "login_name") String loginName,
-            @ApiParam(name = "password", value = "密码") @RequestParam(value = "password") String password,
-            @ApiParam(name = "user_role", value = "0:管理员 1:普通用户") @RequestParam(
+            @ApiParam(name = "login_name", value = "login name") @RequestParam(value = "login_name") String loginName,
+            @ApiParam(name = "password", value = "password") @RequestParam(value = "password") String password,
+            @ApiParam(name = "user_role", value = "0:administrator 1:general user") @RequestParam(
                     value = "user_role",required=false,defaultValue="1") Integer userRole,
             HttpServletRequest request) {
-        log.info("用户登录, loginName:{}, password:{}, userRole:{}", loginName, password, userRole);
+        log.info("user login, loginName:{}, password:{}, userRole:{}", loginName, password, userRole);
         if (StringUtils.isBlank(loginName) || StringUtils.isBlank(password) || Objects.isNull(userRole)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
         }
         UserQuery userQuery = new UserQuery();
         userQuery.setUserName(loginName);
         UserDO userDO = userService.getUserByUserQuery(userQuery);
-        // 判username是否存在
         if (Objects.isNull(userDO)){
             throw new ResponseException(StatusCodeEnu.USERNAME_NOT_EXIST);
         }
-        // 判账号密码正确性，密码md5,不相等就抛异常
+        // Judge the correctness of the account password, the password encrypt by MD5,
+        // throw an exception if they are not equal
         if (!StringUtils.equals(userDO.getPswd(),MD5Encrypt.md5Encrypt(password))){
-            log.info("数据库里的:{},加密完的数据:{}",userDO.getPswd(),MD5Encrypt.md5Encrypt(password));
+            log.info("In the database: {}, encrypted data: {}",userDO.getPswd(),MD5Encrypt.md5Encrypt(password));
             throw new ResponseException(StatusCodeEnu.USERNAME_OR_PSWD_ERROR);
         }
-        // 判断user_role
+        // judge user_role
         if (!userRole.equals(userDO.getRoleId())) {
             throw new ResponseException(StatusCodeEnu.USER_ROLE_ERROR);
         }
-        // 加到session里去
+        // Add to session
 //        request.getSession().setAttribute(Const.CURRENT_USER,userDO);
-        // 生成token
+        // generate token
         JSONObject jsonObject=new JSONObject();
         String token = tokenService.generateToken(loginName);
         jsonObject.put("token", token);
@@ -92,38 +82,27 @@ public class UserController {
         return ResponseUtils.returnSuccess(jsonObject);
     }
 
-    @ApiOperation(value = "测试登录是否成功", notes = "测试登录是否成功")
-    @UserLogin
-    @GetMapping("/getMessage")
-    public String getMessage(){
-        return "你已通过验证";
-    }
 
-
-    @ApiOperation(value = "用户注册", notes = "用户注册")
+    @ApiOperation(value = "register", notes = "register")
     @PassToken
     @PostMapping(value = "/register")
     public Response userRegister(
-            @ApiParam(name = "login_name", value = "用户名") @RequestParam(value = "login_name") String loginName,
-            @ApiParam(name = "password", value = "密码") @RequestParam(value = "password") String password,
-            @ApiParam(name = "question", value = "密保问题") @RequestParam(value = "question") String question,
+            @ApiParam(name = "login_name", value = "username") @RequestParam(value = "login_name") String loginName,
+            @ApiParam(name = "password", value = "password") @RequestParam(value = "password") String password,
+            @ApiParam(name = "question", value = "security question") @RequestParam(value = "question") String question,
             @ApiParam(name = "email", value = "email") @RequestParam(value = "email") String email,
-            @ApiParam(name = "answer", value = "密保问题回答") @RequestParam(value = "answer") String answer) {
-        log.info("用户注册,username:{},password:{},question:{},answer:{},email:{}",loginName,password,question,answer,email);
-        // 参数判空
+            @ApiParam(name = "answer", value = "answer of security question") @RequestParam(value = "answer") String answer) {
+        log.info("register request,username:{},password:{},question:{},answer:{},email:{}",loginName,password,question,answer,email);
         if (Objects.isNull(loginName)||Objects.isNull(password) || Objects.isNull(question) ||
                 Objects.isNull(email) || Objects.isNull(answer)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
         }
-        // 数据库判username是否存在
         UserQuery userQuery = new UserQuery();
         userQuery.setUserName(loginName);
         UserDO userDO = userService.getUserByUserQuery(userQuery);
-        // 判username是否存在
         if (!Objects.isNull(userDO)){
             throw new ResponseException(StatusCodeEnu.USERNAME_EXIST);
         }
-        // 数据库录入操作，密码md5
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername(loginName);
         userDTO.setPswd(MD5Encrypt.md5Encrypt(password));
@@ -134,11 +113,11 @@ public class UserController {
         return ResponseUtils.returnDefaultSuccess();
     }
 
-    @ApiOperation(value = "用户删除", notes = "用户删除")
+    @ApiOperation(value = "delete user", notes = "delete user")
     @UserLogin
     @PostMapping(value = "/del")
     public Response userRegister(
-            @ApiParam(name = "login_name", value = "用户名") @RequestParam(value = "login_name") String loginName,
+            @ApiParam(name = "login_name", value = "username") @RequestParam(value = "login_name") String loginName,
             HttpServletRequest request){
         String username;
         try {
@@ -149,7 +128,7 @@ public class UserController {
         UserQuery userQuery = new UserQuery();
         userQuery.setUserName(username);
         UserDO isUserRoleExist = userService.getUserByUserQuery(userQuery);
-        // 不是管理员无法删除用户
+        // Cannot delete user if you are not administrator
         if (isUserRoleExist.getRoleId()!=0) {
             throw new ResponseException(StatusCodeEnu.NO_RIGHT);
         }
@@ -158,7 +137,7 @@ public class UserController {
         userDO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
         userService.updateUserSelective(userDO);
 
-        // room_booking表也要删除username相关字段
+        // room_booking table also delete the username related fields
         MeetingDO meetingDO = new MeetingDO();
         meetingDO.setUsername(loginName);
         meetingDO.setDeleteTime(DateUtils.formatDate(new Date(), FORMAT_YYYY_MM_DD_HH_MM));
@@ -167,7 +146,7 @@ public class UserController {
         return ResponseUtils.returnDefaultSuccess();
     }
 
-    @ApiOperation(value = "用户退出", notes = "用户退出")
+    @ApiOperation(value = "user logout", notes = "user logout")
     @UserLogin
     @PostMapping(value = "/logout")
     public Response userLogout(HttpServletRequest request){
@@ -179,12 +158,12 @@ public class UserController {
         }
 //        UserDO userDo = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
         tokenService.delToken(request.getHeader("token"));
-        log.info("用户 " + username + " 退出");
+        log.info("user " + username + " logout");
 //        request.getSession().removeAttribute(Const.CURRENT_USER);
         return ResponseUtils.returnDefaultSuccess();
     }
 
-    @ApiOperation(value = "获取用户信息", notes = "获取用户信息")
+    @ApiOperation(value = "Get user information", notes = "Get user information")
     @UserLogin
     @PostMapping(value = "/info")
     public Response getUserInfo(HttpServletRequest request){
@@ -199,23 +178,22 @@ public class UserController {
         UserDO user = userService.getUserByUserQuery(userQuery);
 //        UserDO userDo = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
         if (ObjectUtils.isNotEmpty(user)) {
-            log.info("用户 "+ user.getUsername() +" 获取其信息");
+            log.info("user "+ user.getUsername() +" get information");
             return ResponseUtils.returnSuccess(user);
         }
         return ResponseUtils.returnDefaultError();
     }
 
-    @ApiOperation(value = "登录状态下修改密码", notes = "登录状态下修改密码")
+    @ApiOperation(value = "Change password under login", notes = "Change password under login")
     @UserLogin
     @PostMapping(value = "/reset/online")
     public Response resetPasswordOnline(
-        @ApiParam(name = "new_password", value = "新密码") @RequestParam(value = "new_password") String newPassword,
-        @ApiParam(name = "new_password_confirm", value = "确认新密码")
+        @ApiParam(name = "new_password", value = "new password") @RequestParam(value = "new_password") String newPassword,
+        @ApiParam(name = "new_password_confirm", value = "new password confirm")
         @RequestParam(value = "new_password_confirm") String newPasswordConfirm, HttpServletRequest request){
         if (!newPasswordConfirm.equals(newPassword)) {
             throw new ResponseException(StatusCodeEnu.TWO_PSWD_NOT_SAME);
         }
-        // 取出已经登录的DO
 //        UserDO userDo = (UserDO) request.getSession().getAttribute(Const.CURRENT_USER);
         String username;
         try {
@@ -223,13 +201,13 @@ public class UserController {
         } catch (Exception e) {
             throw new ResponseException(StatusCodeEnu.TOKEN_ERROR);
         }
-        log.info("用户 "+ username +" 登录状态下修改密码");
+        log.info("user "+ username +" change password under login");
         UserQuery userQuery = new UserQuery();
         userQuery.setUserName(username);
         UserDO user = userService.getUserByUserQuery(userQuery);
-        // 新老密码不能一样
+        // New and old passwords cannot be the same
         if (StringUtils.equals(user.getPswd(),MD5Encrypt.md5Encrypt(newPassword))){
-            log.info("数据库里的:{},加密完的数据:{}",user.getPswd(),MD5Encrypt.md5Encrypt(newPassword));
+            log.info("In the database: {}, encrypted data: {}",user.getPswd(),MD5Encrypt.md5Encrypt(newPassword));
             throw new ResponseException(StatusCodeEnu.TWO_PSWD_SAME);
         }
         user.setPswd(MD5Encrypt.md5Encrypt(newPassword));
@@ -237,15 +215,15 @@ public class UserController {
         return ResponseUtils.returnDefaultSuccess();
     }
 
-    @ApiOperation(value = "未登录状态下修改密码", notes = "未登录状态下修改密码")
+    @ApiOperation(value = "Change password without logging in", notes = "Change password without logging in")
     @PassToken
     @PostMapping(value = "/reset/offline")
     public Response resetPasswordOnline(
-            @ApiParam(name = "username", value = "用户名") @RequestParam(value = "username") String username,
-            @ApiParam(name = "new_password", value = "新密码") @RequestParam(value = "new_password") String newPassword,
-            @ApiParam(name = "question", value = "密保问题") @RequestParam(value = "question") String question,
-            @ApiParam(name = "answer", value = "密保问题答案") @RequestParam(value = "answer") String answer){
-        log.info("未登录状态下修改密码,username:{},password:{},question:{},answer:{}",username,newPassword,question,answer);
+            @ApiParam(name = "username", value = "username") @RequestParam(value = "username") String username,
+            @ApiParam(name = "new_password", value = "new password") @RequestParam(value = "new_password") String newPassword,
+            @ApiParam(name = "question", value = "security question") @RequestParam(value = "question") String question,
+            @ApiParam(name = "answer", value = "answer of security question") @RequestParam(value = "answer") String answer){
+        log.info("Change password without logging in,username:{},password:{},question:{},answer:{}",username,newPassword,question,answer);
         // 参数判空
         if (Objects.isNull(username)||Objects.isNull(newPassword) || Objects.isNull(question) || Objects.isNull(answer)) {
             throw new ResponseException(StatusCodeEnu.PORTION_PARAMS_NULL_ERROR);
@@ -267,8 +245,6 @@ public class UserController {
         return ResponseUtils.returnDefaultSuccess();
     }
 
-
-    // TODO 给用户添加部门
 
 //    public static void main(String[] args) {
 //        String password = "qwe123";

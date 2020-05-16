@@ -1,46 +1,36 @@
 package com.walking.meeting.common;
 
 public enum StatusCodeEnu {
-    SYSTEM_ERROR(new StatusCode(-1, "系统繁忙")),
-    USERNAME_NOT_EXIST(new StatusCode(43001, "用户名不存在，请注册哦")),
-    USERNAME_EXIST(new StatusCode(43002, "用户名已存在啦")),
-    USERNAME_OR_PSWD_ERROR(new StatusCode(43003, "用户名或密码错误哦")),
-    PORTION_PARAMS_NULL_ERROR(new StatusCode(43004, "部分参数为空哦")),
-    MEETING_TIME_ERROR(new StatusCode(43005, "会议时间参数问题")),
-    ROOM_EXIST(new StatusCode(43006, "房间名或房间id已经存在咯")),
-    MEETING_ID_NOT_EXIST(new StatusCode(43007, "会议id不存在哦")),
-    MEETING_TIME_TOO_EARLY(new StatusCode(43008, "会议开始时间不能早于会议室能预定的时间哦")),
-    MEETING_TIME_TOO_LATE(new StatusCode(43009, "会议结束时间不能晚于会议室能预定的时间哦")),
-    MEETING_ROOM_FULL(new StatusCode(43010, "该会议室当天已被订满咯")),
-    MEETING_TIME_ILLEGAL(new StatusCode(43011, "这个时间不能被预定哦")),
-    MEETING_PARAMETER_ERROR(new StatusCode(43012, "预定会议参数不全哦")),
-    MEETING_ROOM_NOT_EXIST(new StatusCode(43013, "会议室不存在哦")),
-    LEVEL_TOO_HIGH(new StatusCode(43014, "等级设置的太高啦")),
-    NO_SUCH_DEVICE(new StatusCode(43015, "没有这种设备哦")),
-    DEVICE_ALREADY_EXIST(new StatusCode(43016, "该设备已经存在了哦")),
-    DEPARTMENT_ALREADY_EXIST(new StatusCode(43017, "该部门已经存在了哦")),
-    DEPARTMENT_NOT_EXIST(new StatusCode(43018, "该部门不存在哦")),
-    NO_RIGHT(new StatusCode(43019, "没有权力进行该操作哦")),
-    USER_ROLE_ERROR(new StatusCode(43020, "请选择正确的身份哦")),
-    TWO_PSWD_NOT_SAME(new StatusCode(43021, "两次新密码不一致哦")),
-    TWO_PSWD_SAME(new StatusCode(43022, "新老密码不能一样哦")),
-    QUESTION_NOT_RIGHT(new StatusCode(43023, "密保问题不对哦")),
-    ANSWER_NOT_RIGHT(new StatusCode(43024, "密保问题答案不对哦")),
-    NOT_MANAGER(new StatusCode(43025, "不是管理员无法进行该操作")),
-    DEVICE_ID_CANNOT_REPEAT(new StatusCode(43026, "设备ID不能重复")),
-    DEVICE_TYPE_CANNOT_REPEAT(new StatusCode(43027, "设备类型不能重复哦")),
-    TOKEN_ERROR(new StatusCode(43028, "token有点问题奥")),
-
-
-
-
-
-
-
-
-
-
-    DEFAULT_SUCCESS(new StatusCode(0, "请求成功"));
+    SYSTEM_ERROR(new StatusCode(-1, "System Busy")),
+    USERNAME_NOT_EXIST(new StatusCode(43001, "Username not exist, please register")),
+    USERNAME_EXIST(new StatusCode(43002, "Username already exist")),
+    USERNAME_OR_PSWD_ERROR(new StatusCode(43003, "Username or password ERROR!")),
+    PORTION_PARAMS_NULL_ERROR(new StatusCode(43004, "Some params ERROR!")),
+    MEETING_TIME_ERROR(new StatusCode(43005, "Meeting Time Error")),
+    ROOM_EXIST(new StatusCode(43006, "Room already exist")),
+    MEETING_ID_NOT_EXIST(new StatusCode(43007, "MeetingId do not exist")),
+    MEETING_TIME_TOO_EARLY(new StatusCode(43008, "The meeting start time cannot be earlier than the meeting room free start time")),
+    MEETING_TIME_TOO_LATE(new StatusCode(43009, "The meeting start time cannot be later than the meeting room free end time")),
+    MEETING_ROOM_FULL(new StatusCode(43010, "The meeting room was fully booked that day")),
+    MEETING_TIME_ILLEGAL(new StatusCode(43011, "This time cannot be booked")),
+    MEETING_PARAMETER_ERROR(new StatusCode(43012, "The scheduled meeting parameters are incomplete")),
+    MEETING_ROOM_NOT_EXIST(new StatusCode(43013, "Room not exist")),
+    LEVEL_TOO_HIGH(new StatusCode(43014, "Level too high")),
+    NO_SUCH_DEVICE(new StatusCode(43015, "No such device")),
+    DEVICE_ALREADY_EXIST(new StatusCode(43016, "Device already exist")),
+    DEPARTMENT_ALREADY_EXIST(new StatusCode(43017, "Department already exist")),
+    DEPARTMENT_NOT_EXIST(new StatusCode(43018, "Department do not exist")),
+    NO_RIGHT(new StatusCode(43019, "You have no Rights")),
+    USER_ROLE_ERROR(new StatusCode(43020, "Please choose true role")),
+    TWO_PSWD_NOT_SAME(new StatusCode(43021, "Two new passwords are inconsistent")),
+    TWO_PSWD_SAME(new StatusCode(43022, "New and old passwords can't be the same")),
+    QUESTION_NOT_RIGHT(new StatusCode(43023, "Secret security question is wrong")),
+    ANSWER_NOT_RIGHT(new StatusCode(43024, "The answer to the secret security question is wrong")),
+    NOT_MANAGER(new StatusCode(43025, "The operation only can be performed by an administrator")),
+    DEVICE_ID_CANNOT_REPEAT(new StatusCode(43026, "Device ID cannot be repeated")),
+    DEVICE_TYPE_CANNOT_REPEAT(new StatusCode(43027, "Device Type cannot be repeated")),
+    TOKEN_ERROR(new StatusCode(43028, "Token ERROR!")),
+    DEFAULT_SUCCESS(new StatusCode(0, "Request Success"));
 
     private StatusCode statusCode;
 

@@ -37,11 +37,8 @@ public class RedisConfig extends CachingConfigurerSupport {
             jackson2JsonRedisSerializer.setObjectMapper(om);
 
             template.setConnectionFactory(factory);
-            //key序列化方式
             template.setKeySerializer(redisSerializer);
-            //value序列化
             template.setValueSerializer(jackson2JsonRedisSerializer);
-            //value hashmap序列化
             template.setHashValueSerializer(jackson2JsonRedisSerializer);
 
             return template;
@@ -52,7 +49,6 @@ public class RedisConfig extends CachingConfigurerSupport {
             RedisSerializer<String> redisSerializer = new StringRedisSerializer();
             Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
 
-            // 配置序列化
             RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig();
             RedisCacheConfiguration redisCacheConfiguration = config.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(redisSerializer))
                     .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(jackson2JsonRedisSerializer));
