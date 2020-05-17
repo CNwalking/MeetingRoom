@@ -13,3 +13,10 @@ if (localStorage.manageTokenTime) {
     //如果没有token，则没有登录，去登录页面
     window.location.replace('./index.html')
 }
+
+function logout() {
+    alert('success logout')
+    localStorage.removeItem('manageTokenTime')
+    localStorage.removeItem('manageToken')
+    window.location.replace('./index.html')
+}

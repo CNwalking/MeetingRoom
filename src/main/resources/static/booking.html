@@ -94,7 +94,7 @@
     <div class="fr">
       <ul>
         <li>
-          <a href=""><img class="menuimg" src="img/avatar.png" alt="user" /><span id="login_info_name"></span></a>
+          <a href=""><img class="menuimg" src="img/avatar.png" alt="user" style="vertical-align: middle"/><span id="login_info_name"></span></a>
         </li>
         <!-- <li><a href="ManageMeeting.html">ManageMeeting</a></li>
             <li><a href="ManageDepartment.html">ManageDepartment</a></li>
@@ -191,7 +191,10 @@
           </tr>
         </table>
       </div>
-      <div class="room_show" style="overflow: hidden;height: 500px;">
+      <style>
+        .room_show::-webkit-scrollbar {display:none}
+      </style>
+      <div class="room_show" style="overflow: scroll;height: 500px;">
         <!-- <span
             ><button class="room_btn" type="button">
               meetting room1
