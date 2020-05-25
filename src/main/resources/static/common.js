@@ -3,12 +3,20 @@
 //检查本地token有效期
 if (localStorage.token) {
     var start = +localStorage.tokenTime
+    var startManageTime = +localStorage.manageTokenTime
     var now = +new Date()
     if (now - start > 7 * 24 * 3600 * 1000) {
         //如果token有效期超过7天
         //清除本地token重回登录页面
         localStorage.removeItem('tokenTime')
         localStorage.removeItem('token')
+        window.location.replace('./index.html')
+    }
+    if (now - startManageTime > 7 * 24 * 3600 * 1000) {
+        //如果token有效期超过7天
+        //清除本地token重回登录页面
+        localStorage.removeItem('manageTokenTime')
+        localStorage.removeItem('manageToken')
         window.location.replace('./index.html')
     }
 } else {
